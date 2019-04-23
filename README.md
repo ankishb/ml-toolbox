@@ -18,7 +18,7 @@
   
   
     
-6. Feature diversity specially for catgorical variable such as 
+3. Feature diversity specially for catgorical variable such as 
 	- eigen-decomoposition
 	- one-hot
 	- target-encoding (cv based your and h2o)
@@ -30,7 +30,7 @@
 	- Label encoder
 	- Hash encoder
 
-7. Feature-engineering:
+4. Feature-engineering:
 	- intraction based w/wo RF and boosting method
 	- date-time based features
 	- lag feature(time series) (grouping based on previous day/hour sales or sth)
@@ -43,24 +43,25 @@
 	- rounding 
 	- split decimal value 
 		for example sales prices is 899.99, 500.01, this .99, .01 can be feature
-	- non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd, NMF)
+	- non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
     - outliers handling using matrix factorization
 
 
 
 
-8. Deep learning module:
+5. Deep learning module:
 	- Augmentatioan function
 	- custom callbacks
 	- data on fly 
 	- pretrained model (classes as_ in object detection)
 	- simple layer in functional form
+	- learning rate callbacks
 
 
  
 
 
-9. ML-Model:
+6. ML-Model:
 	- XGBoost/LightGBM/CatBoost
 	- ExtraTree/ Adaptive GBM/ Random-Forest
 	- Linear model/ Lasso/Ridge/Logistic/SVM
@@ -74,24 +75,30 @@
 	- field aware factorization machine
 
 
-10. Advanced features
+7. Advanced features
     - feature importance toolbox, eli5/shap-value
     - gridsearch / bayesian optimization
     - psuedo labeling
     - object detection
     - subsemble
     - stacking
+    - online learning (vowpal rabbit/ follow the regularized leader)
 
   
 
-Special features:
+8. Special features:
     - tutorial/example of how to use each of them.
+    	- gradient boosting tree
+    	- random forest
+    	- reguralized greedy forest
     - Parallel processing
     - Dask tutorial for data preprocessing
     - Feature Selection (Recusive feature elimination)
     - Sparse Matrix handling and along with Sparse SVD
     - OOF-analysis(correlation plot and analysis)
     - Error Analysis
+    	- statistics of wrong observation as well as correct observation
+    	- 
     - CV Vs leaderboard analysis
     - Rank Average
 
@@ -108,5 +115,8 @@ Useful resources:
 7. https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/
 8. https://web.stanford.edu/~hastie/ElemStatLearn/
 9. https://www.dummies.com/programming/big-data/data-science/data-science-how-to-create-interactions-between-variables-with-python/
+10. https://github.com/diefimov/MTH594_MachineLearning/blob/master/ipython/Lecture1.ipynb
+
+
 
 
