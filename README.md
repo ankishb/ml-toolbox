@@ -60,7 +60,7 @@
  
 
 
-ML-Model:
+9. ML-Model:
 	- XGBoost/LightGBM/CatBoost
 	- ExtraTree/ Adaptive GBM/ Random-Forest
 	- Linear model/ Lasso/Ridge/Logistic/SVM
@@ -69,7 +69,7 @@ ML-Model:
 	- Non negative linear regression (scipy)/ lasso(positive=True)
 
 
-9. Advanced features
+10. Advanced features
     - feature importance toolbox, eli5/shap-value
     - gridsearch / bayesian optimization
     - psuedo labeling
