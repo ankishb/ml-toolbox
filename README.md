@@ -1,1 +1,107 @@
 # ml-toolbox
+
+1. Add EDA tool for classification using hue.
+	- boxplot
+	- kdeplot
+	- distplot
+	- pairplot
+	- multivariate plot
+	- heatmap
+		https://www.kaggle.com/mjbahmani/20-ml-algorithms-15-plot-for-beginners
+
+2. Common feature
+    - Outliers Handling
+        - filling with nan
+        - removing them
+        - fill with lower/upper bound 
+    - memory optimization
+  
+  
+    
+6. Feature diversity specially for catgorical variable such as 
+	- eigen-decomoposition
+	- one-hot
+	- target-encoding (cv based your and h2o)
+        https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
+        http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-munging/target-encoding.html
+	- bayesian encoding (prior information) 
+		https://github.com/MaxHalford/xam/blob/master/docs/feature-extraction.md#smooth-target-encoding
+	- quantile binning
+	- Label encoder
+	- Hash encoder
+
+7. Feature-engineering:
+	- intraction based w/wo RF and boosting method
+	- date-time based features
+	- lag feature(time series) (grouping based on previous day/hour sales or sth)
+	- relational (grouping based)
+	- Matrix factorization/low-rank
+	- social network (networkx)
+	- Count-vectorizer
+	- Hashing Tricks for highly sparse data(text data)
+	- text preprocessing
+	- rounding 
+	- split decimal value 
+		for example sales prices is 899.99, 500.01, this .99, .01 can be feature
+	- non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd, NMF)
+    - outliers handling using matrix factorization
+
+
+
+
+8. Deep learning module:
+	- Augmentatioan function
+	- custom callbacks
+	- data on fly 
+	- pretrained model (classes as_ in object detection)
+	- simple layer in functional form
+
+
+ 
+
+
+ML-Model:
+	- XGBoost/LightGBM/CatBoost
+	- ExtraTree/ Adaptive GBM/ Random-Forest
+	- Linear model/ Lasso/Ridge/Logistic/SVM
+	- KNN(coursera)/tsne-multicore/clustering
+	- H2o models with all important parameters specifically with categorical_encoding
+	- Non negative linear regression (scipy)/ lasso(positive=True)
+
+
+9. Advanced features
+    - feature importance toolbox, eli5/shap-value
+    - gridsearch / bayesian optimization
+    - psuedo labeling
+    - object detection
+    - subsemble
+    - stacking
+
+  
+
+Special features:
+    - tutorial/example of how to use each of them.
+    - Parallel processing
+    - Dask tutorial for data preprocessing
+    - Feature Selection (Recusive feature elimination)
+    - Sparse Matrix handling and along with Sparse SVD
+    - OOF-analysis(correlation plot and analysis)
+    - Error Analysis
+    - CV Vs leaderboard analysis
+    - Rank Average
+
+
+
+
+Useful resources:
+1. https://docs.microsoft.com/en-us/azure/machine-learning/team-data-science-process/select-features
+2. https://forums.aws.amazon.com/message.jspa?messageID=774050
+3. https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize.nnls.html
+4. http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-science/algo-params/categorical_encoding.html
+5. http://h2o-release.s3.amazonaws.com/h2o/master/3484/docs-website/h2o-py/docs/intro.html
+6. https://christophm.github.io/interpretable-ml-book/extend-lm.html (book)
+7. https://maxhalford.github.io/blog/streaming-groupbys-in-pandas-for-big-datasets/
+8. https://web.stanford.edu/~hastie/ElemStatLearn/
+9. https://www.dummies.com/programming/big-data/data-science/data-science-how-to-create-interactions-between-variables-with-python/
+
+
