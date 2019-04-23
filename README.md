@@ -67,7 +67,8 @@
 	- KNN(coursera)/tsne-multicore/clustering
 	- H2o models with all important parameters specifically with categorical_encoding
 	- Non negative linear regression (scipy)/ lasso(positive=True)
-
+	- Regularized Random forest
+	
 
 10. Advanced features
     - feature importance toolbox, eli5/shap-value
