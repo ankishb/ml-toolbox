@@ -1,122 +1,135 @@
 # ml-toolbox
 
 1. Add EDA tool for classification using hue.
-	[ ] boxplot
-	[ ] kdeplot
-	[ ] distplot
-	[ ] pairplot
-	[ ] multivariate plot
-	[ ] heatmap
+- [ ] boxplot
+- [ ] kdeplot
+- [ ] distplot
+- [ ] pairplot
+- [ ] multivariate plot
+- [ ] heatmap
+		
 		https://www.kaggle.com/mjbahmani/20-ml-algorithms-15-plot-for-beginners
 
 2. Common feature
-    [x] Outliers Handling
+- [x] Outliers Handling
+        
         - filling with nan
         - removing them
         - fill with lower/upper bound 
         - compute quantile range
-    [x] memory optimization
+- [x] memory optimization
+    	
     	<span style="color:red">some **Add category feature dtype** text</span>
-    [x] standardization-scaling
+- [x] standardization-scaling
+    	
     	- min-max
     	- standardization
   
   
     
 3. Feature diversity specially for catgorical variable such as 
-	[ ] eigen-decomoposition
-	[ ] one-hot
-	[ ] target-encoding (cv based your and h2o)
+- [ ] eigen-decomoposition
+- [ ] one-hot
+- [ ] target-encoding (cv based your and h2o)
+        
         https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
         http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-munging/target-encoding.html
-	[ ] bayesian encoding (prior information) 
+- [ ] bayesian encoding (prior information) 
+		
 		https://github.com/MaxHalford/xam/blob/master/docs/feature-extraction.md#smooth-target-encoding
-	[ ] quantile binning
-	[ ] Label encoder
-	[ ] Hash encoder
+- [ ] quantile binning
+- [ ] Label encoder
+- [ ] Hash encoder
 
 4. Feature-engineering:
-	[ ] intraction based w/wo RF and boosting method
-	[ ] date-time based features
-	[ ] lag feature(time series) (grouping based on previous day/hour sales or sth)
-	[ ] relational (grouping based)
-	[ ] Matrix factorization/low-rank
-	[ ] social network (networkx)
-	[ ] Count-vectorizer
-	[ ] Hashing Tricks for highly sparse data(text data)
-	[ ] text preprocessing
-	[ ] rounding 
-	[ ] split decimal value 
+- [ ] intraction based w/wo RF and boosting method
+- [ ] date-time based features
+- [ ] lag feature(time series) (grouping based on previous day/hour sales or sth)
+- [ ] relational (grouping based)
+- [ ] Matrix factorization/low-rank
+- [ ] social network (networkx)
+- [ ] Count-vectorizer
+- [ ] Hashing Tricks for highly sparse data(text data)
+- [ ] text preprocessing
+- [ ] rounding 
+- [ ] split decimal value 
+
 		for example sales prices is 899.99, 500.01, this .99, .01 can be feature
-	[ ] non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
-    [ ] outliers handling using matrix factorization
+- [ ] non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
+- [ ] outliers handling using matrix factorization
 
 
 
 
 5. Deep learning module:
-	[x] Augmentatioan function
+- [x] Augmentatioan function
+
 		Add example of using augmentation library for segmentation and object detections
 		<span style="color:red">some **Add After completing general task** text</span>
-	[ ] custom callbacks example
-	[ ] data on fly 
-	[x] pretrained model (classes as_ in object detection)
-	[ ] simple layer in functional form
-	[x] learning rate callbacks
+- [ ] custom callbacks example
+- [ ] data on fly 
+- [x] pretrained model (classes as_ in object detection)
+- [ ] simple layer in functional form
+- [x] learning rate callbacks
 
 
  
 
 
 6. ML-Model:
-	[ ] XGBoost/LightGBM/CatBoost
-	[ ] ExtraTree/ Adaptive GBM/ Random-Forest
-	[ ] Linear model/ Lasso/Ridge/Logistic/SVM
-	[ ] KNN(coursera)/tsne-multicore/clustering
-	[ ] H2o models with all important parameters specifically with categorical_encoding
+- [ ] XGBoost/LightGBM/CatBoost
+- [ ] ExtraTree/ Adaptive GBM/ Random-Forest
+- [ ] Linear model/ Lasso/Ridge/Logistic/SVM
+- [ ] KNN(coursera)/tsne-multicore/clustering
+- [ ] H2o models with all important parameters specifically with categorical_encoding
+		
 		Generalized Linear Model with all target distributions
-	[ ] Non negative linear regression (scipy)/ lasso(positive=True)
-	[ ] Regularized Random forest
+- [ ] Non negative linear regression (scipy)/ lasso(positive=True)
+- [ ] Regularized Random forest
+		
 		https://github.com/RGF-team/rgf/tree/master/python-package
 		https://github.com/TimSalimans/HiggsML
 		https://www.kaggle.com/scirpus/regularized-greedy-forest
 		<span style="color:red">some **For FastRFG, we need c++ build system, follow these instruction for that[https://github.com/RGF-team/rgf/tree/master/FastRGF]** text</span>
-	[ ] field aware factorization machine
+- [ ] field aware factorization machine
 
 
 7. Advanced features
-    [ ] feature importance toolbox, eli5/shap-value
-    [ ] gridsearch / bayesian optimization
-    [ ] psuedo labeling
-    [ ] object detection
-    [ ] subsemble
-    [ ] stacking
-    [ ] online learning (vowpal rabbit/ follow the regularized leader)
+- [ ] feature importance toolbox, eli5/shap-value
+- [ ] gridsearch / bayesian optimization
+- [ ] psuedo labeling
+- [ ] object detection
+- [ ] subsemble
+- [ ] stacking
+- [ ] online learning (vowpal rabbit/ follow the regularized leader)
 
   
 
-8. Special features:
-	[ ] parameter tuning
-		- hyperopt
-		- space (tpe)
-		- bayesian optimization
-		- gridsearch
-		- hyperparameter-hunter
-	[ ] parameter tuning for the baseline fit, using gridsearch and less no of samples(50,000).
-    [ ] tutorial/example of how to use each of them.
+8. Special features
+- [ ] parameter tuning
+
+		-  hyperopt
+		-  space (tpe)
+		-  bayesian optimization
+		-  gridsearch
+		-  hyperparameter-hunter
+- [ ] parameter tuning for the baseline fit, using gridsearch and less no of samples(50,000).
+- [ ] tutorial/example of how to use each of them.
+    	
     	- gradient boosting tree
     	- random forest
     	- reguralized greedy forest
-    [ ] Parallel processing
-    [ ] Dask tutorial for data preprocessing
-    [ ] Feature Selection (Recusive feature elimination)
-    [ ] Sparse Matrix handling and along with Sparse SVD
-    [ ] OOF-analysis(correlation plot and analysis)
-    [ ] Error Analysis
+- [ ] Parallel processing
+- [ ] Dask tutorial for data preprocessing
+- [ ] Feature Selection (Recusive feature elimination)
+- [ ] Sparse Matrix handling and along with Sparse SVD
+- [ ] OOF-analysis(correlation plot and analysis)
+- [ ] Error Analysis
+    	
     	- statistics of wrong observation as well as correct observation
     	- 
-    [ ] CV Vs leaderboard analysis
-    [ ] Rank Average
+- [ ] CV Vs leaderboard analysis
+- [ ] Rank Average
 
 
 
