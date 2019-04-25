@@ -40,9 +40,18 @@
 - [ ] quantile binning
 - [ ] Label encoder
 - [ ] Hash encoder
+- [ ] Binary encoding
+
+    https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING
+
 
 4. Feature-engineering:
 - [ ] intraction based w/wo RF and boosting method
+- [ ] intraction based on time-series statistics
+- [ ] use tree terminal leaf prediction as the feature for next tree.
+    
+        check out tree.apply() method to collect tree terminal leaf node output.
+
 - [ ] date-time based features
 - [ ] lag feature(time series) (grouping based on previous day/hour sales or sth)
 - [ ] relational (grouping based)
@@ -55,7 +64,7 @@
 - [ ] split decimal value 
 
 		for example sales prices is 899.99, 500.01, this .99, .01 can be feature
-- [ ] non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
+- [ ] linear/non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
 - [ ] outliers handling using matrix factorization
 
 
@@ -145,7 +154,7 @@ Useful resources:
 8. https://web.stanford.edu/~hastie/ElemStatLearn/
 9. https://www.dummies.com/programming/big-data/data-science/data-science-how-to-create-interactions-between-variables-with-python/
 10. https://github.com/diefimov/MTH594_MachineLearning/blob/master/ipython/Lecture1.ipynb
-
+11. https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING (different way of encoding)
 
 
 
