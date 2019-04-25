@@ -1,50 +1,43 @@
 
-
-
 from PIL import Image, ImageOps, ImageEnhance
 import math
 from math import floor, ceil
-
 import numpy as np
 # from skimage import img_as_ubyte
-# from skimage import transform
+from skimage import transform
 
 import os
 import random
 import warnings
 
-
-
+def get_all_function():
+    all_func = [RandomContrast, RandomColor, RotateStandard, RotateRange, Resize, Flip, Crop,
+                Scale, Zoom, HistogramEqualisation, Greyscale, Invert, BlackAndWhite, 
+                RandomBrightness, rotate_aug]
+    all_func = [str(var) for var in all_func]
+    print("all augmented function present in thi module are:")
+    print(all_func)
+    print("There is another function `get_batch`, which shows an example to use this module")
 
 def RandomContrast( image, min_factor, max_factor):
-    """
-    Random change the passed image contrast.
-    """
+    """Random change the passed image contrast."""
     factor = np.random.uniform(min_factor, max_factor)
-
     image_enhancer_contrast = ImageEnhance.Contrast(image)
     return image_enhancer_contrast.enhance(factor)
 
 def RandomColor( image, min_factor, max_factor):
-    """
-    Random change the passed image saturation.
-    """
+    """Random change the passed image saturation."""
     factor = np.random.uniform(min_factor, max_factor)
 
     image_enhancer_color = ImageEnhance.Color(image)
     return image_enhancer_color.enhance(factor)
 
 def RotateStandard( image, max_left_rotation, max_right_rotation):
-    """
-    To perform rotations without automatically cropping the image.
-
-    """
-
+    """To perform rotations without automatically cropping the image."""
     random_left = random.randint(max_left_rotation, 0)
     random_right = random.randint(0, max_right_rotation)
 
     left_or_right = random.randint(0, 1)
-
     rotation = 0
 
     if left_or_right == 0:
@@ -55,9 +48,7 @@ def RotateStandard( image, max_left_rotation, max_right_rotation):
     return image.rotate(rotation, expand=expand, resample=Image.BICUBIC)
 
 def RotateRange( image, max_left_rotation, max_right_rotation):
-    """
-    This class is used to perform rotations on image by arbitrary numbers of
-    degrees.
+    """ This class is used to perform rotations on image by arbitrary numbers of degrees.
 
     Image are rotated **in place** and an image of the same size is
     returned by this function. That is to say, that after a rotation
@@ -68,7 +59,6 @@ def RotateRange( image, max_left_rotation, max_right_rotation):
     The method by which this is performed is described as follows:
 
     .. math::
-
         E = \\frac{\\frac{\\sin{\\theta_{a}}}{\\sin{\\theta_{b}}}\\Big(X-\\frac{\\sin{\\theta_{a}}}{\\sin{\\theta_{b}}} Y\\Big)}{1-\\frac{(\\sin{\\theta_{a}})^2}{(\\sin{\\theta_{b}})^2}}
 
     which describes how :math:`E` is derived, and then follows
@@ -128,17 +118,13 @@ def RotateRange( image, max_left_rotation, max_right_rotation):
     # Return the image, re-sized to the size of the image passed originally
     return image.resize((x, y), resample=Image.BICUBIC)
 
-
 def Resize( image, width, height, resample_filter):
     """This class is used to resize image by absolute values passed as parameters.
-
-    :param resample_filter: The resample filter to use. Must be one of
-     the standard PIL types, i.e. ``NEAREST``, ``BICUBIC``, ``ANTIALIAS``,
-     or ``BILINEAR``.
+    Args:
+        resample_filter: [BILINEAR, NEAREST, BICUBIC, ANTIALIAS]
     """
     # TODO: Automatically change this to ANTIALIAS or BICUBIC depending on the size of the file
     return image.resize((width, height), eval("Image.%s" % resample_filter))
-
                         
 def Flip( image, top_bottom_left_right):
     """
@@ -168,7 +154,6 @@ def Flip( image, top_bottom_left_right):
         elif random_axis == 1:
             return image.transpose(Image.FLIP_TOP_BOTTOM)
 
-
 def Crop( image, width, height, centre=True):
     """
     Crop an area from an image, either from a random location or centred,
@@ -189,12 +174,9 @@ def Crop( image, width, height, centre=True):
     else:
         return image.crop((left_shift, down_shift, width + left_shift, height + down_shift))
 
-
 def Scale( image, scale_factor):
-    """
-    This class is used to increase or decrease image in size by a certain
-    factor, while maintaining the aspect ratio of the original image.
-    """
+    """To increase or decrease image in size by a certain factor, while maintaining the 
+    aspect ratio of the original image."""
     w, h = image.size
 
     new_h = int(h * scale_factor)
@@ -202,12 +184,9 @@ def Scale( image, scale_factor):
 
     return image.resize((new_w, new_h), resample=Image.BICUBIC)
 
-
 def Zoom(image, min_factor, max_factor):
-    """
-    This class is used to enlarge image (to zoom) but to return a cropped
-    region of the zoomed image of the same size as the original image.
-    """
+    """to enlarge image (to zoom) but to return a cropped region of the zoomed image of the 
+    same size as the original image"""
     factor = round(random.uniform(min_factor, max_factor), 2)
 
     w, h = image.size
@@ -222,37 +201,19 @@ def Zoom(image, min_factor, max_factor):
                               floor((float(w_zoomed) / 2) + (float(w) / 2)),
                               floor((float(h_zoomed) / 2) + (float(h) / 2))))
 
-
-
 def HistogramEqualisation( image):
-    """
-    Performs histogram equalisation on the image passed as an argument
-    and returns the equalised image. There are no user definable
-    parameters for this method.
-    """
-    # If an image is a colour image, the histogram will
-    # will be computed on the flattened image, which fires
-    # a warning.
-    # We may want to apply this instead to each colour channel.
+    """returns the equalised image"""
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         return ImageOps.equalize(image)
 
-
-
 def Greyscale(image):
-    """
-    This class is used to convert image into greyscale. That is, it converts
-    image into having only shades of grey (pixel value intensities)
-    varying from 0 to 255 which represent black and white respectively.
-    """
+    """Converts image into having only shades of grey (pixel value intensities)
+    varying from 0 to 255 which represent black and white respectively."""
     return ImageOps.grayscale(image)
 
 def Invert(image):
-    """
-    Negates the image passed as an argument. There are no user definable
-    parameters for this method.
-    """
+    """Negates the image"""
     return ImageOps.invert(image)
 
 def BlackAndWhite(image, threshold):
@@ -268,39 +229,12 @@ def BlackAndWhite(image, threshold):
     image = ImageOps.grayscale(image)
     return image.point(lambda x: 0 if x < threshold else 255, '1')
 
-
-
-
 def RandomBrightness( image, min_factor, max_factor):
-    """
-    Random change the passed image brightness.
-    """
+    """Random change the passed image brightness."""
     factor = np.random.uniform(min_factor, max_factor)
 
     image_enhancer_brightness = ImageEnhance.Brightness(image)
     return image_enhancer_brightness.enhance(factor)
-
-def RandomColor( image, min_factor, max_factor):
-    """
-    Random change the passed image saturation.
-    """
-    factor = np.random.uniform(min_factor, max_factor)
-
-    image_enhancer_color = ImageEnhance.Color(image)
-    return image_enhancer_color.enhance(factor)
-
-def RandomContrast( image, min_factor, max_factor):
-    """
-    Random change the passed image contrast.
-    """
-    factor = np.random.uniform(min_factor, max_factor)
-
-    image_enhancer_contrast = ImageEnhance.Contrast(image)
-    return image_enhancer_contrast.enhance(factor)
-
-
-
-from skimage import transform
 
 def rotate_aug(image, k):
     image = transform.rotate(image, angle=k, resize=False, center=None, order=1, mode='constant',

@@ -7,8 +7,8 @@
 - [ ] pairplot
 - [ ] multivariate plot
 - [ ] heatmap
-		
-		https://www.kaggle.com/mjbahmani/20-ml-algorithms-15-plot-for-beginners
+
+	https://www.kaggle.com/mjbahmani/20-ml-algorithms-15-plot-for-beginners
 
 2. Common feature
 - [x] Outliers Handling
@@ -19,7 +19,7 @@
         - compute quantile range
 - [x] memory optimization
     	
-    	<span style="color:red">some **Add category feature dtype** text</span>
+    <span style="color:red">some **Add category feature dtype** text</span>
 - [x] standardization-scaling
     	
     	- min-max
@@ -28,12 +28,14 @@
   
     
 3. Feature diversity specially for catgorical variable such as 
+	<span style="color:red">some **Remember: Handle nan carefully while label encoding, for float, it will treat all nan as same, whereas for int, it will consider all nan as different value.** text</span>
 - [ ] eigen-decomoposition
 - [ ] one-hot
 - [ ] target-encoding (cv based your and h2o)
         
-        https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
-        http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-munging/target-encoding.html
+    https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
+    http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-munging/target-encoding.html
+    https://www.kaggle.com/tnarik/likelihood-encoding-of-categorical-features
 - [ ] bayesian encoding (prior information) 
 		
 		https://github.com/MaxHalford/xam/blob/master/docs/feature-extraction.md#smooth-target-encoding
@@ -50,7 +52,7 @@
 - [ ] intraction based on time-series statistics
 - [ ] use tree terminal leaf prediction as the feature for next tree.
     
-        check out tree.apply() method to collect tree terminal leaf node output.
+    <span style="color:red">some **check out tree.apply() method to collect tree terminal leaf node output.** text</span>
 
 - [ ] date-time based features
 - [ ] lag feature(time series) (grouping based on previous day/hour sales or sth)
@@ -73,16 +75,18 @@
 5. Deep learning module:
 - [x] Augmentatioan function
 
-		Add example of using augmentation library for segmentation and object detections
-		<span style="color:red">some **Add After completing general task** text</span>
+	Add example of using augmentation library for segmentation and object detections
+	<span style="color:red">some **Add After completing general task** text</span>
 - [ ] custom callbacks example
 - [ ] data on fly 
 - [x] pretrained model (classes as_ in object detection)
 - [ ] simple layer in functional form
 - [x] learning rate callbacks
+- [ ] Entity embedding 
+	
+	https://github.com/mohsinkhn/ltfs-av
+- [ ] pretrained Word2Vec embedding for nlp task (quora question answer)
 
-
- 
 
 
 6. ML-Model:
@@ -96,10 +100,10 @@
 - [ ] Non negative linear regression (scipy)/ lasso(positive=True)
 - [ ] Regularized Random forest
 		
-		https://github.com/RGF-team/rgf/tree/master/python-package
-		https://github.com/TimSalimans/HiggsML
-		https://www.kaggle.com/scirpus/regularized-greedy-forest
-		<span style="color:red">some **For FastRFG, we need c++ build system, follow these instruction for that[https://github.com/RGF-team/rgf/tree/master/FastRGF]** text</span>
+	https://github.com/RGF-team/rgf/tree/master/python-package
+	https://github.com/TimSalimans/HiggsML
+	https://www.kaggle.com/scirpus/regularized-greedy-forest
+	<span style="color:red">some **For FastRFG, we need c++ build system, follow these instruction for that[https://github.com/RGF-team/rgf/tree/master/FastRGF]** text</span>
 - [ ] field aware factorization machine
 
 
@@ -111,7 +115,7 @@
 - [ ] subsemble
 - [ ] stacking
 - [ ] online learning (vowpal rabbit/ follow the regularized leader)
-
+- [ ] NLP Transform ULMAFit/ELMO/Bert
   
 
 8. Special features
