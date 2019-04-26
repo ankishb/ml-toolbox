@@ -72,6 +72,8 @@
 - [x] polynomial features
 - [x] svd transformation
 - [x] nmf transformation
+- [ ] ica transformation
+- [ ] isomap features
 
 
 
