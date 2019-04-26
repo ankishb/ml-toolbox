@@ -59,16 +59,19 @@
 - [ ] relational (grouping based)
 - [ ] Matrix factorization/low-rank
 - [ ] social network (networkx)
-- [ ] Count-vectorizer
+- [x] Count-vectorizer
 - [ ] Hashing Tricks for highly sparse data(text data)
-- [ ] text preprocessing
+- [x] text preprocessing
+- [ ] extensive text processing with stemmer and lemmantizer
 - [ ] rounding 
 - [ ] split decimal value 
 
 		for example sales prices is 899.99, 500.01, this .99, .01 can be feature
 - [ ] linear/non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
 - [ ] outliers handling using matrix factorization
-
+- [x] polynomial features
+- [x] svd transformation
+- [x] nmf transformation
 
 
 
@@ -83,8 +86,9 @@
 - [ ] simple layer in functional form
 - [x] learning rate callbacks
 - [ ] Entity embedding 
+- [ ] Segmentation (U-net)
 	
-	https://github.com/mohsinkhn/ltfs-av
+    	https://github.com/mohsinkhn/ltfs-av
 - [ ] pretrained Word2Vec embedding for nlp task (quora question answer)
 
 
@@ -93,6 +97,10 @@
 - [ ] XGBoost/LightGBM/CatBoost
 - [ ] ExtraTree/ Adaptive GBM/ Random-Forest
 - [ ] Linear model/ Lasso/Ridge/Logistic/SVM
+    
+    <span style="color:red">some **For large dataset, sunning svm is not wise, there is an online approximation of SVM solver, please follow following link.** text</span>
+    https://scikit-learn.org/stable/modules/metrics.html#metrics (kernel function)
+    https://leon.bottou.org/projects/lasvm
 - [ ] KNN(coursera)/tsne-multicore/clustering
 - [ ] H2o models with all important parameters specifically with categorical_encoding
 		
@@ -119,13 +127,9 @@
   
 
 8. Special features
-- [ ] parameter tuning
+- [x] parameter tuning
 
-		-  hyperopt
-		-  space (tpe)
-		-  bayesian optimization
-		-  gridsearch
-		-  hyperparameter-hunter
+    <span style="color:red">some **Another tuning method: hyperparameter-hunter, will visit at last.** text</span>
 - [ ] parameter tuning for the baseline fit, using gridsearch and less no of samples(50,000).
 - [ ] tutorial/example of how to use each of them.
     	
@@ -159,6 +163,8 @@ Useful resources:
 9. https://www.dummies.com/programming/big-data/data-science/data-science-how-to-create-interactions-between-variables-with-python/
 10. https://github.com/diefimov/MTH594_MachineLearning/blob/master/ipython/Lecture1.ipynb
 11. https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING (different way of encoding)
-
+12. https://scikit-learn.org/stable/modules/classes.html (sklearn complete classes/functions list)
+13. https://www.youtube.com/watch?v=TJU8NfDdqNQ (ml tutorials)
+14. 
 
 
