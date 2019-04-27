@@ -312,8 +312,6 @@ Deal with Over-fitting
 
 """
 
-import lightgbm as lgb
-from sklearn.model_selection import StratifiedKFold, GroupKFold
 
 import lightgbm as lgb
 from sklearn.model_selection import StratifiedKFold, GroupKFold
@@ -573,4 +571,9 @@ end = time.time()
 
 
 
-
+    trials = Trials()
+    results = fmin(
+        objective, param_grid, algo=tpe.suggest,
+        trials=trials, max_evals=max_evals)
+    
+    return results, trials.results 
