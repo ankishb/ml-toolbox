@@ -33,6 +33,8 @@
 - [ ] one-hot
 - [ ] target-encoding (cv based your and h2o)
         
+    https://github.com/mohsinkhn/ltfs-av/blob/dev/TargetEncoder.py
+    https://www.kaggle.com/vprokopev/mean-likelihood-encodings-a-comprehensive-study?utm_medium=email&utm_source=mailchimp&utm_campaign=datanotes-20181004
     https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
     http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-munging/target-encoding.html
     https://www.kaggle.com/tnarik/likelihood-encoding-of-categorical-features
@@ -74,6 +76,7 @@
 - [x] nmf transformation
 - [ ] ica transformation
 - [ ] isomap features
+- [ ] numerical to catgorical tranformation
 
 
 
@@ -88,11 +91,16 @@
 - [ ] simple layer in functional form
 - [x] learning rate callbacks
 - [ ] Entity embedding 
+
+    https://github.com/mohsinkhn/ltfs-av/blob/dev/TargetEncoder.py
 - [ ] Segmentation (U-net)
 	
-    	https://github.com/mohsinkhn/ltfs-av
+    https://github.com/mohsinkhn/ltfs-av
 - [ ] pretrained Word2Vec embedding for nlp task (quora question answer)
-
+- [ ] word2vec from gensim for category variables.
+    
+    <span style="color:red">some **Add example of cuisine prediction using phase2vec model built using word2vec from gensim (kaggle dataset).** text</span>
+    http://kavita-ganesan.com/how-to-incorporate-phrases-into-word2vec-a-text-mining-approach/#.WuiiKtMvyds
 
 
 6. ML-Model:

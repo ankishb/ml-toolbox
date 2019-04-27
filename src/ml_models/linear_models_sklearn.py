@@ -15,34 +15,31 @@ import lightgbm as lgb
 
 
 
-sklearn.linear_model.LinearRegression(fit_intercept=True, normalize=False, copy_X=True, n_jobs=None)
+from sklearn.linear_model import LinearRegression
+lin_reg = LinearRegression(fit_intercept=True, normalize=False, n_jobs=-1)
 
-sklearn.linear_model.Ridge(alpha=1.0, fit_intercept=True, normalize=False, copy_X=True, max_iter=None, tol=0.001, solver=’auto’, random_state=None)
-If set to false, no intercept will be used in calculations (e.g. data is expected to be already centered)
+from sklearn.linear_model import Ridge
+ridge = Ridge(alpha=1.0, fit_intercept=True, normalize=False, max_iter=None, random_state=1234)
+# If set to false, no intercept will be used in calculations (e.g. data is expected to be already centered)
 
 
-sklearn.linear_model.RidgeClassifier(alpha=1.0, fit_intercept=True, 
+sklearn.linear_model import RidgeClassifier
+ridge_clf = RidgeClassifier(alpha=1.0, fit_intercept=True, 
   normalize=False, class_weight='balanced', random_state=1234)
 
 
-sklearn.linear_model.RidgeCV(alphas=(0.1, 1.0, 10.0), 
-  fit_intercept=True, 
-  normalize=False, scoring=None, cv=None, gcv_mode=None, store_cv_values=False)
-
-store_cv_values : boolean, default=False
-
-    Flag indicating if the cross-validation values corresponding to each alpha should be stored in the cv_values_ attribute 
-alpha_
 
 
 
-sklearn.kernel_ridge.KernelRidge(alpha=1, 
-  kernel=’linear’, gamma=None, degree=3, coef0=1, kernel_params=None)
+sklearn.kernel_ridge import KernelRidge
+kenel_func = ['rbf','linear','poly']
+kernel_ridge = KernelRidge(alpha=1, kernel=kenel_func, gamma=None, 
+                          degree=3, coef0=1, kernel_params=None)
 
-gamma : float, default=None
+# gamma : Gamma parameter for the RBF, laplacian, polynomial, exponential chi2 and sigmoid kernels. 
+#         Interpretation of the default value is left to the kernel
 
-    Gamma parameter for the RBF, laplacian, polynomial, exponential chi2 and sigmoid kernels. Interpretation of the default value is left to the kernel
-
+"""
 from sklearn.kernel_ridge import KernelRidge
 import numpy as np
 n_samples, n_features = 10, 5
@@ -50,25 +47,32 @@ rng = np.random.RandomState(0)
 y = rng.randn(n_samples)
 X = rng.randn(n_samples, n_features)
 clf = KernelRidge(alpha=1.0)
-clf.fit(X, y) 
+clf.fit(X, y)
+""" 
 
 
-sklearn.linear_model.Lasso(alpha=1.0, fit_intercept=True, normalize=False, precompute=False, copy_X=True, max_iter=1000, tol=0.0001, warm_start=False, positive=False, random_state=None, selection=’cyclic’)
+from sklearn.linear_model import Lasso
+lasso = Lasso(alpha=1.0, fit_intercept=True, normalize=False, 
+  positive=False, random_state=1234, selection='cyclic')
+
+"""
 from sklearn import linear_model
 clf = linear_model.Lasso(alpha=0.1)
 clf.fit([[0,0], [1, 1], [2, 2]], [0, 1, 2])
 print(clf.coef_)
 print(clf.intercept_) 
+"""
 
 
 
 
 
-sklearn.linear_model.ElasticNet(alpha=1.0, l1_ratio=0.5, fit_intercept=True, normalize=False, precompute=False, max_iter=1000, copy_X=True, tol=0.0001, warm_start=False, positive=False, random_state=None, selection=’cyclic’
+from sklearn.linear_model import ElasticNet
+elastic_net = ElasticNet(alpha=1.0, l1_ratio=0.5, fit_intercept=True, 
+  normalize=False, random_state=1234, selection='cyclic')
   For l1_ratio = 0 the penalty is an L2 penalty. For l1_ratio = 1 it is an L1 penalty.
 
-
-
+"""
 from sklearn.linear_model import ElasticNet
 from sklearn.datasets import make_regression
 
@@ -79,38 +83,38 @@ regr.fit(X, y)
 print(regr.coef_) 
 print(regr.intercept_) 
 print(regr.predict([[0, 0]])
+"""
 
 
 
 
-sklearn.linear_model.BayesianRidge(n_iter=300, tol=0.001, alpha_1=1e-06, alpha_2=1e-06, lambda_1=1e-06, lambda_2=1e-06, compute_score=False, fit_intercept=True, normalize=False, copy_X=True, verbose=False)
-alpha_1 : float, optional
+from sklearn.linear_model import BayesianRidge
+bayesian_ridge = BayesianRidge(n_iter=300, tol=0.001, alpha_1=1e-06, alpha_2=1e-06, 
+  lambda_1=1e-06, lambda_2=1e-06, compute_score=False, fit_intercept=True, normalize=False, verbose=True)
+# alpha_1 : Hyper-parameter : shape parameter for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
+# alpha_2 : Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
+# lambda_1 : Hyper-parameter : shape parameter for the Gamma distribution prior over the lambda parameter. Default is 1.e-6.
+# lambda_2 : Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the lambda parameter. Default is 1.e-6
 
-    Hyper-parameter : shape parameter for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
-alpha_2 : float, optional
-
-    Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
-
-
-    lambda_1 : float, optional
-
-    Hyper-parameter : shape parameter for the Gamma distribution prior over the lambda parameter. Default is 1.e-6.
-lambda_2 : float, optional
-
-    Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the lambda parameter. Default is 1.e-6
-
+"""
 from sklearn import linear_model
 clf = linear_model.BayesianRidge()
 clf.fit([[0,0], [1, 1], [2, 2]], [0, 1, 2])
 clf.predict([[1, 1]])
+"""
 
 
 
-sklearn.linear_model.LogisticRegression(penalty=’l2’, dual=False, tol=0.0001, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=None, solver=’warn’, max_iter=100, multi_class=’warn’, verbose=0, warm_start=False, n_jobs=None)
+from sklearn.linear_model import LogisticRegression
+logistic_reg = LogisticRegression(penalty=’l2’, dual=False, C=1.0, fit_intercept=True, 
+  intercept_scaling=1, class_weight=None, random_state=1234, max_iter=100, 
+  multi_class=’warn’, verbose=1, n_jobs=-1)
 multi_class : str, {‘ovr’, ‘multinomial’, ‘auto’}, default: ‘ovr’
-If the option chosen is ‘ovr’, then a binary problem is fit for each label. For ‘multinomial’ the loss minimised is the multinomial loss fit across the entire probability distribution, even when the data is binary. ‘multinomial’ is unavailable when solver=’liblinear’. ‘auto’ selects ‘ovr’ if the data is binary, or if solver=’liblinear’, and otherwise selects ‘multinomial’.
+If the option chosen is ‘ovr’, then a binary problem is fit for each label.
+For ‘multinomial’ the loss minimised is the multinomial loss fit across the entire probability distribution, even when the data is binary. ‘multinomial’ is unavailable when solver=’liblinear’. ‘auto’ selects ‘ovr’ if the data is binary, or if solver=’liblinear’, and otherwise selects ‘multinomial’.
 
 
+"""
 from sklearn.datasets import load_iris
 from sklearn.linear_model import LogisticRegression
 X, y = load_iris(return_X_y=True)
@@ -119,33 +123,32 @@ clf = LogisticRegression(random_state=0, solver='lbfgs',
 clf.predict(X[:2, :])
 clf.predict_proba(X[:2, :]) 
 clf.score(X, y)
-
-
-
-
-sklearn.linear_model.PassiveAggressiveClassifier(C=1.0, 
-  fit_intercept=True, max_iter=None, tol=None, 
-  early_stopping=False, validation_fraction=0.1, 
-  n_iter_no_change=5, shuffle=True, verbose=0, loss=’hinge’, 
-  n_jobs=None, random_state=None, warm_start=False, 
-  class_weight=None, average=False, n_iter=None)
-
-early_stopping=True
-n_iter_no_change : int, default=5
-
-    Number of iterations with no improvement to wait before early stopping.
+"""
 
 
 
 from sklearn.linear_model import PassiveAggressiveClassifier
+passive_aggresive = PassiveAggressiveClassifier(C=1.0, 
+  fit_intercept=True, max_iter=None, tol=None, 
+  early_stopping=False, validation_fraction=0.1, 
+  n_iter_no_change=5, shuffle=True, verbose=0, 
+  n_jobs=-1, random_state=1234, loss='hinge',
+  class_weight=None, average=False, n_iter=None)
+
+# early_stopping=True
+# n_iter_no_change : Number of iterations with no improvement to wait before early stopping.
+
+
+"""
+from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.datasets import make_classification
 X, y = make_classification(n_features=4, random_state=0)
-clf = PassiveAggressiveClassifier(max_iter=1000, random_state=0,
-tol=1e-3)
+clf = PassiveAggressiveClassifier(max_iter=1000, random_state=0, tol=1e-3)
 clf.fit(X, y)
 print(clf.coef_)
 print(clf.intercept_)
 print(clf.predict([[0, 0, 0, 0]]))
+"""
 
 The index t has been chosen to mark the temporal dimension. In this case, in fact, the samples can continue arriving for an indefinite time. Of course, if they are drawn from same data generating distribution, the algorithm will keep learning (probably without large parameter modifications), but if they are drawn from a completely different distribution, the weights will slowly forget the previous one and learn the new distribution.
 
@@ -153,13 +156,15 @@ The index t has been chosen to mark the temporal dimension. In this case, in fac
 
 
 
-sklearn.svm.SVC(C=1.0, kernel=’rbf’, degree=3, gamma=’auto_deprecated’, coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape=’ovr’, random_state=None)
+from sklearn.svm import SVC
+svm = SVC(C=1.0, kernel=’rbf’, degree=3, gamma=’auto_deprecated’, coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape=’ovr’, random_state=None)
 The implementation is based on libsvm. The fit time complexity is more than quadratic with the number of samples which makes it hard to scale to dataset with more than a couple of 10000 samples.
 
 
 
 
-sklearn.linear_model.SGDRegressor(loss=’squared_loss’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, random_state=None, learning_rate=’invscaling’, eta0=0.01, power_t=0.25, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, warm_start=False, average=False, n_iter=None)
+from sklearn.linear_model import SGDRegressor
+sgd_reg = SGDRegressor(loss=’squared_loss’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, random_state=None, learning_rate=’invscaling’, eta0=0.01, power_t=0.25, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, warm_start=False, average=False, n_iter=None)
 penalty : str, ‘none’, ‘l2’, ‘l1’, or ‘elasticnet’
 learning_rate : string, optional
 
@@ -211,7 +216,8 @@ clf.fit(X, y)
 
 
 
-sklearn.linear_model.SGDClassifier(loss=’hinge’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, n_jobs=None, random_state=None, learning_rate=’optimal’, eta0=0.0, power_t=0.5, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, class_weight=None, warm_start=False, average=False, n_iter=None)
+from sklearn.linear_model import SGDClassifier
+sgd_clf = SGDClassifier(loss=’hinge’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, n_jobs=None, random_state=None, learning_rate=’optimal’, eta0=0.0, power_t=0.5, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, class_weight=None, warm_start=False, average=False, n_iter=None)
 
 
 The possible options are ‘hinge’, ‘log’, ‘modified_huber’, ‘squared_hinge’, ‘perceptron’, or a regression loss: ‘squared_loss’, ‘huber’, ‘epsilon_insensitive’, or ‘squared_epsilon_insensitive’.

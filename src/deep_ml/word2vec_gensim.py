@@ -1,0 +1,1 @@
+model = gensim.models.Word2Vec(documents, size=150, window=10, min_count=2, workers=10)

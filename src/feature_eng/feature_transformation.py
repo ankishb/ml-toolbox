@@ -130,3 +130,35 @@ def svd_decomposition(train, test, n_component, col_name=None):
 
 
 
+
+
+# from sklearn.preprocessing import KBinsDiscretizer
+# kbins = KBinsDiscretizer(n_bins=n_bins, encode=encoding, 
+# 	strategy=strategy)
+
+# encode:  {‘onehot’, ‘onehot-dense’, ‘ordinal’}
+# strategy : {‘uniform’, ‘quantile’, ‘kmeans’}
+
+# return: bin_edges_
+
+# X = [[-2, 1, -4,   -1],
+#      [-1, 2, -3, -0.5],
+#      [ 0, 3, -2,  0.5],
+#      [ 1, 4, -1,    2]]
+# est = KBinsDiscretizer(n_bins=3, encode='ordinal', strategy='uniform')
+# est.fit(X)  
+
+
+
+
+
+
+# import numpy as np
+# from sklearn.preprocessing import FunctionTransformer
+# transformer = FunctionTransformer(np.log1p, validate=True)
+# X = np.array([[0, 1], [2, 3]])
+# transformer.transform(X)
+
+# Xt = est.transform(X)
+# Xt
+
