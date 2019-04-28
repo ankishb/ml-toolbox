@@ -53,29 +53,24 @@
 - [ ] intraction based on time-series statistics
 - [ ] use tree terminal leaf prediction as the feature for next tree.
     <span style="color:red">some **check out tree.apply() method to collect tree terminal leaf node output.** text</span>
-
 - [ ] date-time based features
 - [ ] lag feature(time series) (grouping using previous day/hour sales or sth)
 - [ ] relational (grouping based)
-- [ ] Matrix factorization/low-rank
-- [ ] social network (networkx)
-- [x] Count-vectorizer
-- [ ] Hashing Tricks for highly sparse data(text data)
 - [x] text preprocessing
-- [ ] extensive text processing with stemmer and lemmantizer
-- [ ] rounding 
-- [ ] split decimal value 
+    - Count-vectorizer
+    - extensive text processing with stemmer and lemmantizer
+    <span style="color:red">some **Will add extensive preprocessing at last.** text</span>
+    - Hashing Tricks for highly sparse data(text data)
+- [ ] rounding/split decimal value 
     for example sales prices is 899.99, 500.01, this .99, .01 can be feature
-- [ ] linear/non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
-- [ ] outliers handling using matrix factorization
+- [x] linear/non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
 - [x] polynomial features
-- [x] svd transformation
-- [x] nmf transformation
-- [ ] ica transformation
-- [ ] isomap features
+- [x] svd/pca/nmf transformation
+- [ ] ica/fastica/factor analysis/ppca transformation
+- [ ] isomap/lle/spectral features
+- [ ] Quantile/Robust scaler feature transormation
+- [ ] outliers handling using matrix factorization
 - [ ] numerical to catgorical tranformation
-- [ ] Quantile feature transormation
-- [ ] Robust scaler
 - [ ] 
 
 ---
@@ -92,20 +87,19 @@
     <span style="color:blue">some **Another example can be seen in my all-in-one-place/keras git repo.** text</span>
 - [x] custom callbacks example
     https://www.kaggle.com/rspadim/gini-keras-callback-earlystopping-validation
-- [ ] data on fly 
 - [x] pretrained model (classes as_ in object detection)
-- [ ] simple layer in functional form
+- [x] simple layer in functional form
 - [x] learning rate callbacks
-- [ ] Entity embedding 
 - [x] keras metrics/losses/activation-func/optimizers list
     https://github.com/mohsinkhn/ltfs-av/blob/dev/TargetEncoder.py
-- [ ] Segmentation (U-net)
-    https://github.com/mohsinkhn/ltfs-av
-- [ ] pretrained Word2Vec embedding for nlp task (quora question answer)
-- [ ] LSTM usuage
-- [ ] word2vec from gensim for category variables.
+- [x] pretrained Word2Vec embedding for nlp task (quora question answer)
+- [x] LSTM usuage
+- [x] word2vec from gensim for category variables. (Entity embedding)
     <span style="color:red">some **Add example of cuisine prediction using phase2vec model built using word2vec from gensim (kaggle dataset).** text</span>
     http://kavita-ganesan.com/how-to-incorporate-phrases-into-word2vec-a-text-mining-approach/#.WuiiKtMvyds
+- [ ] data on fly 
+- [ ] Segmentation (U-net)
+    https://github.com/mohsinkhn/ltfs-av
 - [ ] 
 
 ---
@@ -133,13 +127,14 @@
     https://www.kaggle.com/scirpus/regularized-greedy-forest
     <span style="color:red">some **For FastRFG, we need c++ build system, follow these instruction for that[https://github.com/RGF-team/rgf/tree/master/FastRGF]** text</span>
 - [ ] field aware factorization machine
-- [ ] 
-
+- [ ] Matrix factorization/low-rank
+- [ ] social network (networkx)
+- [ ]
 ---
 
 8. Advanced features
 - [ ] feature importance toolbox, eli5/shap-value
-- [ ] gridsearch / bayesian optimization
+- [x] gridsearch / bayesian optimization
 - [ ] psuedo labeling
 - [ ] object detection
 - [ ] subsemble
@@ -170,6 +165,7 @@
 - [ ] CV Vs leaderboard analysis
 - [ ] Rank Average
 - [ ] sklearn estimator class
+    https://www.slideshare.net/PyData/julie-michelman-pandas-pipelines-and-custom-transformers
 - [ ] 
 
 ---
