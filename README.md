@@ -110,7 +110,13 @@
 
 ---
 
-6. ML-Model:
+6. Little more on Feature engineering
+-[ ] Text features such as no of words, no of characters etc
+
+
+---
+
+7. ML-Model:
 - [x] XGBoost/LightGBM/CatBoost
 - [ ] ExtraTree/ Adaptive GBM/ Random-Forest
 - [ ] Linear model/ Lasso/Ridge/Logistic/SVM
@@ -131,7 +137,7 @@
 
 ---
 
-7. Advanced features
+8. Advanced features
 - [ ] feature importance toolbox, eli5/shap-value
 - [ ] gridsearch / bayesian optimization
 - [ ] psuedo labeling
@@ -146,7 +152,7 @@
   
 ---
 
-8. Special features
+9. Special features
 - [x] parameter tuning
     <span style="color:red">some **Another tuning method: hyperparameter-hunter, will visit at last.** text</span>
 - [ ] parameter tuning for the baseline fit, using gridsearch and less no of samples(50,000).
@@ -163,6 +169,7 @@
     - statistics of wrong observation as well as correct observation
 - [ ] CV Vs leaderboard analysis
 - [ ] Rank Average
+- [ ] sklearn estimator class
 - [ ] 
 
 ---
