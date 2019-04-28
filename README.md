@@ -157,9 +157,9 @@
     <span style="color:red">some **Another tuning method: hyperparameter-hunter, will visit at last.** text</span>
 - [ ] parameter tuning for the baseline fit, using gridsearch and less no of samples(50,000).
 - [ ] tutorial/example of how to use each of them.
-        - gradient boosting tree
-        - random forest
-        - reguralized greedy forest
+    * gradient boosting tree
+    * random forest
+    * reguralized greedy forest
 - [ ] Parallel processing
 - [ ] Dask tutorial for data preprocessing
 - [ ] Feature Selection (Recusive feature elimination)
@@ -188,6 +188,7 @@ Useful resources:
 11. https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING (different way of encoding)
 12. https://scikit-learn.org/stable/modules/classes.html (sklearn complete classes/functions list)
 13. https://www.youtube.com/watch?v=TJU8NfDdqNQ (ml tutorials)
-14. 
+14. https://www.kaggle.com/mjbahmani/top-5-deep-learning-frameworks-tutorial (many references and ebooks for ml)
+15. 
 
 
