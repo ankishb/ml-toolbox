@@ -1,109 +1,100 @@
 
 
 
-
-from sklearn.linear_model import ElasticNet, Lasso,  BayesianRidge, LassoLarsIC
-from sklearn.ensemble import RandomForestRegressor,  GradientBoostingRegressor
-from sklearn.kernel_ridge import KernelRidge
-# from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import RobustScaler
-from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
-from sklearn.model_selection import KFold, cross_val_score, train_test_split
-from sklearn.metrics import mean_squared_error
-import xgboost as xgb
-import lightgbm as lgb
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
+from sklearn.ensemble import BaggingClassifier, BaggingRegressor
+from sklearn.ensemble import ExtraTreesClassifier, ExtraTreesRegressor
+from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import VotingClassifier
 
 
+def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_samples_leaf=3, max_samples=0.75, subsample=0.7, loss_func='mse'):
+  """
+  Args:
+    n_estimators: no of estimators
+    criteria: ['gini': gini-impurity,'entropy':infomation gain]
+    depth: depth of tree
+    min_samples_split : (default=2)
+    min_samples_leaf : create smoothening effect
+    max_features : ['auto','sqrt','log2',None:n_features]
+    max_leaf_nodes : Grow trees with max_leaf_nodes in best-first fashion. Best nodes are defined as relative reduction in impurity.
+    bootstrap: True
+    class_weight : dict, “balanced”, “balanced_subsample” or None
+      The “balanced_subsample” mode is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
+  """
+  if tree_name = 'decision_tree_clf':
+    dtc = DecisionTreeClassifier(criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, min_samples_split=2,random_state=1234, max_leaf_nodes=None, class_weight='balanced')
+
+  if tree_name = 'decision_tree_reg':
+    dtr = DecisionTreeRegressor(criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, min_samples_split=2, random_state=1234, max_leaf_nodes=None)
 
 
-
-#Base models
-
-#    LASSO Regression :
-#This model may be very sensitive to outliers. So we need to made it more robust on them. 
-#For that we use the sklearn's Robustscaler() method on pipeline
-
-# lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
-lasso = Lasso(alpha =0.0005, random_state=1)
-
-#    Elastic Net Regression :
-#again made robust to outliers
-
-# ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
-ENet = ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3)
-
-#    Kernel Ridge Regression :
-KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
-
-#    Gradient Boosting Regression :
-#With huber loss that makes it robust to outliers
-GBoost = GradientBoostingRegressor(n_estimators=300, learning_rate=0.05,#n_estimators=3000
-                                   max_depth=4, max_features='sqrt',
-                                   min_samples_leaf=15, min_samples_split=10, 
-                                   loss='huber', random_state =5)
-
-#    XGBoost :
-model_xgb = xgb.XGBRegressor(colsample_bytree=0.4603, gamma=0.0468, 
-                             learning_rate=0.05, max_depth=3, 
-                             min_child_weight=1.7817, n_estimators=220,#n_estimators=2200,
-                             reg_alpha=0.4640, reg_lambda=0.8571,
-                             subsample=0.5213, silent=1,
-                             random_state =7, nthread = -1)
-
-#    LightGBM :
-model_lgb = lgb.LGBMRegressor(objective='regression',num_leaves=5,
-                              learning_rate=0.05, n_estimators=220,#n_estimators=720,
-                              max_bin = 55, bagging_fraction = 0.8,
-                              bagging_freq = 5, feature_fraction = 0.2319,
-                              feature_fraction_seed=9, bagging_seed=9,
-                              min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
+  if tree_name = 'ada_boost_clf':
+    ada_noost = AdaBoostClassifier(base_estimator=None, n_estimators=n_estimators, learning_rate=lr_rate, random_state=1234)
 
 
+  if tree_name = 'ada_boost_reg':
+    # loss_func = {‘linear’, ‘square’, ‘exponential’}
+    AdaBoostRegressor(base_estimator=None, n_estimators=n_estimators, loss=loss_func, learning_rate=lr_rate, random_state=1234)
 
 
+  if tree_name = 'bagging_clf':
+# bootstrap_features: Whether features are drawn with replacement.
+    bag_clf = BaggingClassifier(base_estimator=None, n_estimators=n_estimators,  max_samples=max_samples, max_features=max_features, bootstrap=True, bootstrap_features=False, oob_score=False, n_jobs=-1, random_state=1234, verbose=1)
 
+
+  if tree_name = 'bagging_reg':
+    bag_reg = BaggingRegressor(base_estimator=None, n_estimators=n_estimators,  max_samples=max_samples, max_features=max_features, bootstrap=True, bootstrap_features=False, oob_score=False, n_jobs=-1, random_state=1234, verbose=1)
+
+
+  if tree_name = 'extra_tree_clf':
+"""When looking for the best split to separate the samples 
+of a node into two groups, random splits are drawn for each 
+of the max_features randomly selected features and the best 
+split among those is chosen"""
+
+criteria: ['mae','mse']
+    et_clf = ExtraTreesClassifier( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators, min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234, class_weight='balanced')
+
+  if tree_name = 'extra_tree_reg':
+  et_reg = ExtraTreesRegressor( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators,min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=False,  max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234)
 
 
 
+  if tree_name = 'grad_boost_clf':
+
+# loss : {‘deviance’, ‘exponential’} (default=’deviance’)
+# criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
+    grad_boost_clf = GradientBoostingClassifier(max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
+
+
+  if tree_name = 'grad_boost_reg':
+
+# loss_func: {‘ls’, ‘lad’, ‘huber’, ‘quantile’} (default='ls')
+# criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
+# alpha: The alpha-quantile of the huber loss function and the quantile loss function. Only if loss='huber' or loss='quantile'
+    grad_boost_reg = GradientBoostingRegressor( max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, alpha=0.9, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
+
+
+  if tree_name = 'random_forest_clf':
+
+# criteria: ['gini','entropy']
+    rf_clf = RandomForestClassifier(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1, random_state=1234, class_weight='balanced_subsample')
+
+  if tree_name = 'random_forest_reg':
+
+# criteria: ['mae','mse']
+    rf_reg = RandomForestRegressor(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,  bootstrap=True, max_leaf_nodes=None, oob_score=False,verbose=1, random_state=1234)
 
 
 
-from sklearn.tree import DecisionTreeClassifier
-dtc = DecisionTreeClassifier(criterion=criteria, 
-  max_depth=depth, max_features=max_features, 
-  min_samples_leaf=1, min_samples_split=2,
-  random_state=1234, max_leaf_nodes=None, 
-  class_weight='balanced')
 
-
-from sklearn.tree import DecisionTreeRegressor
-dtr = DecisionTreeRegressor(criterion=criteria, 
-  max_depth=depth, max_features=max_features,  
-  min_samples_leaf=1, min_samples_split=2, 
-  random_state=1234, max_leaf_nodes=None)
-
-
-
-
-
-from sklearn.ensemble import AdaBoostClassifier
-AdaBoostClassifier(base_estimator=None, 
-  n_estimators=n_estimators, 
-  learning_rate=0.1, random_state=1234)
-
-
-from sklearn.ensemble import AdaBoostRegressor
-# loss_func = {‘linear’, ‘square’, ‘exponential’}
-AdaBoostRegressor(base_estimator=None, 
-  n_estimators=n_estimators, loss=loss_func, 
-  learning_rate=0.1, random_state=1234)
 
 
 
 """
-from sklearn.ensemble import AdaBoostClassifier
-from sklearn.tree import DecisionTreeClassifier
-
 dt_stump = DecisionTreeClassifier(max_depth=1, min_samples_leaf=1)
 dt_stump.fit(X_train, y_train)
 dt_stump_err = 1.0 - dt_stump.score(X_test, y_test)
@@ -129,113 +120,20 @@ ada_real.fit(X_train, y_train)
 
 
 
-from sklearn.ensemble import BaggingClassifier
-# bootstrap_features: Whether features are drawn with replacement.
-
-BaggingClassifier(base_estimator=None, 
-  n_estimators=n_estimators,  
-  max_samples=1.0, max_features=1.0, bootstrap=True, 
-  bootstrap_features=False, oob_score=False, 
-  n_jobs=-1, random_state=1234, verbose=1)
-
-from sklearn.ensemble import BaggingRegressor
-BaggingRegressor(base_estimator=None, 
-  n_estimators=n_estimators,  
-  max_samples=1.0, max_features=1.0, bootstrap=True, 
-  bootstrap_features=False, oob_score=False, 
-  n_jobs=-1, random_state=1234, verbose=1)
 
 
 
-from sklearn.ensemble import ExtraTreesClassifier
-"""When looking for the best split to separate the samples 
-of a node into two groups, random splits are drawn for each 
-of the max_features randomly selected features and the best 
-split among those is chosen"""
-
-criteria: ['mae','mse']
-etc = ExtraTreesClassifier( 
-  criterion=criteria, max_depth=depth, 
-  max_features=max_features, n_estimators=n_estimators,
-  min_samples_split=2, min_samples_leaf=1, n_jobs=-1,
-  min_weight_fraction_leaf=0.0, bootstrap=True, 
-  max_leaf_nodes=None, oob_score=False, verbose=1,
-  random_state=1234, class_weight='balanced')
-
-from sklearn.ensemble import ExtraTreesRegressor
-ExtraTreesRegressor( 
-  criterion=criteria, max_depth=depth, 
-  max_features=max_features, n_estimators=n_estimators,
-  min_samples_split=2, min_samples_leaf=1, n_jobs=-1, 
-  min_weight_fraction_leaf=0.0, bootstrap=False,  
-  max_leaf_nodes=None, oob_score=False, verbose=1,
-  random_state=1234)
 
 
-def tree():
-  """
-  Args:
-    n_estimators: no of estimators
-    criteria: ['gini': gini-impurity,'entropy':infomation gain]
-    depth: depth of tree
-    min_samples_split : (default=2)
-    min_samples_leaf : create smoothening effect
-    max_features : ['auto','sqrt','log2',None:n_features]
-    max_leaf_nodes : Grow trees with max_leaf_nodes in best-first fashion. Best nodes are defined as relative reduction in impurity.
-    bootstrap: True
-    class_weight : dict, “balanced”, “balanced_subsample” or None
-      The “balanced_subsample” mode is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
-  """
 
-from sklearn.tree import ExtraTreeRegressor
+
 criteria = ['mae','mse']
 etr = ExtraTreeRegressor(criterion=criteria, max_depth=depth, min_samples_split=2, min_samples_leaf=1, max_features=max_features, random_state=1234, max_leaf_nodes=None)
 
 
 
-from sklearn.ensemble import GradientBoostingClassifier
-# loss : {‘deviance’, ‘exponential’} (default=’deviance’)
-# criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
-gbc = GradientBoostingClassifier(
-  max_features=max_features, n_estimators=n_estimators, 
-  subsample=subsample, max_depth=depth, loss=loss_func,
-  criterion=criteria, min_samples_split=2, verbose=1, 
-  min_samples_leaf=1, random_state=1234, 
-  learning_rate=0.1, max_leaf_nodes=None, 
-  validation_fraction=0.1, n_iter_no_change=5)
 
 
-from sklearn.ensemble import GradientBoostingRegressor
-# loss_func: {‘ls’, ‘lad’, ‘huber’, ‘quantile’} (default='ls')
-# criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
-# alpha: The alpha-quantile of the huber loss function and the quantile loss function. Only if loss='huber' or loss='quantile'
-gbr = GradientBoostingRegressor( 
-   max_features=max_features, n_estimators=n_estimators, 
-  subsample=subsample, max_depth=depth, loss=loss_func,
-  criterion=criteria, min_samples_split=2, verbose=1,
-  min_samples_leaf=1, random_state=1234, 
-  learning_rate=0.1, alpha=0.9, max_leaf_nodes=None, 
-  validation_fraction=0.1, n_iter_no_change=5)
-
-
-from sklearn.ensemble import RandomForestClassifier
-# criteria: ['gini','entropy']
-rfc = RandomForestClassifier(n_estimators=n_estimators, 
-  criterion=criteria, max_depth=depth, max_features=max_features,  
-  min_samples_leaf=1, n_jobs=-1, min_samples_split=2,
-  bootstrap=True, max_leaf_nodes=None, oob_score=False, 
-  verbose=1, random_state=1234, class_weight='balanced_subsample')
-
-from sklearn.ensemble import RandomForestRegressor
-# criteria: ['mae','mse']
-rfr = RandomForestRegressor(n_estimators=n_estimators, 
-  criterion=criteria, max_depth=depth, max_features=max_features, 
-  min_samples_leaf=1, n_jobs=-1, min_samples_split=2,  
-  bootstrap=True, max_leaf_nodes=None, oob_score=False,
-  verbose=1, random_state=1234)
-
-
-from sklearn.ensemble import VotingClassifier
 
 voting_criteria = ['hard','soft']
 flatten_transform: bool

@@ -1,6 +1,5 @@
 
 # Monday
-
 - [ ] Category Encoding
 - [ ] Linear Models
 - [ ] Tree Based Models

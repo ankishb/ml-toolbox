@@ -1,6 +1,6 @@
 # ml-toolbox
 
-1. Add EDA tool for classification using hue.
+## Add EDA tool for classification using hue.
 - [ ] boxplot
 - [ ] kdeplot
 - [ ] distplot
@@ -12,7 +12,7 @@
     plt.style.use('fivethirtyeight')
 ---
 
-2. Common feature
+## Common feature
 - [x] Outliers Handling  
         - filling with nan
         - removing them
@@ -27,7 +27,7 @@
   
 ---
 
-3. Feature diversity specially for catgorical variable such as 
+## Feature diversity specially for catgorical variable such as 
     <span style="color:red">some **Remember: Handle nan carefully while label encoding, for float, it will treat all nan as same, whereas for int, it will consider all nan as different value.** text</span>
 - [ ] eigen-decomoposition
 - [ ] one-hot
@@ -37,6 +37,8 @@
     https://maxhalford.github.io/blog/target-encoding-done-the-right-way/
     http://docs.h2o.ai/h2o/latest-stable/h2o-docs/data-munging/target-encoding.html
     https://www.kaggle.com/tnarik/likelihood-encoding-of-categorical-features
+
+    https://www.kaggle.com/scirpus/hybrid-jeepy-and-lgb (most impotant)
 - [ ] bayesian encoding (prior information) 
         https://github.com/MaxHalford/xam/blob/master/docs/feature-extraction.md#smooth-target-encoding
 - [ ] quantile binning
@@ -48,14 +50,13 @@
 
 ---
 
-4. Feature-engineering:
+## Feature-engineering:
 - [ ] intraction based w/wo RF and boosting method
 - [ ] intraction based on time-series statistics
 - [ ] use tree terminal leaf prediction as the feature for next tree.
     <span style="color:red">some **check out tree.apply() method to collect tree terminal leaf node output.** text</span>
 - [ ] date-time based features
 - [ ] lag feature(time series) (grouping using previous day/hour sales or sth)
-- [ ] relational (grouping based)
 - [x] text preprocessing
     - Count-vectorizer
     - extensive text processing with stemmer and lemmantizer
@@ -80,7 +81,7 @@
 ### My Multi Word Header -->
 <!-- [just](#like-this-one) -->
 
-5. Deep learning module:
+## Deep learning module:
 - [x] Augmentatioan function
     Add example of using augmentation library for segmentation and object detections
     <span style="color:red">some **Add After completing general task** text</span>
@@ -104,7 +105,7 @@
 
 ---
 
-6. Little more on Feature engineering
+## Little more on Feature engineering
 -[ ] Text features such as no of words, no of characters etc
 
 
@@ -118,7 +119,7 @@
     https://scikit-learn.org/stable/modules/metrics.html#metrics (kernel function)
     https://leon.bottou.org/projects/lasvm
 - [ ] KNN(coursera)/tsne-multicore/clustering
-- [ ] H2o models with all important parameters specifically with categorical_encoding        
+- [ ] H2o models with all important parameters specifically with categorical_encoding 
     Generalized Linear Model with all target distributions
 - [ ] Non negative linear regression (scipy)/ lasso(positive=True)
 - [ ] Regularized Random forest
@@ -127,12 +128,16 @@
     https://www.kaggle.com/scirpus/regularized-greedy-forest
     <span style="color:red">some **For FastRFG, we need c++ build system, follow these instruction for that[https://github.com/RGF-team/rgf/tree/master/FastRGF]** text</span>
 - [ ] field aware factorization machine
+    https://www.kaggle.com/scirpus/kernels
 - [ ] Matrix factorization/low-rank
 - [ ] social network (networkx)
-- [ ]
+- [ ] FTRL Proximal Model
+    https://www.kaggle.com/ogrellier/multi-process-ftrl
+    https://www.kaggle.com/supernova117/ftrl-with-validation-and-auc
+    
 ---
 
-8. Advanced features
+## Advanced features
 - [ ] feature importance toolbox, eli5/shap-value
 - [x] gridsearch / bayesian optimization
 - [ ] psuedo labeling
@@ -141,22 +146,21 @@
 - [ ] stacking
 - [ ] online learning (vowpal rabbit/ follow the regularized leader)
 - [ ] NLP Transform ULMAFit/ELMO/Bert
+    https://www.kaggle.com/christofhenkel/bert-embeddings-lstm/data
+    https://www.kaggle.com/christofhenkel/ulmfit-fast-ai-starter
+
 - [x] Set random seed for reproducible features
 - [ ] Adverserial validation example
-- [ ] 
-  
+- [ ] Relation Data based Feature enginnering (featuretool)
+    https://medium.com/@rrfd/simple-automatic-feature-engineering-using-featuretools-in-python-for-classification-b1308040e183
+
 ---
 
-9. Special features
+## Special features
 - [x] parameter tuning
     <span style="color:red">some **Another tuning method: hyperparameter-hunter, will visit at last.** text</span>
 - [ ] parameter tuning for the baseline fit, using gridsearch and less no of samples(50,000).
-- [ ] tutorial/example of how to use each of them.
-    * gradient boosting tree
-    * random forest
-    * reguralized greedy forest
-- [ ] Parallel processing
-- [ ] Dask tutorial for data preprocessing
+- [ ] Parallel processing (using dask and numba)
 - [ ] Feature Selection (Recusive feature elimination)
 - [ ] Sparse Matrix handling and along with Sparse SVD
 - [ ] OOF-analysis(correlation plot and analysis)
@@ -166,11 +170,18 @@
 - [ ] Rank Average
 - [ ] sklearn estimator class
     https://www.slideshare.net/PyData/julie-michelman-pandas-pipelines-and-custom-transformers
-- [ ] 
+- [ ] Image based feature such as quality, canny, etc
+    https://www.kaggle.com/shivamb/ideas-for-image-features-and-image-quality
+- [ ] Automatic Feature Engineering
+    https://www.kaggle.com/willkoehrsen/kernels
 
 ---
 
-Useful resources:
+# Experiments:
+- [ ] https://www.kaggle.com/ogrellier/scale-pos-weight-vs-duplication
+
+
+### Useful resources:
 1. https://docs.microsoft.com/en-us/azure/machine-learning/team-data-science-process/select-features
 2. https://forums.aws.amazon.com/message.jspa?messageID=774050
 3. https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.optimize.nnls.html
@@ -185,6 +196,8 @@ Useful resources:
 12. https://scikit-learn.org/stable/modules/classes.html (sklearn complete classes/functions list)
 13. https://www.youtube.com/watch?v=TJU8NfDdqNQ (ml tutorials)
 14. https://www.kaggle.com/mjbahmani/top-5-deep-learning-frameworks-tutorial (many references and ebooks for ml)
-15. 
+15. http://www.chioka.in/kaggle-competition-solutions/ (kaggle solutions)
+16. http://ndres.me/kaggle-past-solutions/ (kaggle prev solutions)
+17. https://www.kaggle.com/shivamb/data-science-glossary-on-kaggle (best resources)
 
 

@@ -65,3 +65,82 @@ del emp_1.fullname
 
 
 
+
+
+
+import itertools
+
+counter = itertools.count(start=5, step=5)
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+
+
+data = [10, 20, 30, 40]
+
+print(list(zip(itertools.count(), data)))
+print(list(zip(range(10), data)))
+print(list(itertools.zip_longest(range(10), data)))
+
+
+
+counter = itertools.cycle([1,2,3])
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+
+counter = itertools.cycle(('on','off'))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+print(next(counter))
+
+
+squares = map(funcion, var1, var2, var3)
+# these variables are taken by function
+
+map(pow, range(10), itertools.repeat(2))
+map(pow, [(0, 2), (1, 2), (2, 2)])
+map(lambda x: x**2, range(10))
+
+# to print these map output, use list(result)
+
+
+letters = ['a', 'b', 'c']
+result = itertools.combinations(letters,2)
+for item in result:
+    print(item)
+result = itertools.permutations(letters,2)
+# permutations: [(a,b), (b,a)] are 2 different possible outcomes, whereas in combinations [(a,b)] is possibles outcome.
+
+
+numbers = [0,1,2,3]
+result = itertools.product(numbers, repeat=4)
+result = itertools.combinations_with_replacement(numbers, 4)
+
+
+
+
+
+# sorting by abs of values
+li = [-2, -4, 2, 5, -6]
+sorted(li, key=abs)
+sorted(li, key=lambda x: abs(x))
+
+li.sort()# inplace sorting
+
+
+
+
+
+from collections import namedtuple
+
+Color = namedtuple('Color', ['red', 'green', 'blue'])
+color = Color(55, 100, 255)
+print(color[0])
+print(color.red)
+
