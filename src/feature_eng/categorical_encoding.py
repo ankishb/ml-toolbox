@@ -1,27 +1,331 @@
 
-import numpy as np 
+from category_encoders import BinaryEncoder
+from category_encoders import OneHotEncoder
+from category_encoders import HashingEncoder
+from category_encoders import OrdinalEncoder
+from category_encoders import TargetEncoder
+from category_encoders.basen import BaseNEncoder
+from category_encoders.sum_coding import SumEncoder
+from category_encoders.polynomial import PolynomialEncoder
+from category_encoders.leave_one_out import LeaveOneOutEncoder
+from category_encoders.backward_difference import BackwardDifferenceEncoder
+
+import numpy as np
 import pandas as pd 
 import gc
-import category_encoders as ce
 
-encoder = ce.BackwardDifferenceEncoder(cols=[...])
-encoder = ce.BinaryEncoder(cols=[...])
-encoder = ce.HashingEncoder(cols=[...], n_components=8)
-encoder = ce.HelmertEncoder(cols=[...])
-encoder = ce.OneHotEncoder(cols=[...])
-encoder = ce.OrdinalEncoder(cols=[...])
-encoder = ce.SumEncoder(cols=[...])
-encoder = ce.PolynomialEncoder(cols=[...])
-encoder = ce.BaseNEncoder(cols=[...])
-.basen.BaseNEncoder(verbose=0, cols=None, drop_invariant=False, return_df=True, base=2, impute_missing=True, handle_unknown='impute')[source]
+def categorical_enc_type1(train, test, enc_type, col_list, hash_comp=None):
+	"""
+	enc_type: name of encoding 
+		[binary, one_hot, hashing, ordinal, polynomial, backward_diff, sum_enc, base_n]
+	col_list: list of column
 
-    #Base-N encoder encodes the categories into arrays of their base-N representation. A base of 1 is equivalent to one-hot encoding (not really base-1, but useful), a base of 2 is equivalent to binary encoding. N=number of actual categories is equivalent to vanilla ordinal encoding.
+	#Base-N encoder encodes the categories into arrays of their base-N representation. A base of 1 is equivalent to one-hot encoding (not really base-1, but useful), a base of 2 is equivalent to binary encoding. N=number of actual categories is equivalent to vanilla ordinal encoding.
 
-encoder = ce.TargetEncoder(cols=[...])
-encoder = ce.LeaveOneOutEncoder(cols=[...])
+	example:
+		x1, x2 = categorical_enc_type1(train, test, 'hashing', col_list, hash_comp=2)
+	"""
+	if not isinstance(col_list, list):
+		col_list = [col_list]
 
-encoder.fit(X, y)
-X_cleaned = encoder.transform(X_dirty)
+	if enc_type == 'binary':
+		enc = BinaryEncoder(cols=col_list)
+	if enc_type == 'one_hot':
+		enc = OneHotEncoder(cols=col_list)
+	if enc_type == 'hashing':
+		enc = HashingEncoder(cols=col_list, n_components=hash_comp, drop_invariant=True)
+	if enc_type == 'ordinal':
+		enc = OrdinalEncoder(cols=col_list, drop_invariant=True)
+	if enc_type == 'polynomial':
+		enc = PolynomialEncoder( cols=col_list, drop_invariant=True)
+	if enc_type == 'backward_diff':
+		enc = BackwardDifferenceEncoder( cols=col_list, drop_invariant=True)
+	if enc_type == 'sum_enc':
+		enc = SumEncoder(cols=col_list, drop_invariant=True)
+	if enc_type == 'base_n':
+		enc = BaseNEncoder(cols=col_list, drop_invariant=True, base=1)
+
+	complete_df = pd.concat([train, test], axis=0).reset_index(drop=True)
+	enc.fit(complete_df)
+	complete_enc = enc.transform(complete_df)
+
+	train_enc = complete_enc.iloc[:train.shape[0]]
+	test_enc  = complete_enc.iloc[train.shape[0]:]
+	test_enc  = test_enc.reset_index(drop=True)
+
+	del complete_enc, complete_df
+	gc.collect()
+	return train_enc, test_enc
+
+
+
+
+def categorical_enc_type2(train, test, valid, target_, enc_type, col_list, target_min_leaf=None, target_smoothing=None, loo_sigma=1):
+	"""
+	enc_type: name of encoding 
+		[target_enc, leave_one_out]
+	col_list: list of column
+
+	example:
+		x1, x2, x3 = categorical_enc_type2(train, test, valid, target_, 'target_enc', col_list, target_min_leaf=3, target_smoothing=2, loo_sigma=1)
+		x1.head().append(x2.tail()).append(x3.tail())
+	"""
+	if not isinstance(col_list, list):
+		col_list = [col_list]
+
+	if enc_type == 'target_enc':
+		enc = TargetEncoder(cols=col_list, min_samples_leaf=target_min_leaf, smoothing=target_smoothing)
+	if enc_type == 'leave_one_out':
+		enc = LeaveOneOutEncoder(cols=col_list,random_state=1234, randomized=True, sigma=loo_sigma)
+	
+	enc.fit(train, target_)
+	train_enc = enc.transform(train)
+	valid_enc = enc.transform(valid)
+	test_enc  = enc.transform(test)
+
+	return train_enc, valid_enc, test_enc
+
+
+
+
+
+
+def expanding_mean(train_df, test_df, col_list, target_col, alpha=0, random_state=1234):
+	"""
+	example:
+		x1, x2 = expanding_mean(train_, test, ['p_len', 's_len'], 'target', alpha=0, random_state=1234)
+
+	"""
+    train_enc = pd.DataFrame()
+    test_enc  = pd.DataFrame()
+
+    global_mean = train_df[target_col].mean()
+    for col in col_list:
+        # Getting means for test data
+        nrows = train_df.groupby(col)[target_col].count()
+        target_means = train_df.groupby(col)[target_col].mean()
+        target_means_reg = (target_means*nrows + global_mean*alpha)/(nrows+alpha)
+        
+        # Mapping means to test data
+        encoded_test = test_df[col].map(target_means_reg)
+        
+        # Getting a train encodings
+        train_df_shuffled = train_df.sample(frac=1, random_state=random_state)
+        cumsum = train_df_shuffled.groupby(col)[target_col].cumsum() - train_df_shuffled[target_col]
+        cumcnt = train_df_shuffled.groupby(col).cumcount()
+        encoded_train = cumsum/(cumcnt)
+        encoded_train.fillna(global_mean, inplace=True)
+
+        train_enc = pd.concat([train_enc, encoded_train], axis=1)
+        test_enc = pd.concat([test_enc, encoded_test], axis=1)
+    
+    return train_enc, test_enc
+
+
+
+
+
+
+def kfold_mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
+	"""
+	example:
+		x1, x2 = kfold_mean_encode(train_, test, ['s_len', 'p_len'], 'target', alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234)
+	"""
+
+    train_enc = pd.DataFrame()
+    test_enc  = pd.DataFrame()
+
+    global_mean = train_df[target_col].mean()
+    for col in col_list:
+        # Getting means for test data
+        nrows = train_df.groupby(col)[target_col].count()
+        target_means = train_df.groupby(col)[target_col].mean()
+        target_means_reg = (target_means*nrows + global_mean*alpha)/(nrows+alpha)
+
+        encoded_test = test_df[col].map(target_means_reg)
+        
+
+        kfold = StratifiedKFold(n_splits=folds, shuffle=True, random_state=random_state)
+
+        valid_fold_enc = np.zeros((train_df.shape[0]))
+        for tr_in, val_ind in kfold.split(train_df, train_df[target_col].values):
+            X_train, X_valid = train_df.iloc[tr_in], train_df.iloc[val_ind]
+
+            # getting means on data for estimation (all folds except estimated)
+            nrows_ = X_train.groupby(col)[target_col].count()
+            target_means_ = X_train.groupby(col)[target_col].mean()
+            target_means_reg_ = (target_means_*nrows_ + global_mean*alpha)/(nrows_+alpha)
+            # Mapping means to estimated fold
+            encoded_col_train_part = X_valid[col].map(target_means_reg_)
+            if add_random:
+                encoded_col_train_part = encoded_col_train_part + normal(loc=rmean, scale=rstd, 
+                                                                         size=(encoded_col_train_part.shape[0]))
+
+            valid_fold_enc[val_ind] = encoded_col_train_part.values
+        
+        valid_fold_enc = pd.DataFrame(data=valid_fold_enc, columns=[col])
+        encoded_train = valid_fold_enc#pd.concat(parts, axis=0)
+        encoded_train.fillna(global_mean, inplace=True)
+
+        train_enc = pd.concat([train_enc, encoded_train], axis=1)
+        test_enc = pd.concat([test_enc, encoded_test], axis=1)
+    
+    return train_enc, test_enc
+
+
+"""
+averages = X_data.groupby(s)["target"].agg(["mean", "count"])
+smoothing_v = 1 / (1 + np.exp(-(averages["count"] - min_samples_leaf) / smoothing))
+averages[f] = X_data["target"].mean() * (1 - smoothing_v) + averages["mean"] * smoothing_v
+averages.drop(["mean", "count"], axis=1, inplace=True)
+
+np.random.seed(42)
+noise = np.random.randn(len(averages[f])) * noise_level
+averages[f] = averages[f] + noise
+
+X_train = pd.merge(X_train, averages, how='left', left_on=s, right_index=True)
+X_valid = pd.merge(X_valid, averages, how='left', left_on=s, right_index=True)
+X_test = pd.merge(X_test, averages, how='left', left_on=s, right_index=True)                       
+
+
+"""
+
+
+
+def add_noise(series, noise_level):
+    return series * (1 + noise_level * np.random.randn(len(series)))
+
+
+def target_encode(trn_series=None, val_series=None, tst_series=None, target=None, min_samples_leaf=1, smoothing=1, noise_level=0):
+    """
+    Smoothing is computed like in the following paper by Daniele Micci-Barreca
+    https://kaggle2.blob.core.windows.net/forum-message-attachments/225952/7441/high%20cardinality%20categoricals.pdf
+    trn_series : training categorical feature as a pd.Series
+    tst_series : test categorical feature as a pd.Series
+    target : target data as a pd.Series
+    min_samples_leaf (int) : minimum samples to take category average into account
+    smoothing (int) : smoothing effect to balance categorical average vs prior
+    """
+    assert len(trn_series) == len(target)
+    assert trn_series.name == tst_series.name
+    temp = pd.concat([trn_series, target], axis=1)
+    # Compute target mean
+    averages = temp.groupby(by=trn_series.name)[target.name].agg(["mean", "count"])
+    # Compute smoothing
+    smoothing = 1 / (1 + np.exp(-(averages["count"] - min_samples_leaf) / smoothing))
+    # Apply average function to all target data
+    prior = target.mean()
+    # The bigger the count the less full_avg is taken into account
+    averages[target.name] = prior * (1 - smoothing) + averages["mean"] * smoothing
+    averages.drop(["mean", "count"], axis=1, inplace=True)
+    # Apply averages to trn and tst series
+    ft_trn_series = pd.merge(
+        trn_series.to_frame(trn_series.name),
+        averages.reset_index().rename(columns={'index': target.name, target.name: 'average'}),
+        on=trn_series.name,
+        how='left')['average'].rename(trn_series.name + '_mean').fillna(prior)
+    # pd.merge does not keep the index so restore it
+    ft_trn_series.index = trn_series.index
+    ft_val_series = pd.merge(
+        val_series.to_frame(val_series.name),
+        averages.reset_index().rename(columns={'index': target.name, target.name: 'average'}),
+        on=val_series.name,
+        how='left')['average'].rename(trn_series.name + '_mean').fillna(prior)
+    # pd.merge does not keep the index so restore it
+    ft_val_series.index = val_series.index
+    ft_tst_series = pd.merge(
+        tst_series.to_frame(tst_series.name),
+        averages.reset_index().rename(columns={'index': target.name, target.name: 'average'}),
+        on=tst_series.name,
+        how='left')['average'].rename(trn_series.name + '_mean').fillna(prior)
+    # pd.merge does not keep the index so restore it
+    ft_tst_series.index = tst_series.index
+    return add_noise(ft_trn_series, noise_level), add_noise(ft_val_series, noise_level), add_noise(ft_tst_series, noise_level)
+    
+
+
+
+    global_mean = train_df[target_col].mean()
+    for col in col_list:
+        # Getting means for test data
+        nrows = train_df.groupby(col)[target_col].count()
+        target_means = train_df.groupby(col)[target_col].mean()
+        target_means_reg = (target_means*nrows + global_mean*alpha)/(nrows+alpha)
+
+        encoded_test = test_df[col].map(target_means_reg)
+        
+
+def target_encode(train_df, valid_df, test_df, col_name, target_col, min_samples_leaf=1, smoothing=1, noise_level=0, fillna_flag=True):
+	"""
+	example:
+		target_encode(train_, valid, test, 'p_len', 'target')
+	"""
+    averages = train_df.groupby(col_name)[target_col].agg(["mean", "count"])
+    smoothing = 1 / (1 + np.exp(-(averages["count"] - min_samples_leaf) / smoothing))
+    prior = train_df[target_col].mean()
+
+    # The bigger the count the less full_avg is taken into account
+    averages[target_col] = prior * (1 - smoothing) + averages["mean"] * smoothing
+    averages.drop(["mean", "count"], axis=1, inplace=True)
+
+    train_enc = train_df[col_name].map(averages['target'])
+    valid_enc = valid_df[col_name].map(averages['target'])
+    test_enc  = test_df[col_name].map(averages['target'])
+
+    train_enc = train_enc * (1 + noise_level * np.random.randn(len(train_enc)))
+    valid_enc = valid_enc * (1 + noise_level * np.random.randn(len(valid_enc)))
+    test_enc  = test_enc * (1 + noise_level * np.random.randn(len(test_enc)))
+    
+    if fillna_flag:
+	    train_enc.fillna(prior, inplace=True)
+	    valid_enc.fillna(prior, inplace=True)
+	    test_enc.fillna(prior, inplace=True)
+    
+    return train_enc, valid_enc, test_enc
+    
+
+
+
+def mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
+	"""
+	example:
+		mean_encode(train_, test, ['p_len', 's_len'], 'target')
+	"""
+
+    train_enc = pd.DataFrame()
+    test_enc  = pd.DataFrame()
+
+    for col in col_list:
+        
+        train_enc_col = np.zeros((train_df.shape[0], folds))
+        test_enc_col  = np.zeros((test_df.shape[0], folds))
+        
+        
+        kfold = StratifiedKFold(n_splits=folds, shuffle=True, random_state=random_state)
+        for cur_fold,(tr_ind, val_ind) in enumerate(kfold.split(train_df, train_df[target_col].values)):
+            X_train, X_valid = train_df.iloc[tr_ind], train_df.iloc[val_ind]
+
+            tr, vl, ts = target_encode(X_train, X_valid, test_df, col, target_col)
+            
+            train_enc_col[tr_ind, cur_fold] = tr
+            train_enc_col[val_ind, cur_fold] = vl
+            test_enc_col[:, cur_fold] = ts
+            
+        encoded_train = pd.DataFrame(data=train_enc_col.mean(axis=1), columns=[col])
+        encoded_test  = pd.DataFrame(data=test_enc_col.mean(axis=1), columns=[col])
+        
+
+        train_enc = pd.concat([train_enc, encoded_train], axis=1)
+        test_enc = pd.concat([test_enc, encoded_test], axis=1)
+    
+    return train_enc, test_enc
+
+
+
+
+
+
+
 
 
 
@@ -156,78 +460,6 @@ Interaction Based feature:
 
 
 # min_samples_leaf=1, smoothing=1)
-enc = ce.TargetEncoder(cols=['s_width', 'p_width'], 
-                       min_samples_leaf=3, smoothing=10).fit(tr, y)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-enc = ce.leave_one_out.LeaveOneOutEncoder(cols=['s_width', 'p_width']).fit(tr, y)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-enc = ce.leave_one_out.LeaveOneOutEncoder(cols=['s_width', 'p_width'],
-                                          random_state=1234, 
-                                          randomized=True, 
-                                          sigma=1).fit(tr, y)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
 
 
 
-enc = ce.BinaryEncoder(cols=['CHAS', 'RAD']).fit(complete)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-enc = ce.OneHotEncoder(cols=['CHAS', 'RAD']).fit(complete)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-
-enc = ce.HashingEncoder(cols=['CHAS', 'RAD'], 
-                        n_components=6,
-                        drop_invariant=True).fit(complete)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-enc = ce.OrdinalEncoder(cols=['CHAS', 'RAD'],
-                        drop_invariant=True).fit(complete)
-print(enc.category_mapping)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-
-enc = ce.polynomial.PolynomialEncoder(
-    cols=['CHAS', 'RAD'], drop_invariant=True).fit(complete)
-print(enc.mapping)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-
-enc = ce.backward_difference.BackwardDifferenceEncoder(
-    cols=['s_width'], drop_invariant=True).fit(complete)
-print(enc.get_params)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-enc = ce.sum_coding.SumEncoder(cols=['CHAS', 'RAD'], drop_invariant=True).fit(complete)
-print(enc.mapping)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))
-
-
-
-
-enc = ce.basen.BaseNEncoder(cols=['CHAS', 'RAD'], 
-                            drop_invariant=True,
-                            base=1).fit(complete)
-enc.transform(tr).head(5).append(enc.transform(ts).head(5))

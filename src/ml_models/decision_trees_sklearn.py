@@ -50,42 +50,42 @@ def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_sampl
 
 
   if tree_name = 'extra_tree_clf':
-"""When looking for the best split to separate the samples 
-of a node into two groups, random splits are drawn for each 
-of the max_features randomly selected features and the best 
-split among those is chosen"""
+    """When looking for the best split to separate the samples 
+    of a node into two groups, random splits are drawn for each 
+    of the max_features randomly selected features and the best 
+    split among those is chosen"""
 
-criteria: ['mae','mse']
+    criteria: ['mae','mse']
     et_clf = ExtraTreesClassifier( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators, min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234, class_weight='balanced')
 
   if tree_name = 'extra_tree_reg':
-  et_reg = ExtraTreesRegressor( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators,min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=False,  max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234)
+    et_reg = ExtraTreesRegressor( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators,min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=False,  max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234)
 
 
 
   if tree_name = 'grad_boost_clf':
 
-# loss : {‘deviance’, ‘exponential’} (default=’deviance’)
-# criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
+    # loss : {‘deviance’, ‘exponential’} (default=’deviance’)
+    # criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
     grad_boost_clf = GradientBoostingClassifier(max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
 
 
   if tree_name = 'grad_boost_reg':
 
-# loss_func: {‘ls’, ‘lad’, ‘huber’, ‘quantile’} (default='ls')
-# criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
-# alpha: The alpha-quantile of the huber loss function and the quantile loss function. Only if loss='huber' or loss='quantile'
+    # loss_func: {‘ls’, ‘lad’, ‘huber’, ‘quantile’} (default='ls')
+    # criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
+    # alpha: The alpha-quantile of the huber loss function and the quantile loss function. Only if loss='huber' or loss='quantile'
     grad_boost_reg = GradientBoostingRegressor( max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, alpha=0.9, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
 
 
   if tree_name = 'random_forest_clf':
 
-# criteria: ['gini','entropy']
+    # criteria: ['gini','entropy']
     rf_clf = RandomForestClassifier(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1, random_state=1234, class_weight='balanced_subsample')
 
   if tree_name = 'random_forest_reg':
 
-# criteria: ['mae','mse']
+    # criteria: ['mae','mse']
     rf_reg = RandomForestRegressor(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,  bootstrap=True, max_leaf_nodes=None, oob_score=False,verbose=1, random_state=1234)
 
 

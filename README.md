@@ -148,7 +148,6 @@
 - [ ] NLP Transform ULMAFit/ELMO/Bert
     https://www.kaggle.com/christofhenkel/bert-embeddings-lstm/data
     https://www.kaggle.com/christofhenkel/ulmfit-fast-ai-starter
-
 - [x] Set random seed for reproducible features
 - [ ] Adverserial validation example
 - [ ] Relation Data based Feature enginnering (featuretool)
