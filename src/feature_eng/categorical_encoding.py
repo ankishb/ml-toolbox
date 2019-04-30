@@ -15,10 +15,12 @@ import pandas as pd
 import gc
 
 def categorical_enc_type1(train, test, enc_type, col_list, hash_comp=None):
-	"""
+	"""return a transformed train_enc, test_enc, with encoding done on col_list
+	train, test: DataFrame
 	enc_type: name of encoding 
 		[binary, one_hot, hashing, ordinal, polynomial, backward_diff, sum_enc, base_n]
 	col_list: list of column
+	hash_comp: no of component for hashing method
 
 	#Base-N encoder encodes the categories into arrays of their base-N representation. A base of 1 is equivalent to one-hot encoding (not really base-1, but useful), a base of 2 is equivalent to binary encoding. N=number of actual categories is equivalent to vanilla ordinal encoding.
 
@@ -61,15 +63,19 @@ def categorical_enc_type1(train, test, enc_type, col_list, hash_comp=None):
 
 
 def categorical_enc_type2(train, test, valid, target_, enc_type, col_list, target_min_leaf=None, target_smoothing=None, loo_sigma=1):
-	"""
+	"""return a transformed train_enc, valid_enc, test_enc, with encoding done on col_list
+	Note: Not a very good method (Avoid if possible)
 	enc_type: name of encoding 
 		[target_enc, leave_one_out]
 	col_list: list of column
+	target_min_leaf: To deal with rare feature in high cardinal state
+	target_smoothing: Smoothening factor
+	loo_sigma: sigma(uncertainty of gaussian distribution) for leave_one_out noise
 
 	example:
 		x1, x2, x3 = categorical_enc_type2(train, test, valid, target_, 'target_enc', col_list, target_min_leaf=3, target_smoothing=2, loo_sigma=1)
-		x1.head().append(x2.tail()).append(x3.tail())
 	"""
+	print("Warnings: Not a very good method (Avoid if possible)")
 	if not isinstance(col_list, list):
 		col_list = [col_list]
 
@@ -90,12 +96,20 @@ def categorical_enc_type2(train, test, valid, target_, enc_type, col_list, targe
 
 
 
-def expanding_mean(train_df, test_df, col_list, target_col, alpha=0, random_state=1234):
-	"""
-	example:
-		x1, x2 = expanding_mean(train_, test, ['p_len', 's_len'], 'target', alpha=0, random_state=1234)
+def expanding_mean_encoding(train_df, test_df, col_list, target_col, alpha=0, random_state=1234):
+	""" return encoded dataset (only columns in col_list)
+	pros: 
+		1. least ammount of leakage
+		2. No hyperparameter tuning
+		3. used in catboost (faster convergence)
 
+	Note: This encoding method is not unique, Better, if we use different set of permuatation (use random_state) 
+		and take average of the model output.
+
+	example:
+		x1, x2 = expanding_mean_encoding(train_, test, ['p_len', 's_len'], 'target', alpha=0, random_state=1234)
 	"""
+	print("Add kfold method for this encoding")
     train_enc = pd.DataFrame()
     test_enc  = pd.DataFrame()
 
@@ -126,10 +140,10 @@ def expanding_mean(train_df, test_df, col_list, target_col, alpha=0, random_stat
 
 
 
-def kfold_mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
+def kfold_mean_encoding(train_df, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
 	"""
 	example:
-		x1, x2 = kfold_mean_encode(train_, test, ['s_len', 'p_len'], 'target', alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234)
+		x1, x2 = kfold_mean_encoding(train_, test, ['s_len', 'p_len'], 'target', alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234)
 	"""
 
     train_enc = pd.DataFrame()
@@ -173,92 +187,20 @@ def kfold_mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_rand
     return train_enc, test_enc
 
 
-"""
-averages = X_data.groupby(s)["target"].agg(["mean", "count"])
-smoothing_v = 1 / (1 + np.exp(-(averages["count"] - min_samples_leaf) / smoothing))
-averages[f] = X_data["target"].mean() * (1 - smoothing_v) + averages["mean"] * smoothing_v
-averages.drop(["mean", "count"], axis=1, inplace=True)
-
-np.random.seed(42)
-noise = np.random.randn(len(averages[f])) * noise_level
-averages[f] = averages[f] + noise
-
-X_train = pd.merge(X_train, averages, how='left', left_on=s, right_index=True)
-X_valid = pd.merge(X_valid, averages, how='left', left_on=s, right_index=True)
-X_test = pd.merge(X_test, averages, how='left', left_on=s, right_index=True)                       
-
-
-"""
-
-
-
-def add_noise(series, noise_level):
-    return series * (1 + noise_level * np.random.randn(len(series)))
-
-
-def target_encode(trn_series=None, val_series=None, tst_series=None, target=None, min_samples_leaf=1, smoothing=1, noise_level=0):
-    """
-    Smoothing is computed like in the following paper by Daniele Micci-Barreca
-    https://kaggle2.blob.core.windows.net/forum-message-attachments/225952/7441/high%20cardinality%20categoricals.pdf
-    trn_series : training categorical feature as a pd.Series
-    tst_series : test categorical feature as a pd.Series
-    target : target data as a pd.Series
-    min_samples_leaf (int) : minimum samples to take category average into account
-    smoothing (int) : smoothing effect to balance categorical average vs prior
-    """
-    assert len(trn_series) == len(target)
-    assert trn_series.name == tst_series.name
-    temp = pd.concat([trn_series, target], axis=1)
-    # Compute target mean
-    averages = temp.groupby(by=trn_series.name)[target.name].agg(["mean", "count"])
-    # Compute smoothing
-    smoothing = 1 / (1 + np.exp(-(averages["count"] - min_samples_leaf) / smoothing))
-    # Apply average function to all target data
-    prior = target.mean()
-    # The bigger the count the less full_avg is taken into account
-    averages[target.name] = prior * (1 - smoothing) + averages["mean"] * smoothing
-    averages.drop(["mean", "count"], axis=1, inplace=True)
-    # Apply averages to trn and tst series
-    ft_trn_series = pd.merge(
-        trn_series.to_frame(trn_series.name),
-        averages.reset_index().rename(columns={'index': target.name, target.name: 'average'}),
-        on=trn_series.name,
-        how='left')['average'].rename(trn_series.name + '_mean').fillna(prior)
-    # pd.merge does not keep the index so restore it
-    ft_trn_series.index = trn_series.index
-    ft_val_series = pd.merge(
-        val_series.to_frame(val_series.name),
-        averages.reset_index().rename(columns={'index': target.name, target.name: 'average'}),
-        on=val_series.name,
-        how='left')['average'].rename(trn_series.name + '_mean').fillna(prior)
-    # pd.merge does not keep the index so restore it
-    ft_val_series.index = val_series.index
-    ft_tst_series = pd.merge(
-        tst_series.to_frame(tst_series.name),
-        averages.reset_index().rename(columns={'index': target.name, target.name: 'average'}),
-        on=tst_series.name,
-        how='left')['average'].rename(trn_series.name + '_mean').fillna(prior)
-    # pd.merge does not keep the index so restore it
-    ft_tst_series.index = tst_series.index
-    return add_noise(ft_trn_series, noise_level), add_noise(ft_val_series, noise_level), add_noise(ft_tst_series, noise_level)
-    
-
-
-
-    global_mean = train_df[target_col].mean()
-    for col in col_list:
-        # Getting means for test data
-        nrows = train_df.groupby(col)[target_col].count()
-        target_means = train_df.groupby(col)[target_col].mean()
-        target_means_reg = (target_means*nrows + global_mean*alpha)/(nrows+alpha)
-
-        encoded_test = test_df[col].map(target_means_reg)
         
 
-def target_encode(train_df, valid_df, test_df, col_name, target_col, min_samples_leaf=1, smoothing=1, noise_level=0, fillna_flag=True):
-	"""
+def target_encoding_oliver(train_df, valid_df, test_df, col_name, target_col, min_samples_leaf=1, smoothing=1, noise_level=0, fillna_flag=True):
+	""" return encoded data (train_enc, valid_enc, test_enc) for only col_name
+	Args:
+		train_df: input dataset with col_name and target_col present in it.
+		col_name: name of columns (single column)
+		target_col: name of target columns
+		min_samples_leaf: min count of leafs (deal with rare category in highly cardinal feature)
+		smoothing: smoothens the effect of rare category
+		noise_level: noise level (0.001-0.1)
+		fillna_flag: whether to fill nan value with global mean or not
 	example:
-		target_encode(train_, valid, test, 'p_len', 'target')
+		target_encoding_oliver(train_, valid, test, 'p_len', 'target')
 	"""
     averages = train_df.groupby(col_name)[target_col].agg(["mean", "count"])
     smoothing = 1 / (1 + np.exp(-(averages["count"] - min_samples_leaf) / smoothing))
@@ -286,10 +228,22 @@ def target_encode(train_df, valid_df, test_df, col_name, target_col, min_samples
 
 
 
-def mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
-	"""
+def mean_encoding(train_df, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
+	""" return encoded data (train_enc, valid_enc, test_enc) for only col_name
+	Args:
+		train_df: input dataset with col_name and target_col present in it.
+		col_list: list of columns (single column)
+		target_col: name of target columns
+		alpha: regularization parameter (need tuning)
+		min_samples_leaf: min count of leafs (deal with rare category in highly cardinal feature)
+		smoothing: smoothens the effect of rare category
+		add_random: if True, use following params also [rmean, rstd] 
+		rmean: mean of gaussian noise (0 is best)
+		rstd: std of gaussian noise (0.001-0.1)
+		folds: no of cv fold 
+		add_random: whether to fill nan value with global mean or not
 	example:
-		mean_encode(train_, test, ['p_len', 's_len'], 'target')
+		mean_encoding(train_, test, ['p_len', 's_len'], 'target')
 	"""
 
     train_enc = pd.DataFrame()
@@ -305,7 +259,7 @@ def mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_random=Fal
         for cur_fold,(tr_ind, val_ind) in enumerate(kfold.split(train_df, train_df[target_col].values)):
             X_train, X_valid = train_df.iloc[tr_ind], train_df.iloc[val_ind]
 
-            tr, vl, ts = target_encode(X_train, X_valid, test_df, col, target_col)
+            tr, vl, ts = target_encoding_oliver(X_train, X_valid, test_df, col, target_col)
             
             train_enc_col[tr_ind, cur_fold] = tr
             train_enc_col[val_ind, cur_fold] = vl
@@ -327,7 +281,7 @@ def mean_encode(train_df, test_df, col_list, target_col, alpha=0, add_random=Fal
 
 
 
-
+"""
 
 1. cv loop
 2. smoothing
@@ -463,3 +417,4 @@ Interaction Based feature:
 
 
 
+"""
