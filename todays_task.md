@@ -1,8 +1,15 @@
 
 # Monday
-- [ ] Category Encoding
+- [x] Category Encoding
 - [ ] Linear Models
 - [ ] Tree Based Models
 - [ ] KNN distributed (coursera)
 - [ ] LSTM model
-- [ ] EDA 
+- [x] EDA 
+
+# Tueday
+- [ ] Linear Models
+- [ ] Tree Based Models
+- [ ] Hyperopt general function for tree model
+- [ ] KNN distributed (coursera)
+- [ ] LSTM model
