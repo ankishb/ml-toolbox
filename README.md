@@ -20,7 +20,7 @@
     - fill with lower/upper bound 
     - compute quantile range
 - [x] memory optimization
-    <span style="color:red">some **Add category feature dtype** text</span>
+<span style="color:red">some **Add category feature dtype** text</span>
 - [x] standardization-scaling
     - min-max
     - standardization
@@ -28,7 +28,7 @@
 ---
 
 ## Feature diversity specially for catgorical variable such as 
-    <span style="color:red">some **Remember: Handle nan carefully while label encoding, for float, it will treat all nan as same, whereas for int, it will consider all nan as different value.** text</span>
+<span style="color:red">some **Remember: Handle nan carefully while label encoding, for float, it will treat all nan as same, whereas for int, it will consider all nan as different value.** text</span>
 - [ ] eigen-decomoposition
 - [x] one-hot
 - [x] target-encoding
@@ -37,7 +37,6 @@
     ([MaxHalford](https://maxhalford.github.io/blog/target-encoding-done-the-right-way/))
     ([kaggle](https://www.kaggle.com/tnarik/likelihood-encoding-of-categorical-features))
     ([kaggle-most-imp](https://www.kaggle.com/scirpus/hybrid-jeepy-and-lgb (most impotant))
-
 - [x] bayesian encoding (prior information)
     ([maxhalford-git](https://github.com/MaxHalford/xam/blob/master/docs/feature-extraction.md#smooth-target-encoding))
 - [ ] quantile binning
@@ -51,14 +50,14 @@
 - [ ] intraction based w/wo RF and boosting method
 - [ ] intraction based on time-series statistics
 - [ ] use tree terminal leaf prediction as the feature for next tree.
-    <span style="color:red">some **check out tree.apply() method to collect tree terminal leaf node output.** text</span>
+<span style="color:red">some **check out tree.apply() method to collect tree terminal leaf node output.** text</span>
 - [ ] date-time based features
 - [ ] lag feature(time series) (grouping using previous day/hour sales or sth)
 - [x] text preprocessing
     - Count-vectorizer
     - extensive text processing with stemmer and lemmantizer
-    <span style="color:red">some **Will add extensive preprocessing at last.** text</span>
     - Hashing Tricks for highly sparse data(text data)
+<span style="color:red">some **Will add extensive preprocessing at last.** text</span>
 - [ ] rounding/split decimal value 
     for example sales prices is 899.99, 500.01, this .99, .01 can be feature
 - [x] linear/non-linear dimensionality reduction (PCA, Kernel-PCA, tsne, svd(std scaling after doing this), NMF)
@@ -81,8 +80,8 @@
 ## Deep learning module:
 - [x] Augmentatioan function
     Add example of using augmentation library for segmentation and object detections
-    <span style="color:red">some **Add After completing general task** text</span>
-    <span style="color:blue">some **Another example can be seen in my all-in-one-place/keras git repo.** text</span>
+<span style="color:red">some **Add After completing general task** text</span>
+<span style="color:blue">some **Another example can be seen in my all-in-one-place/keras git repo.** text</span>
 - [x] custom callbacks example
     ([gini-kaggle](https://www.kaggle.com/rspadim/gini-keras-callback-earlystopping-validation))
 - [x] pretrained model (classes as_ in object detection)
@@ -164,6 +163,9 @@
     ([imgae-feature-kaggle](https://www.kaggle.com/shivamb/ideas-for-image-features-and-image-quality))
 - [ ] Automatic Feature Engineering
     ([automatic-feature-eng](https://www.kaggle.com/willkoehrsen/kernels))
+- [ ] Bortua Feature Selection
+    ([bortua-oliver](https://www.kaggle.com/ogrellier/noise-analysis-of-porto-seguro-s-features))
+    ([bortua-tilli](https://www.kaggle.com/tilii7/boruta-feature-elimination))
 
 ---
 

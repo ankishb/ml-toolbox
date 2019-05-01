@@ -16,16 +16,20 @@ import lightgbm as lgb
 
 
 from sklearn.linear_model import LinearRegression
-lin_reg = LinearRegression(fit_intercept=True, normalize=False, n_jobs=-1)
+lin_reg_params = fit_intercept=True, normalize=False, n_jobs=-1
+lin_reg = LinearRegression(lin_reg_params)
+
 
 from sklearn.linear_model import Ridge
-ridge = Ridge(alpha=1.0, fit_intercept=True, normalize=False, max_iter=None, random_state=1234)
+ridge_params = alpha=1.0, fit_intercept=True, normalize=False, max_iter=None, random_state=1234
+ridge = Ridge(ridge_params)
+
 # If set to false, no intercept will be used in calculations (e.g. data is expected to be already centered)
 
 
 sklearn.linear_model import RidgeClassifier
-ridge_clf = RidgeClassifier(alpha=1.0, fit_intercept=True, 
-  normalize=False, class_weight='balanced', random_state=1234)
+ridge_clf_params = alpha=1.0, fit_intercept=True, normalize=False, class_weight='balanced', random_state=1234
+ridge_clf = RidgeClassifier(ridge_clf_params)
 
 
 
@@ -33,8 +37,8 @@ ridge_clf = RidgeClassifier(alpha=1.0, fit_intercept=True,
 
 sklearn.kernel_ridge import KernelRidge
 kenel_func = ['rbf','linear','poly']
-kernel_ridge = KernelRidge(alpha=1, kernel=kenel_func, gamma=None, 
-                          degree=3, coef0=1, kernel_params=None)
+kernel_ridge_params = alpha=1, kernel=kenel_func, gamma=None,  degree=3, coef0=1, kernel_params=None
+kernel_ridge = KernelRidge(kernel_ridge_params)
 
 # gamma : Gamma parameter for the RBF, laplacian, polynomial, exponential chi2 and sigmoid kernels. 
 #         Interpretation of the default value is left to the kernel
@@ -52,8 +56,8 @@ clf.fit(X, y)
 
 
 from sklearn.linear_model import Lasso
-lasso = Lasso(alpha=1.0, fit_intercept=True, normalize=False, 
-  positive=False, random_state=1234, selection='cyclic')
+lasso_params = alpha=1.0, fit_intercept=True, normalize=False, positive=False, random_state=1234, selection='cyclic'
+lasso = Lasso(lasso_params)
 
 """
 from sklearn import linear_model
@@ -68,8 +72,8 @@ print(clf.intercept_)
 
 
 from sklearn.linear_model import ElasticNet
-elastic_net = ElasticNet(alpha=1.0, l1_ratio=0.5, fit_intercept=True, 
-  normalize=False, random_state=1234, selection='cyclic')
+elastic_params = alpha=1.0, l1_ratio=0.5, fit_intercept=True, normalize=False, random_state=1234, selection='cyclic'
+elastic_net = ElasticNet(elastic_params)
   For l1_ratio = 0 the penalty is an L2 penalty. For l1_ratio = 1 it is an L1 penalty.
 
 """
@@ -89,8 +93,8 @@ print(regr.predict([[0, 0]])
 
 
 from sklearn.linear_model import BayesianRidge
-bayesian_ridge = BayesianRidge(n_iter=300, tol=0.001, alpha_1=1e-06, alpha_2=1e-06, 
-  lambda_1=1e-06, lambda_2=1e-06, compute_score=False, fit_intercept=True, normalize=False, verbose=True)
+bayesian_ridge_params = n_iter=300, tol=0.001, alpha_1=1e-06, alpha_2=1e-06, lambda_1=1e-06, lambda_2=1e-06, compute_score=False, fit_intercept=True, normalize=False, verbose=True
+bayesian_ridge = BayesianRidge(bayesian_ridge_params)
 # alpha_1 : Hyper-parameter : shape parameter for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
 # alpha_2 : Hyper-parameter : inverse scale parameter (rate parameter) for the Gamma distribution prior over the alpha parameter. Default is 1.e-6
 # lambda_1 : Hyper-parameter : shape parameter for the Gamma distribution prior over the lambda parameter. Default is 1.e-6.
@@ -106,9 +110,9 @@ clf.predict([[1, 1]])
 
 
 from sklearn.linear_model import LogisticRegression
-logistic_reg = LogisticRegression(penalty=’l2’, dual=False, C=1.0, fit_intercept=True, 
-  intercept_scaling=1, class_weight=None, random_state=1234, max_iter=100, 
-  multi_class=’warn’, verbose=1, n_jobs=-1)
+logistic_reg_params = penalty=’l2’, dual=False, C=1.0, fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=1234, max_iter=100,  multi_class=’warn’, verbose=1, n_jobs=-1
+logistic_reg = LogisticRegression(logistic_reg_params)
+
 multi_class : str, {‘ovr’, ‘multinomial’, ‘auto’}, default: ‘ovr’
 If the option chosen is ‘ovr’, then a binary problem is fit for each label.
 For ‘multinomial’ the loss minimised is the multinomial loss fit across the entire probability distribution, even when the data is binary. ‘multinomial’ is unavailable when solver=’liblinear’. ‘auto’ selects ‘ovr’ if the data is binary, or if solver=’liblinear’, and otherwise selects ‘multinomial’.
@@ -128,12 +132,8 @@ clf.score(X, y)
 
 
 from sklearn.linear_model import PassiveAggressiveClassifier
-passive_aggresive = PassiveAggressiveClassifier(C=1.0, 
-  fit_intercept=True, max_iter=None, tol=None, 
-  early_stopping=False, validation_fraction=0.1, 
-  n_iter_no_change=5, shuffle=True, verbose=0, 
-  n_jobs=-1, random_state=1234, loss='hinge',
-  class_weight=None, average=False, n_iter=None)
+passive_aggresive_params = C=1.0, fit_intercept=True, max_iter=None, tol=None, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, shuffle=True, verbose=0, n_jobs=-1, random_state=1234, loss='hinge', class_weight=None, average=False, n_iter=None
+passive_aggresive = PassiveAggressiveClassifier(passive_aggresive_params)
 
 # early_stopping=True
 # n_iter_no_change : Number of iterations with no improvement to wait before early stopping.
@@ -157,51 +157,31 @@ The index t has been chosen to mark the temporal dimension. In this case, in fac
 
 
 from sklearn.svm import SVC
-svm = SVC(C=1.0, kernel=’rbf’, degree=3, gamma=’auto_deprecated’, coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape=’ovr’, random_state=None)
+svm_params = C=1.0, kernel=’rbf’, degree=3, gamma=’auto_deprecated’, coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=False, max_iter=-1, decision_function_shape=’ovr’, random_state=None
+svm = SVC(svm_params)
+
 The implementation is based on libsvm. The fit time complexity is more than quadratic with the number of samples which makes it hard to scale to dataset with more than a couple of 10000 samples.
 
 
 
 
 from sklearn.linear_model import SGDRegressor
-sgd_reg = SGDRegressor(loss=’squared_loss’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, random_state=None, learning_rate=’invscaling’, eta0=0.01, power_t=0.25, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, warm_start=False, average=False, n_iter=None)
+sgd_reg_params = loss=’squared_loss’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, random_state=None, learning_rate=’invscaling’, eta0=0.01, power_t=0.25, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, warm_start=False, average=False, n_iter=None
+sgd_reg = SGDRegressor(sgd_reg_params)
+
 penalty : str, ‘none’, ‘l2’, ‘l1’, or ‘elasticnet’
-learning_rate : string, optional
+learning_rate : The learning rate schedule:
+    ‘constant’: eta = eta0
+    ‘optimal’: eta = 1.0 / (alpha * (t + t0)) where t0 is chosen by a heuristic proposed by Leon Bottou.
+    ‘invscaling’: [default] eta = eta0 / pow(t, power_t)
+    ‘adaptive’: eta = eta0, as long as the training keeps decreasing. Each time n_iter_no_change consecutive epochs fail to decrease the training loss by tol or fail to increase validation score by tol if early_stopping is True, the current learning rate is divided by 5.
 
-    The learning rate schedule:
-
-    ‘constant’:
-
-        eta = eta0
-    ‘optimal’:
-
-        eta = 1.0 / (alpha * (t + t0)) where t0 is chosen by a heuristic proposed by Leon Bottou.
-    ‘invscaling’: [default]
-
-        eta = eta0 / pow(t, power_t)
-    ‘adaptive’:
-
-        eta = eta0, as long as the training keeps decreasing. Each time n_iter_no_change consecutive epochs fail to decrease the training loss by tol or fail to increase validation score by tol if early_stopping is True, the current learning rate is divided by 5.
-
-eta0 : double
-
-    The initial learning rate for the ‘constant’, ‘invscaling’ or ‘adaptive’ schedules. The default value is 0.0 as eta0 is not used by the default schedule ‘optimal’.
-power_t : double
-
-    The exponent for inverse scaling learning rate [default 0.5].
-early_stopping : bool, default=False
-
-    Whether to use early stopping to terminate training when validation score is not improving. If set to True, it will automatically set aside a fraction of training data as validation and terminate training when validation score is not improving by at least tol for n_iter_no_change consecutive epochs.
-
-    New in version 0.20.
-validation_fraction : float, default=0.1
-
-    The proportion of training data to set aside as validation set for early stopping. Must be between 0 and 1. Only used if early_stopping is True.
-
-    New in version 0.20.
+eta0 :  The initial learning rate for the ‘constant’, ‘invscaling’ or ‘adaptive’ schedules. The default value is 0.0 as eta0 is not used by the default schedule ‘optimal’.
+power_t : The exponent for inverse scaling learning rate [default 0.5].
+early_stopping : bool, default=False, 
+  Whether to use early stopping to terminate training when validation score is not improving. If set to True, it will automatically set aside a fraction of training data as validation and terminate training when validation score is not improving by at least tol for n_iter_no_change consecutive epochs.
+validation_fraction : float, default=0.1, Only used if early_stopping is True.
 n_iter_no_change : int, default=5
-
-    Number of iterations with no improvement to wait before early stopping.
 
 
 
@@ -217,53 +197,28 @@ clf.fit(X, y)
 
 
 from sklearn.linear_model import SGDClassifier
-sgd_clf = SGDClassifier(loss=’hinge’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, n_jobs=None, random_state=None, learning_rate=’optimal’, eta0=0.0, power_t=0.5, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, class_weight=None, warm_start=False, average=False, n_iter=None)
+sgd_clf_params = loss=’hinge’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, n_jobs=None, random_state=None, learning_rate=’optimal’, eta0=0.0, power_t=0.5, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, class_weight=None, warm_start=False, average=False, n_iter=None
+sgd_clf = SGDClassifier(sgd_clf_params)
+
 
 
 The possible options are ‘hinge’, ‘log’, ‘modified_huber’, ‘squared_hinge’, ‘perceptron’, or a regression loss: ‘squared_loss’, ‘huber’, ‘epsilon_insensitive’, or ‘squared_epsilon_insensitive’.
 
-n_jobs : int or None, optional (default=None)
-
-    The number of CPUs to use to do the OVA (One Versus All, for multi-class problems) computation. None means 1 unless in a joblib.parallel_backend context. -1 means using all processors. See Glossary for more details.
 random_state : int, RandomState instance or None, optional (default=None)
+learning_rate :  The learning rate schedule:
 
-    The seed of the pseudo random number generator to use when shuffling the data. If int, random_state is the seed used by the random number generator; If RandomState instance, random_state is the random number generator; If None, the random number generator is the RandomState instance used by np.random.
-learning_rate : string, optional
+    ‘constant’: eta = eta0
+    ‘optimal’: [default] eta = 1.0 / (alpha * (t + t0)) where t0 is chosen by a heuristic proposed by Leon Bottou.
+    ‘invscaling’: eta = eta0 / pow(t, power_t)
+    ‘adaptive’: eta = eta0, as long as the training keeps decreasing. Each time n_iter_no_change consecutive epochs fail to decrease the training loss by tol or fail to increase validation score by tol if early_stopping is True, the current learning rate is divided by 5.
 
-    The learning rate schedule:
-
-    ‘constant’:
-
-        eta = eta0
-    ‘optimal’: [default]
-
-        eta = 1.0 / (alpha * (t + t0)) where t0 is chosen by a heuristic proposed by Leon Bottou.
-    ‘invscaling’:
-
-        eta = eta0 / pow(t, power_t)
-    ‘adaptive’:
-
-        eta = eta0, as long as the training keeps decreasing. Each time n_iter_no_change consecutive epochs fail to decrease the training loss by tol or fail to increase validation score by tol if early_stopping is True, the current learning rate is divided by 5.
-
-eta0 : double
-
-    The initial learning rate for the ‘constant’, ‘invscaling’ or ‘adaptive’ schedules. The default value is 0.0 as eta0 is not used by the default schedule ‘optimal’.
-power_t : double
-
-    The exponent for inverse scaling learning rate [default 0.5].
+eta0 : The initial learning rate for the ‘constant’, ‘invscaling’ or ‘adaptive’ schedules. The default value is 0.0 as eta0 is not used by the default schedule ‘optimal’.
+power_t :  The exponent for inverse scaling learning rate [default 0.5].
 early_stopping : bool, default=False
-
-    Whether to use early stopping to terminate training when validation score is not improving. If set to True, it will automatically set aside a fraction of training data as validation and terminate training when validation score is not improving by at least tol for n_iter_no_change consecutive epochs.
-
-    New in version 0.20.
-validation_fraction : float, default=0.1
-
-    The proportion of training data to set aside as validation set for early stopping. Must be between 0 and 1. Only used if early_stopping is True.
-
-    New in version 0.20.
+  Whether to use early stopping to terminate training when validation score is not improving. If set to True, it will automatically set aside a fraction of training data as validation and terminate training when validation score is not improving by at least tol for n_iter_no_change consecutive epochs.
+validation_fraction : float, default=0.1, Only used if early_stopping is True.
 n_iter_no_change : int, default=5
 
-    Number of iterations with no improvement to wait before early stopping.
 
 
 
