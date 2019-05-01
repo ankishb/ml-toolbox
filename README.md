@@ -102,7 +102,7 @@
 7. ML-Model:
 - [x] XGBoost/LightGBM/CatBoost
 - [ ] ExtraTree/ Adaptive GBM/ Random-Forest
-- [ ] Linear model/ Lasso/Ridge/Logistic/SVM
+- [x] Linear model/ Lasso/Ridge/Logistic/SVM
     <span style="color:red">some **For large dataset, sunning svm is not wise, there is an online approximation of SVM solver, please follow following link.** text</span>
     ([sklearn-metric](https://scikit-learn.org/stable/modules/metrics.html#metrics (kernel function)))
     ([blog](https://leon.bottou.org/projects/lasvm))

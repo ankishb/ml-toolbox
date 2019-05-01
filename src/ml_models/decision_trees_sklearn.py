@@ -10,9 +10,46 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.ensemble import VotingClassifier
 
 
-def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_samples_leaf=3, max_samples=0.75, subsample=0.7, loss_func='mse'):
-  """
-  Args:
+
+
+import warnings
+warnings.filterwarnings("ignore")
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_boston
+
+
+boston = load_boston()
+
+X = boston['data']
+y = boston['target']
+
+cols = list(boston.feature_names) + ['target']
+
+df = pd.DataFrame(data=np.column_stack([X,y]), columns=cols)
+
+idx = np.random.permutation(df.shape[0])
+
+train_len = int(len(idx)*0.8)
+train_df = df.iloc[idx][:train_len]
+test_df  = df.iloc[idx][train_len:]
+
+train_df.shape, test_df.shape
+
+
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
+from sklearn.ensemble import BaggingClassifier, BaggingRegressor
+from sklearn.ensemble import ExtraTreesClassifier, ExtraTreesRegressor
+from sklearn.ensemble import GradientBoostingClassifier, GradientBoostingRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.ensemble import VotingClassifier
+
+
+def tree(tree_name, criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_samples_leaf=3, max_samples=0.75, subsample=0.7, loss_func='mse'):
+    """
+    Args:
     n_estimators: no of estimators
     criteria: ['gini': gini-impurity,'entropy':infomation gain]
     depth: depth of tree
@@ -23,33 +60,116 @@ def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_sampl
     bootstrap: True
     class_weight : dict, “balanced”, “balanced_subsample” or None
       The “balanced_subsample” mode is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
-  """
-  if tree_name = 'decision_tree_clf':
+    """
+    if tree_name is 'decision_tree_clf':
+        dtc = DecisionTreeClassifier(criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, min_samples_split=2,random_state=1234, max_leaf_nodes=None, class_weight='balanced')
+
+    if tree_name is 'decision_tree_reg':
+        dtr = DecisionTreeRegressor(criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, min_samples_split=2, random_state=1234, max_leaf_nodes=None)
+
+
+    if tree_name is 'ada_boost_clf':
+        ada_noost = AdaBoostClassifier(base_estimator=None, n_estimators=n_estimators, learning_rate=lr_rate, random_state=1234)
+
+
+    if tree_name is 'ada_boost_reg':
+    # loss_func = {‘linear’, ‘square’, ‘exponential’}
+        AdaBoostRegressor(base_estimator=None, n_estimators=n_estimators, loss=loss_func, learning_rate=lr_rate, random_state=1234)
+
+
+    if tree_name is 'bagging_clf':
+    # bootstrap_features: Whether features are drawn with replacement.
+        bag_clf = BaggingClassifier(base_estimator=None, n_estimators=n_estimators,  max_samples=max_samples, max_features=max_features, bootstrap=True, bootstrap_features=False, oob_score=False, n_jobs=-1, random_state=1234, verbose=1)
+
+
+    if tree_name is 'bagging_reg':
+        bag_reg = BaggingRegressor(base_estimator=None, n_estimators=n_estimators,  max_samples=max_samples, max_features=max_features, bootstrap=True, bootstrap_features=False, oob_score=False, n_jobs=-1, random_state=1234, verbose=1)
+
+
+    if tree_name is 'extra_tree_clf':
+        """When looking for the best split to separate the samples 
+        of a node into two groups, random splits are drawn for each 
+        of the max_features randomly selected features and the best 
+        split among those is chosen"""
+
+#     criteria: ['mae','mse']
+        et_clf = ExtraTreesClassifier( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators, min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234, class_weight='balanced')
+
+    if tree_name is 'extra_tree_reg':
+        et_reg = ExtraTreesRegressor( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators,min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=False,  max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234)
+
+
+
+    if tree_name is 'grad_boost_clf':
+
+    # loss : {‘deviance’, ‘exponential’} (default=’deviance’)
+    # criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
+        grad_boost_clf = GradientBoostingClassifier(max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
+
+
+    if tree_name is 'grad_boost_reg':
+
+    # loss_func: {‘ls’, ‘lad’, ‘huber’, ‘quantile’} (default='ls')
+    # criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
+    # alpha: The alpha-quantile of the huber loss function and the quantile loss function. Only if loss='huber' or loss='quantile'
+        grad_boost_reg = GradientBoostingRegressor( max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, alpha=0.9, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
+
+
+    if tree_name is 'random_forest_clf':
+
+    # criteria: ['gini','entropy']
+        rf_clf = RandomForestClassifier(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1, random_state=1234, class_weight='balanced_subsample')
+
+    if tree_name is 'random_forest_reg':
+
+    # criteria: ['mae','mse']
+        rf_reg = RandomForestRegressor(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,  bootstrap=True, max_leaf_nodes=None, oob_score=False,verbose=1, random_state=1234)
+
+    return 
+
+
+
+
+def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_samples_leaf=3, max_samples=0.75, subsample=0.7, loss_func='mse'):
+    """
+    Args:
+    n_estimators: no of estimators
+    criteria: ['gini': gini-impurity,'entropy':infomation gain]
+    depth: depth of tree
+    min_samples_split : (default=2)
+    min_samples_leaf : create smoothening effect
+    max_features : ['auto','sqrt','log2',None:n_features]
+    max_leaf_nodes : Grow trees with max_leaf_nodes in best-first fashion. Best nodes are defined as relative reduction in impurity.
+    bootstrap: True
+    class_weight : dict, “balanced”, “balanced_subsample” or None
+      The “balanced_subsample” mode is the same as “balanced” except that weights are computed based on the bootstrap sample for every tree grown.
+    """
+    if tree_name = 'decision_tree_clf':
     dtc = DecisionTreeClassifier(criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, min_samples_split=2,random_state=1234, max_leaf_nodes=None, class_weight='balanced')
 
-  if tree_name = 'decision_tree_reg':
+    if tree_name = 'decision_tree_reg':
     dtr = DecisionTreeRegressor(criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, min_samples_split=2, random_state=1234, max_leaf_nodes=None)
 
 
-  if tree_name = 'ada_boost_clf':
+    if tree_name = 'ada_boost_clf':
     ada_noost = AdaBoostClassifier(base_estimator=None, n_estimators=n_estimators, learning_rate=lr_rate, random_state=1234)
 
 
-  if tree_name = 'ada_boost_reg':
+    if tree_name = 'ada_boost_reg':
     # loss_func = {‘linear’, ‘square’, ‘exponential’}
     AdaBoostRegressor(base_estimator=None, n_estimators=n_estimators, loss=loss_func, learning_rate=lr_rate, random_state=1234)
 
 
-  if tree_name = 'bagging_clf':
-# bootstrap_features: Whether features are drawn with replacement.
+    if tree_name = 'bagging_clf':
+    # bootstrap_features: Whether features are drawn with replacement.
     bag_clf = BaggingClassifier(base_estimator=None, n_estimators=n_estimators,  max_samples=max_samples, max_features=max_features, bootstrap=True, bootstrap_features=False, oob_score=False, n_jobs=-1, random_state=1234, verbose=1)
 
 
-  if tree_name = 'bagging_reg':
+    if tree_name = 'bagging_reg':
     bag_reg = BaggingRegressor(base_estimator=None, n_estimators=n_estimators,  max_samples=max_samples, max_features=max_features, bootstrap=True, bootstrap_features=False, oob_score=False, n_jobs=-1, random_state=1234, verbose=1)
 
 
-  if tree_name = 'extra_tree_clf':
+    if tree_name = 'extra_tree_clf':
     """When looking for the best split to separate the samples 
     of a node into two groups, random splits are drawn for each 
     of the max_features randomly selected features and the best 
@@ -58,19 +178,19 @@ def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_sampl
     criteria: ['mae','mse']
     et_clf = ExtraTreesClassifier( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators, min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234, class_weight='balanced')
 
-  if tree_name = 'extra_tree_reg':
+    if tree_name = 'extra_tree_reg':
     et_reg = ExtraTreesRegressor( criterion=criteria, max_depth=depth, max_features=max_features, n_estimators=n_estimators,min_samples_leaf=min_samples_leaf, min_samples_split=2, n_jobs=-1, bootstrap=False,  max_leaf_nodes=None, oob_score=False, verbose=1,random_state=1234)
 
 
 
-  if tree_name = 'grad_boost_clf':
+    if tree_name = 'grad_boost_clf':
 
     # loss : {‘deviance’, ‘exponential’} (default=’deviance’)
     # criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
     grad_boost_clf = GradientBoostingClassifier(max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
 
 
-  if tree_name = 'grad_boost_reg':
+    if tree_name = 'grad_boost_reg':
 
     # loss_func: {‘ls’, ‘lad’, ‘huber’, ‘quantile’} (default='ls')
     # criteria: Supported criteria are “friedman_mse” for the mean squared error with improvement score by Friedman, “mse” for mean squared error, and “mae” for the mean absolute error
@@ -78,12 +198,12 @@ def tree(criteria, depth, n_estimators, lr_rate=0.1, max_features=0.7, min_sampl
     grad_boost_reg = GradientBoostingRegressor( max_features=max_features, n_estimators=n_estimators, subsample=subsample, max_depth=depth, loss=loss_func, criterion=criteria, min_samples_leaf=min_samples_leaf, learning_rate=lr_rate, min_samples_split=2, verbose=1, random_state=1234, alpha=0.9, max_leaf_nodes=None, validation_fraction=0.1, n_iter_no_change=5)
 
 
-  if tree_name = 'random_forest_clf':
+    if tree_name = 'random_forest_clf':
 
     # criteria: ['gini','entropy']
     rf_clf = RandomForestClassifier(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features,  min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,bootstrap=True, max_leaf_nodes=None, oob_score=False, verbose=1, random_state=1234, class_weight='balanced_subsample')
 
-  if tree_name = 'random_forest_reg':
+    if tree_name = 'random_forest_reg':
 
     # criteria: ['mae','mse']
     rf_reg = RandomForestRegressor(n_estimators=n_estimators, criterion=criteria, max_depth=depth, max_features=max_features, min_samples_leaf=min_samples_leaf, n_jobs=-1, min_samples_split=2,  bootstrap=True, max_leaf_nodes=None, oob_score=False,verbose=1, random_state=1234)

@@ -222,67 +222,365 @@ n_iter_no_change : int, default=5
 
 
 
-return predict_proba
-   
+
+
+
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import load_boston
+
+
+from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import Ridge
+from sklearn.kernel_ridge import KernelRidge
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import ElasticNet
+from sklearn.linear_model import BayesianRidge
+from sklearn.svm import SVR
+
+
+boston = load_boston()
+
+X = boston['data']
+y = boston['target']
+
+cols = list(boston.feature_names) + ['target']
+
+df = pd.DataFrame(data=np.column_stack([X,y]), columns=cols)
+
+idx = np.random.permutation(df.shape[0])
+
+train_len = int(len(idx)*0.8)
+train_df = df.iloc[idx][:train_len]
+test_df  = df.iloc[idx][train_len:]
+
+train_df.shape, test_df.shape
+
+
+bayesian_ridge = BayesianRidge(n_iter=300, tol=0.001, alpha_1=1e-06, alpha_2=1e-06, 
+                               lambda_1=1e-06, lambda_2=1e-06, compute_score=False, 
+                               fit_intercept=True, normalize=True, verbose=False)
+
+lasso = Lasso(alpha=1.0, fit_intercept=True, normalize=True, positive=False, 
+              random_state=1234, selection='cyclic')
+
+elastic_net = ElasticNet(alpha=1.0, l1_ratio=0.5, fit_intercept=True, normalize=True, 
+                         random_state=1234, selection='cyclic')
+#   For l1_ratio = 0 the penalty is an L2 penalty. For l1_ratio = 1 it is an L1 penalty.
+
+lin_reg = LinearRegression(fit_intercept=True, normalize=True, n_jobs=-1)
+
+ridge = Ridge(alpha=1.0, fit_intercept=True, normalize=True, max_iter=500, 
+              random_state=1234)
+
+# kenel_func = ['rbf','linear','poly']
+kernel_ridge = KernelRidge(alpha=1, kernel='rbf', gamma=None, degree=3, coef0=1, 
+                           kernel_params=None)
+
+svm = SVR(kernel='rbf', degree=3, coef0=0.0, tol=0.001, C=1.0, epsilon=0.1, 
+          shrinking=True, cache_size=200, verbose=False, max_iter=500)
+
+bayesian_ridge.fit(train_df.drop('target', axis=1), train_df['target'])
+print(bayesian_ridge.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+lasso.fit(train_df.drop('target', axis=1), train_df['target'])
+print(lasso.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+elastic_net.fit(train_df.drop('target', axis=1), train_df['target'])
+print(elastic_net.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+lin_reg.fit(train_df.drop('target', axis=1), train_df['target'])
+print(lin_reg.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+ridge.fit(train_df.drop('target', axis=1), train_df['target'])
+print(ridge.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+kernel_ridge.fit(train_df.drop('target', axis=1), train_df['target'])
+print(kernel_ridge.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+svm.fit(train_df.drop('target', axis=1), train_df['target'])
+print(svm.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
 
 
 
 
 
-clf = MultinomialNB()
-clf.fit(xtrain_tfv, ytrain)
-predictions = clf.predict_proba(xvalid_tfv)
+from sklearn.linear_model import RidgeClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn.svm import SVC
 
-print ("logloss: %0.3f " % multiclass_logloss(yvalid, predictions))
-
-
-
-# Fitting a simple Logistic Regression on Counts
-clf = LogisticRegression(C=1.0)
-clf.fit(xtrain_ctv, ytrain)
-predictions = clf.predict_proba(xvalid_ctv)
+passive_agg = PassiveAggressiveClassifier(C=params['alpha'], fit_intercept=True, max_iter=None, 
+        tol=None, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, 
+        shuffle=True, verbose=0, n_jobs=-1, random_state=1234, loss='hinge', 
+        class_weight='balanced', average=False, n_iter=None)
 
 
+ridge_clf = RidgeClassifier(alpha=params['alpha'], fit_intercept=True, 
+                 normalize=True, class_weight='balanced', random_state=1234)
+
+svm = SVC(C=1.0, kernel='rbf', degree=3, coef0=0.0, shrinking=True, probability=False, 
+          tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, 
+          decision_function_shape='ovr', random_state=None)
+
+logistic_reg = LogisticRegression(penalty='l2', dual=False, C=params['alpha'], fit_intercept=True, 
+    intercept_scaling=1, class_weight=None, random_state=1234, max_iter=100,  
+                                  multi_class='warn', verbose=0, n_jobs=-1)
 
 
-#Base models
 
-#    LASSO Regression :
-#This model may be very sensitive to outliers. So we need to made it more robust on them. 
-#For that we use the sklearn's Robustscaler() method on pipeline
 
-# lasso = make_pipeline(RobustScaler(), Lasso(alpha =0.0005, random_state=1))
-lasso = Lasso(alpha =0.0005, random_state=1)
+from sklearn.datasets import load_iris
+iris = load_iris()
 
-#    Elastic Net Regression :
-#again made robust to outliers
+X = iris['data']
+y = iris['target']
 
-# ENet = make_pipeline(RobustScaler(), ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3))
-ENet = ElasticNet(alpha=0.0005, l1_ratio=.9, random_state=3)
+cols = list(iris.feature_names) + ['target']
 
-#    Kernel Ridge Regression :
-KRR = KernelRidge(alpha=0.6, kernel='polynomial', degree=2, coef0=2.5)
+df = pd.DataFrame(data=np.column_stack([X,y]), columns=cols)
 
-#    Gradient Boosting Regression :
-#With huber loss that makes it robust to outliers
-GBoost = GradientBoostingRegressor(n_estimators=300, learning_rate=0.05,#n_estimators=3000
-                                   max_depth=4, max_features='sqrt',
-                                   min_samples_leaf=15, min_samples_split=10, 
-                                   loss='huber', random_state =5)
+idx = np.random.permutation(df.shape[0])
 
-#    XGBoost :
-model_xgb = xgb.XGBRegressor(colsample_bytree=0.4603, gamma=0.0468, 
-                             learning_rate=0.05, max_depth=3, 
-                             min_child_weight=1.7817, n_estimators=220,#n_estimators=2200,
-                             reg_alpha=0.4640, reg_lambda=0.8571,
-                             subsample=0.5213, silent=1,
-                             random_state =7, nthread = -1)
+train_len = int(len(idx)*0.8)
+train_df = df.iloc[idx][:train_len]
+test_df  = df.iloc[idx][train_len:]
 
-#    LightGBM :
-model_lgb = lgb.LGBMRegressor(objective='regression',num_leaves=5,
-                              learning_rate=0.05, n_estimators=220,#n_estimators=720,
-                              max_bin = 55, bagging_fraction = 0.8,
-                              bagging_freq = 5, feature_fraction = 0.2319,
-                              feature_fraction_seed=9, bagging_seed=9,
-                              min_data_in_leaf =6, min_sum_hessian_in_leaf = 11)
+train_df.shape, test_df.shape
 
+
+
+
+ridge_clf.fit(train_df.drop('target', axis=1), train_df['target'])
+print(ridge_clf.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+passive_agg.fit(train_df.drop('target', axis=1), train_df['target'])
+print(passive_agg.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+svm.fit(train_df.drop('target', axis=1), train_df['target'])
+print(svm.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+logistic_reg.fit(train_df.drop('target', axis=1), train_df['target'])
+print(logistic_reg.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+ridge_clf.fit(train_df.drop('target', axis=1), train_df['target'])
+print(ridge_clf.score(test_df.drop('target', axis=1), test_df['target']))
+print("==============")
+
+
+
+
+def run_hyperopt_clf(train_df, target, max_evals, clf_name, kernel_func='linear', degree=3):
+
+    def bayesian_opt(params):
+        random_seed = 1234
+        n_splits = 3
+
+        folds = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=random_seed)
+        oof_lgb = np.zeros(len(train_df))
+
+        score_cv = []
+
+        for fold_, (train_index, valid_index) in enumerate(folds.split(train_df, target)):
+
+            y_train, y_valid = target.iloc[train_index], target.iloc[valid_index]
+            X_train, X_valid = train_df.iloc[train_index,:], train_df.iloc[valid_index,:]
+
+            if clf_name == 'passive_agg':
+            
+                clf = PassiveAggressiveClassifier(
+                    C=params['alpha'], fit_intercept=True, max_iter=None, tol=None, 
+                    early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, 
+                    shuffle=True, verbose=0, n_jobs=-1, random_state=1234, loss='hinge',
+                    class_weight='balanced', average=False, n_iter=100)
+            
+            elif clf_name is 'ridge':
+                clf = RidgeClassifier(
+                    alpha=params['alpha'], fit_intercept=True, normalize=True, 
+                    class_weight='balanced', random_state=1234)
+            
+            elif clf_name is 'logistic':
+                clf = LogisticRegression(
+                    penalty='l2', dual=False, C=params['alpha'], fit_intercept=True, 
+                    intercept_scaling=1, class_weight=None, random_state=1234, 
+                    max_iter=100, multi_class='warn', verbose=0, n_jobs=-1)
+            
+            elif clf_name is 'svm':
+                clf = SVC(
+                    C=params['alpha'], kernel=kernel_func, degree=degree, coef0=0.0, 
+                    shrinking=True, probability=False, tol=0.001, cache_size=200, 
+                    class_weight='balanced', verbose=False, max_iter=200, 
+                    decision_function_shape='ovr', random_state=1234)
+            
+            else:
+              raise Exception('only [passive_agg, ridge, logistic, svm] are supported')
+            
+            clf.fit(X_train, y_train)
+            score = clf.score(X_valid, y_valid)
+    #         score = roc_auc_score(y_valid, oof)
+            score_cv.append(score)
+
+        return -np.mean(score_cv)
+
+    
+    bayesian_params = {'alpha': hp.uniform('alpha', 0.01, 1000),}   
+
+    
+    trials = Trials()
+    results = fmin(bayesian_opt, bayesian_params, algo=tpe.suggest, 
+                   trials=trials, max_evals=max_evals)
+        
+    return results, trials 
+
+
+best, tpe_trials = run_hyperopt_clf(train_df, target, 20, 'passive_agg')
+print(best)
+print("="*50)
+
+best, tpe_trials = run_hyperopt_clf(train_df, target, 100, 'ridge')
+print(best)
+print("="*50)
+
+best, tpe_trials = run_hyperopt_clf(train_df, target, 100, 'logistic')
+print(best)
+print("="*50)
+
+best, tpe_trials = run_hyperopt_clf(train_df, target, 20, 'svm')
+print(best)
+print("="*50)
+
+best, tpe_trials = run_hyperopt_clf(train_df, target, 20, 'svm', kernel_func='rbf')
+print(best)
+print("="*50)
+
+best, tpe_trials = run_hyperopt_clf(train_df, target, 20, 'svm', kernel_func='poly')
+print(best)
+print("="*50)
+
+
+
+
+
+
+def run_hyperopt_reg(train_df, target, max_evals, clf_name, kernel_func='linear', degree=3):
+
+    def bayesian_opt(params):
+        random_seed = 1234
+        n_splits = 3
+
+        folds = KFold(n_splits=n_splits, shuffle=True, random_state=random_seed)
+        oof_lgb = np.zeros(len(train_df))
+
+        score_cv = []
+
+        for fold_, (train_index, valid_index) in enumerate(folds.split(train_df, target)):
+
+            y_train, y_valid = target.iloc[train_index], target.iloc[valid_index]
+            X_train, X_valid = train_df.iloc[train_index,:], train_df.iloc[valid_index,:]
+
+            if clf_name == 'bayesian_ridge':
+            
+                reg = BayesianRidge(
+                    n_iter=300, tol=0.001, compute_score=False,
+                    alpha_1=params['alpha1'], alpha_2=params['alpha2'], 
+                    lambda_1=params['lambda1'], lambda_2=params['lambda2'],  
+                    fit_intercept=True, normalize=True, verbose=False)
+
+            
+            elif clf_name is 'lasso':
+                reg = Lasso(
+                    alpha=params['alpha'], fit_intercept=True, normalize=True, 
+                    positive=False, random_state=1234, selection='cyclic')
+
+            
+            elif clf_name is 'elastic_net':
+                reg = ElasticNet(
+                    alpha=params['alpha'], l1_ratio=0.5, fit_intercept=True, 
+                    normalize=True, random_state=1234, selection='cyclic')
+            
+            elif clf_name is 'ridge':
+                reg = Ridge(
+                    alpha=params['alpha'], fit_intercept=True, normalize=True, 
+                    max_iter=500, random_state=1234)
+
+            elif clf_name is 'kernel_ridge':
+                reg = KernelRidge(
+                    alpha=params['alpha'], kernel=kernel_func, gamma=None, 
+                    degree=degree, coef0=1, kernel_params=None)
+            
+            elif clf_name is 'svm':
+                reg = SVR(
+                    kernel=kernel_func, degree=degree, coef0=0.0, tol=0.001, 
+                    C=params['alpha'], epsilon=0.1, shrinking=True, cache_size=200, 
+                    verbose=0, max_iter=500)
+            
+            else:
+                raise Exception('only [bayesian_ridge, lasso, elastic_net, ridge, kernel_ridge, svm] \
+                are supported')
+            reg.fit(X_train, y_train)
+            score = reg.score(X_valid, y_valid)
+            
+    #         score = roc_auc_score(y_valid, oof)
+            score_cv.append(score)
+
+        return -np.mean(score_cv)
+
+    if clf_name == 'bayesian_ridge':
+        bayesian_params = {'alpha1': hp.uniform('alpha1', 0.0001, 10),
+                           'alpha2': hp.uniform('alpha2', 0.0001, 10),
+                           'lambda1': hp.uniform('lambda1', 0.0001, 10),
+                           'lambda2': hp.uniform('lambda2', 0.0001, 10),}   
+    else:
+        bayesian_params = {'alpha': hp.uniform('alpha', 0.01, 1000),}   
+
+    
+    trials = Trials()
+    results = fmin(bayesian_opt, bayesian_params, algo=tpe.suggest, 
+                   trials=trials, max_evals=max_evals)
+        
+    return results, trials 
+
+print("bayesian ridge","="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 20, 'bayesian_ridge')
+print(best)
+
+print("lasso","="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 20, 'lasso')
+print(best)
+
+print("elastic_net", "="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 100, 'elastic_net')
+print(best)
+
+print("ridge", "="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 100, 'ridge')
+print(best)
+
+print("kernel_ridge", "="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 20, 'kernel_ridge')
+print(best)
+
+print("kernel_ridge", "="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 20, 'kernel_ridge', kernel_func='rbf')
+print(best)
+
+print("kernel_ridge", "="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 20, 'kernel_ridge', kernel_func='poly')
+print(best)
+
+print("svm", "="*50)
+best, tpe_trials = run_hyperopt(train_df, target, 20, 'svm', kernel_func='poly')
+print(best)
+print("="*50)
