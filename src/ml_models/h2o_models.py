@@ -471,166 +471,124 @@ deep_ml_params = {
 
 
 
+########################################################################################
+########################################################################################
+########################################################################################
+
+"""
+hyperparameters: a dict of parameters and a list f values for each parameter
+search_criteria: a dict of values for following params. 
+	(strategy, max_models, max_runtime_secs, stopping_metric, stopping_tolerance, stopping_rounds and seed)
+strategy: cartesian, # [RandomDiscrete (random select), cartesian (all case)]
+	cartesian: all possible case
+	RandomDiscrete: Randomly choose some parameters, use max_models, seed, max_runtime_secs, stopping_rounds, stopping_metric, stopping_tolerance as 
+	{'strategy': "RandomDiscrete", 'stopping_metric': "misclassification", 'stopping_tolerance': 0.0005, 'stopping_rounds': 5}
+"""
+
+from h2o.estimators.gbm import H2OGradientBoostingEstimator
+from h2o.grid.grid_search import H2OGridSearch
+
+gbm_params1 = { 'learn_rate': [i * 0.01 for i in range(1, 11)],
+                'max_depth': list(range(2, 11)),
+                'sample_rate': [0.8, 1.0],
+                'col_sample_rate': [i * 0.1 for i in range(1, 11)]}
+
+search_criteria = {'strategy': 'RandomDiscrete', 'max_models': 36, 'seed': 1}
+
+gbm_grid1 = H2OGridSearch(model=H2OGradientBoostingEstimator,
+                          grid_id='gbm_grid1',
+                          hyper_params=gbm_params1,
+                          search_criteria=None) # Either leave it or use as strategy
+gbm_grid1.train(x=x, y=y,
+                training_frame=train,
+                validation_frame=valid,
+                ntrees=100,
+                seed=1)
+
+# Get the grid results, sorted by validation AUC
+gbm_gridperf1 = gbm_grid1.get_grid(sort_by='auc', decreasing=True)
+
+best_gbm1 = gbm_gridperf1.models[0]
+best_gbm_perf1 = best_gbm1.model_performance(test)
+best_gbm_perf1.auc()
+
 
 ########################################################################################
 ########################################################################################
 ########################################################################################
 
 
-gbm_model_deep = H2OGradientBoostingEstimator(  nfolds=3, seed=1234,
-                                                fold_assignment = 'stratified',
+
+
+
+
+
+
+
+
+########################################################################################
+########################################################################################
+########################################################################################
+
+
+gbm_model_deep = H2OGradientBoostingEstimator(  
+nfolds=3, seed=1234,
+fold_assignment = 'stratified',
 #                                                 score_validation_sampling='stratified',
-                                                ntrees = 10000,
-                                                learn_rate = 0.05,
-                                                max_depth = 4,
-                                                stopping_rounds = 5, 
-                                                stopping_tolerance = 1e-3,
-                                                stopping_metric = "AUC",
-                                                sample_rate = 0.7,
-                                                col_sample_rate = 0.7,
-                                                keep_cross_validation_predictions=True
-                                             )
+ntrees = 10000,
+learn_rate = 0.05,
+max_depth = 4,
+stopping_rounds = 5, 
+stopping_tolerance = 1e-3,
+stopping_metric = "AUC",
+sample_rate = 0.7,
+col_sample_rate = 0.7,
+keep_cross_validation_predictions=True
+)
 
 gbm_params = {
-	'nfolds': 3,
-	'ignored_columns':drop_cols,
-    'ntrees':200,
-	'max_depth':10,# (default=20)
-	'min_rows':None, # Specify the minimum number of observations for a leaf
-	'nbins': 63, # Specify the number of bins for the histogram to build, then split at the best point.
-	'nbins_cats': # (Extensively tuning needed)
-	'seed':1234,
-	'learn_rate':0.01,
-	'learn_rate_annealing':0.99, # (danger as it reduce the lr_rate rapidly) (for lr:0.01, use lr:0.05, with anealing of 0.99, lead to better converger (fast))
-	'distribution':'AUTO', # Classification: binomial(binary), quasibinomial(binary), multinomial(Categorical)
-					       # numeric: poisson, laplace, tweedie, gaussian, huber, gamma, quantile
-	'sample_rate':0.7, # default 0.63 (samples without replacement)
+	'nfolds'              :  3,
+	'ignored_columns'     : drop_cols,
+    'ntrees'              : 200,
+	'max_depth'           : 10,# (default=20)
+	'min_rows'            : None, # Specify the minimum number of observations for a leaf
+	'nbins'               :  63, # Specify the number of bins for the histogram to build, then split at the best point.
+	'nbins_cats'          : None # (Extensively tuning needed)
+	'verbose'             : 25,
+	'seed'                : 1234,
+	'learn_rate'          : 0.01,
+	'learn_rate_annealing': 0.99, # (danger as it reduce the lr_rate rapidly) (for lr:0.01, use lr:0.05, with anealing of 0.99, lead to better converger (fast))
+	'distribution'        :'AUTO', # Classification: binomial(binary), quasibinomial(binary), multinomial(Categorical) and for numeric: poisson, laplace, tweedie, gaussian, huber, gamma, quantile
+	'sample_rate'         : 0.7, # default 0.63 (samples without replacement)
     'sample_rate_per_class':0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
-    'col_sample_rate':0.7, # sampling without replacement
+    'col_sample_rate'     : 0.7, # sampling without replacement
     'col_sample_rate_per_tree':0.7, # sample without replacement.
-	'categorical_encoding':'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
-	'histogram_type':'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
-	 
+	'histogram_type'      : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
+	'fold_column'         : None, # col name for cv fold
+	'weights_column'      : col_name, # which should be present in the dataframe as an indiaction to weights of each row.
+	'fold_assignment'     : 'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
+	'balance_classes'     : True, # only for classification (balance the classes by oversampling),
 
-
+	'min_split_improvement' : 1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
+	'categorical_encoding'  : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
     'keep_cross_validation_predictions':True,
-	'score_each_iteration':True, # scoring at each iteration
-	'score_tree_interval':5, # score after each 5 tree built
-	'fold_assignment':'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
-	'fold_column':None, # col name for cv fold
-	'weights_column':col_name, # which should be present in the dataframe as an indiaction to weights of each row.
-	'balance_classes':True, # only for classification (balance the classes by oversampling),
-	'max_after_balance_size':1,# (0-inf) for oversampling choose > 1, else < 1.
-	
-	'nbins_top_level': # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
-	
-	'stopping_rounds':25, # wait for n(25) itrs for early stopping
-	'stopping_metric':'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
-	'stopping_tolerance':0.001, # tolerance factor for wait till stopping
-	'seed':1234,
-	'verbose':25,
-    'min_split_improvement':1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
-    'binomial_double_trees':True, # (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building.
-    'mtries':-1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
-    'class_sampling_factors':1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
+	'score_each_iteration'  : True, # scoring at each iteration
+	'score_tree_interval'   : 5, # score after each 5 tree built
+	'stopping_rounds'       : 25, # wait for n(25) itrs for early stopping
+	'stopping_metric'       : 'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+	'stopping_tolerance'    : 0.001, # tolerance factor for wait till stopping
+	'max_after_balance_size': 1,# (0-inf) for oversampling choose > 1, else < 1.
+	'class_sampling_factors': 1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
+	'quantile_alpha'        : 0.01, # when distribution is quantile. (Specify the quantile to be used for Quantile Regression.)
+	'huber_alpha'           : 0.001, # Huber/M-regression (the threshold between quadratic and linear loss)
+	'max_abs_leafnode_pred' : None, # (only for clf), it reduce overfitting by limiting the maximum absolute value of a leaf node prediction
+	'pred_noise_bandwidth'  : 0 # The bandwidth (sigma) of Gaussian multiplicative noise ~N(1,sigma) for tree node predictions. If this parameter is specified with a value greater than 0, then every leaf node prediction is randomly scaled by a number drawn from a Normal distribution centered around 1 with a bandwidth given by this parameter
+	'nbins_top_level'       : None # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
 }
 
+Leaf Node Assignment:
 
-
-    max_abs_leafnode_pred: When building a GBM classification model, this option reduces overfitting by limiting the maximum absolute value of a leaf node prediction. This option defaults to Double.MAX_VALUE.
-
-    pred_noise_bandwidth: The bandwidth (sigma) of Gaussian multiplicative noise ~N(1,sigma) for tree node predictions. If this parameter is specified with a value greater than 0, then every leaf node prediction is randomly scaled by a number drawn from a Normal distribution centered around 1 with a bandwidth given by this parameter. The default is 0 (disabled).
-
-.
-
-    min_split_improvement: The value of this option specifies the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.
-
-
-    score_each_iteration: (Optional) Specify whether to score during each iteration of the model training.
-
-    fold_assignment: (Applicable only if a value for nfolds is specified and fold_column is not specified) Specify the cross-validation fold assignment scheme. The available options are AUTO (which is Random), Random, Modulo, or Stratified (which will stratify the folds based on the response variable for classification problems).
-
-    score_tree_interval: Score the model after every so many trees. Disabled if set to 0.
-
-    fold_column: Specify the column that contains the cross-validation fold index assignment per observation.
-
-    offset_column: (Not applicable if the distribution is multinomial) Specify a column to use as the offset.
-
-        Note: Offsets are per-row “bias values” that are used during model training. For Gaussian distributions, they can be seen as simple corrections to the response (y) column. Instead of learning to predict the response (y-row), the model learns to predict the (row) offset of the response column. For other distributions, the offset corrections are applied in the linearized space before applying the inverse link function to get the actual response values. For more information, refer to the following link.
-
-    weights_column: Specify a column to use for the observation weights, which are used for bias correction. The specified weights_column must be included in the specified training_frame.
-
-        Python only: To use a weights column when passing an H2OFrame to x instead of a list of column names, the specified training_frame must contain the specified weights_column.
-
-        Note: Weights are per-row observation weights and do not increase the size of the data frame. This is typically the number of times a row is repeated, but non-integer values are supported as well. During training, rows with higher weights matter more, due to the larger loss function pre-factor.
-
-    balance_classes: Specify whether to oversample the minority classes to balance the class distribution. This option is not enabled by default and can increase the data frame size. This option is only applicable for classification. Majority classes can be undersampled to satisfy the max_after_balance_size parameter.
-
-    max_hit_ratio_k: Specify the maximum number (top K) of predictions to use for hit ratio computation. Applicable to multi-class only. To disable, enter 0.
-
-    r2_stopping: r2_stopping is no longer supported and will be ignored if set - please use stopping_rounds, stopping_metric, and stopping_tolerance instead.
-
-    stopping_rounds: Stops training when the option selected for stopping_metric doesn’t improve for the specified number of training rounds, based on a simple moving average. To disable this feature, specify 0. The metric is computed on the validation data (if provided); otherwise, training data is used.
-
-    Note: If cross-validation is enabled:
-
-            All cross-validation models stop training when the validation metric doesn’t improve.
-            The main model runs for the mean number of epochs.
-            N+1 models may be off by the number specified for stopping_rounds from the best model, but the cross-validation metric estimates the performance of the main model for the resulting number of epochs (which may be fewer than the specified number of epochs).
-
-    stopping_metric: Specify the metric to use for early stopping. The available options are:
-
-            auto: This defaults to logloss for classification, deviance for regression
-            deviance
-            logloss
-            mse
-            rmse
-            mae
-            rmsle
-            auc
-            lift_top_group
-            misclassification
-            mean_per_class_error
-            custom (Python client only)
-            custom_increasing (Python client only)
-
-    stopping_tolerance: Specify the relative tolerance for the metric-based stopping to stop training if the improvement is less than this value.
-
-    max_runtime_secs: Maximum allowed runtime in seconds for model training. Use 0 to disable.
-
-    build_tree_one_node: To run on a single node, check this checkbox. This is suitable for small datasets as there is no network overhead but fewer CPUs are used.
-
-    quantile_alpha: (Only applicable if Quantile is specified for distribution) Specify the quantile to be used for Quantile Regression.
-
-    tweedie_power: (Only applicable if Tweedie is specified for distribution) Specify the Tweedie power. The range is from 1 to 2. For a normal distribution, enter 0. For Poisson distribution, enter 1. For a gamma distribution, enter 2. For a compound Poisson-gamma distribution, enter a value greater than 1 but less than 2. For more information, refer to Tweedie distribution.
-
-    huber_alpha: Specify the desired quantile for Huber/M-regression (the threshold between quadratic and linear loss). This value must be between 0 and 1.
-
-    checkpoint: Enter a model key associated with a previously trained model. Use this option to build a new model as a continuation of a previously generated model.
-
-    keep_cross_validation_predictions: Enable this option to keep the cross-validation predictions.
-
-    keep_cross_validation_fold_assignment: Enable this option to preserve the cross-validation fold assignment.
-
-    class_sampling_factors: Specify the per-class (in lexicographical order) over/under-sampling ratios. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
-
-    max_after_balance_size: Specify the maximum relative size of the training data after balancing class counts (balance_classes must be enabled). The value can be less than 1.0.
-
-    nbins_top_level: (For numerical/real/int columns only) Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
-
-    calibrate_model: Use Platt scaling to calculate calibrated class probabilities. Defaults to False.
-
-    calibration_frame: Specifies the frame to be used for Platt scaling.
-
-    custom_metric_func: Optionally specify a custom evaluation function.
-
-    export_checkpoints_dir: Optionally specify a path to a directory where every generated model will be stored when checkpointing models.
-
-    monotone_constraints: A mapping representing monotonic constraints. Use +1 to enforce an increasing constraint and -1 to specify a decreasing constraint. Note that constraints can only be defined for numerical columns. Also note that this option can only be used when the distribution is either gaussian or bernoulli. A Python demo is available here.
-
-    check_constant_response: Check if the response column is a constant value. If enabled (default), then an exception is thrown if the response column is a constant value. If disabled, then the model will train regardless of the response column being a constant value or not.
-
-    verbose: Print scoring history to the console. For GBM, metrics are per tree. This value defaults to FALSE
+ # Use h2o.predict_leaf_node_assignment(model, frame) to get an H2OFrame with the leaf node assignments. Those leaf nodes represent decision rules that can be fed to other models (i.e., GLM with lambda search and strong rules) to obtain a limited set of the most important rules.
 
 ########################################################################################
 ########################################################################################
@@ -666,33 +624,32 @@ drf_model_deep = H2ORandomForestEstimator( nfolds=3, seed=1234,
 drf_params = {
 	'nfolds': 3,
 	'keep_cross_validation_predictions':True,
-	'score_each_iteration':True, # scoring at each iteration
-	'score_tree_interval':5, # score after each 5 tree built
-	'fold_assignment':'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
-	'fold_column':None, # col name for cv fold
-	'ignored_columns':drop_cols,
-	'weights_column':#,
-	# balance_classes:True, # only for classification (balance the classes by oversampling),
+	'score_each_iteration' : True, # scoring at each iteration
+	'score_tree_interval'  : 5, # score after each 5 tree built
+	'fold_assignment'      : 'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
+	'fold_column'          : None, # col name for cv fold
+	'ignored_columns'      : drop_cols,
+	'balance_classes'      : True, # only for classification (balance the classes by oversampling),
 	'max_after_balance_size':1,# (0-inf) for oversampling choose > 1, else < 1.
-	'ntrees':200,
-	'max_depth':10,# (default=20)
-	'min_rows':None, # Specify the minimum number of observations for a leaf
-	'nbins': 63, # Specify the number of bins for the histogram to build, then split at the best point.
-	'nbins_top_level': # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
+	'ntrees'               : 200,
+	'max_depth'            : 10,# (default=20)
+	'min_rows'             : None, # Specify the minimum number of observations for a leaf
+	'nbins'                : 63, # Specify the number of bins for the histogram to build, then split at the best point.
+	'nbins_top_level'      : None # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
 	# 'nbins_cats': # (Extensively tuning needed)
-	'stopping_rounds':25, # wait for n(25) itrs for early stopping
-	'stopping_metric':'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
-	'stopping_tolerance':0.001, # tolerance factor for wait till stopping
-	'seed':1234,
-	'categorical_encoding':'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
-	'verbose':25,
-    'histogram_type':'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
+	'stopping_rounds'      : 25, # wait for n(25) itrs for early stopping
+	'stopping_metric'      : 'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+	'stopping_tolerance'   : 0.001, # tolerance factor for wait till stopping
+	'seed'                 : 1234,
+	'categorical_encoding' : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
+	'verbose'              : 25,
+    'histogram_type'       : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
 	'col_sample_rate_per_tree':0.7, # sample without replacement.
-    'min_split_improvement':1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
-    'sample_rate':0.7, # default 0.63 (samples without replacement)
-    'sample_rate_per_class':0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
-    'binomial_double_trees':True, # (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building.
-    'mtries':-1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
+    'min_split_improvement': 1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
+    'sample_rate'          : 0.7, # default 0.63 (samples without replacement)
+    'sample_rate_per_class': 0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
+    'binomial_double_trees': True, # (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building.
+    'mtries'               : -1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
     'class_sampling_factors':1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
     'weights_column':col_name, # which should be present in the dataframe as an indiaction to weights of each row.
 }
@@ -757,56 +714,27 @@ low_rank = H2OGeneralizedLowRankEstimator(k=5,#gamma_x=0.1, gamma_y=0.1,
                                           regularization_y='l1',
                                           seed=1234
                                    )
-.
 
-ignored_columns: 
-score_each_iteration: (Optional) Specify whether to score during each iteration of the model training.
-
-loading_name: Specify the frame key to save the resulting X.
-
-transform: Specify the transformation method for the training data: None, Standardize, Normalize, Demean, or Descale. The default is None.
-
-k: (Required) Specify the rank of matrix approximation.
-
-loss: Specify the numeric loss function: Quadratic, Absolute, Huber, Poisson, Hinge, or Periodic.
-
-loss_by_col: Specify the loss function by column override: Quadratic, Absolute, Huber, Poisson, Hinge, or Periodic, Categorical, or Ordinal.
-
-loss_by_col_idx: Specify the loss function by column index override.
-
-multi_loss: Specify either Categorical or Ordinal for the categorical loss function.
-
-period: When loss=periodic, specify the length of the period.
-
-gamma_x: Specify the regularization weight on the X matrix.
-
-gamma_y: Specify the regularization weight on the Y matrix.
-
-max_iterations: Specify the maximum number of training iterations. The range is 0 to 1e6.
-
-max_updates: Specify the maximum number of updates.
-
-init_step_size: Specify the initial step size.
-
-min_step_size: Specify the minimum step size.
-
-seed: Specify the random number generator (RNG) seed for algorithm components dependent on randomization. The seed is consistent for each H2O instance so that you can create models with the same starting conditions in alternative configurations.
-
-init: Specify the initialization mode: Random, SVD, PlusPlus, or User.
-
-svd_method: Specify the method for computing SVD during initialization: GramSVD, Power, Randomized.
-
-    Caution: Randomized is currently experimental.
-
-user_y: (Optional) Specify the initial Y value.
-
-user_x: (Optional) Specify the initial X value.
-
-expand_user_y: Specify whether to expand categorical columns in the user-specified initial Y value.
-
-impute_original: Specify whether to reconstruct the original training data by reversing the data transform after projecting archetypes.
-
-recover_svd: Specify whether to recover singular values and eigenvectors of XY.
+low_rank_params = {
+	'ignored_columns'      : drop_cols,
+	'score_each_iteration' : True,
+	'transform'            : 'Standardize', # [None, Standardize, Normalize, Demean, Descale]
+	'k'                    : 5, # rank of marrix
+	'loss'                 : 'Quadratic', # [Quadratic, Absolute, Huber, Poisson, Hinge]
+	'max_iterations'       : 1000, # [1, 1e6]
+	'gamma_x'              : 0.001, # reg weights on X matrix
+	'gamma_y'              : 0.001, # reg weights on Y matrix
+	'multi_loss'           : 'Categorical', # When it is defined, then it will treat cat_var differently. [Ordinal, Categorical]
+	'init'                 : 'SVD', # [Random, SVD, PlusPlus]
+	'init_step_size'       : 1, # initial step size (not clear, how it works)
+	'min_step_size'        : 1e-6, # min step size (not clear, how to choose)
+	'seed'                 : 1234,
+	'svd_method'           : 'GramSVD', # [GramSVD, Power, Randomized(not stable in current version)]
+	'impute_original'      : False, # This is whole idea of using this algorithm, to fill those Nan values
+	'recover_svd'          : False, # whether to recover singular values and eigenvectors of XY.
+	'regularization_x'     : 'l2', # [None, Quadratic, L2, L1, NonNegative, OneSparse, UnitOneSparse, Simplex]
+	'regularization_y'     : 'l2', # [None, Quadratic, L2, L1, NonNegative, OneSparse, UnitOneSparse, Simplex]
+}
 
 
 

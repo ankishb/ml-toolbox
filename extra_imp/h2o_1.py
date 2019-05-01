@@ -1849,11 +1849,6 @@ def make_h20_prediction(file_path, df, test_ids, sub_df):
 # print(gbm_model_deep.accuracy())
 
 
-# # categorical_encoding
-# # "auto", "enum", "one_hot_internal", "one_hot_explicit", "binary", "eigen", 
-# # "label_encoder", 
-# # "sort_by_response", "enum_limited" (default: "auto").
-
 
 # In[ ]:
 
@@ -1879,18 +1874,7 @@ def make_h20_prediction(file_path, df, test_ids, sub_df):
 # In[111]:
 
 
-dl_model = H2ODeepLearningEstimator(epochs=10, nfolds=3, seed=1234, 
-                                    score_validation_sampling='stratified',
-                                    keep_cross_validation_predictions=True,
-                                    balance_classes = True,
-                                    fold_assignment='Stratified',
-                                    l2 = 0.0001,
-                                    loss = 'cross_entropy',
-#                                     stopping_rounds=2,
-                                    mini_batch_size = 200,
-                                    rate_decay=0.1,
-                                    stopping_rounds=2
-                                   )
+
 dl_model.train(x, y, training_frame=train)#, validation_frame=test)
 print(dl_model.accuracy())
 
@@ -1932,24 +1916,8 @@ print(model_path)
 # In[113]:
 
 
-dl_model_deep = H2ODeepLearningEstimator( nfolds=3, seed=1234,
-                                          score_validation_sampling='stratified',
-                                          keep_cross_validation_predictions=True,
-                                          hidden=[100,10],
-                                          activation='rectifier_with_dropout',
-                                          fold_assignment='Stratified',
-                                          epochs=500,
-#                                           categorical_encoding='eigen',
-                                          balance_classes = True,
-                                          l2 = 0.0001,
-                                          loss = 'cross_entropy',
-                                          mini_batch_size = 500,
-                                          rate_decay=0.1,
-                                          stopping_rounds=3,
-#                                           score_validation_samples=10000,
-                                          stopping_metric="auc",
-                                          stopping_tolerance=0.01
-                                        )
+
+
 dl_model_deep.train(x, y, training_frame=train)#, validation_frame=test)
 print(dl_model_deep.accuracy())
 
@@ -2026,19 +1994,7 @@ gc.collect()
 # In[ ]:
 
 
-gbm_model_one_hot = H2OGradientBoostingEstimator(nfolds=3, seed=1234,
-                                         balance_classes = True,
-                                         col_sample_rate = 0.7,
-                                         learn_rate=0.1,
-                                         ntrees = 10000,
-#                                          nbins = 128,one_hot_internal
-# sort_by_response
-                                         categorical_encoding='one_hot_explicit',
-                                         fold_assignment='stratified',
-                                         stopping_rounds=25,
-#                                          categorical_encoding='enum',
-                                         keep_cross_validation_predictions=True
-                                        )
+
 gbm_model_one_hot.train(x, y, training_frame=train)#, validation_frame=test)
 try:
     print(gbm_model_one_hot.accuracy())
@@ -2070,19 +2026,6 @@ gc.collect()
 # In[115]:
 
 
-gbm_model_sort = H2OGradientBoostingEstimator(nfolds=3, seed=1234,
-                                         balance_classes = True,
-                                         col_sample_rate = 0.7,
-                                         learn_rate=0.1,
-                                         ntrees = 10000,
-#                                          nbins = 128,sort_internal
-# sort_by_response
-                                         categorical_encoding='sortbyresponse',
-                                         fold_assignment='stratified',
-                                         stopping_rounds=25,
-#                                          categorical_encoding='enum',
-                                         keep_cross_validation_predictions=True
-                                        )
 gbm_model_sort.train(x, y, training_frame=train)#, validation_frame=test)
 try:
     print(gbm_model_sort.accuracy())
@@ -2127,6 +2070,22 @@ gbm_model_deep = H2OGradientBoostingEstimator(  nfolds=3, seed=1234,
                                                 col_sample_rate = 0.7,
                                                 keep_cross_validation_predictions=True
                                              )
+
+gbm_model_sort = H2OGradientBoostingEstimator(nfolds=3, seed=1234,
+                                         balance_classes = True,
+                                         col_sample_rate = 0.7,
+                                         learn_rate=0.1,
+                                         ntrees = 10000,
+#                                          nbins = 128,sort_internal
+# sort_by_response
+                                         categorical_encoding='sortbyresponse',
+                                         fold_assignment='stratified',
+                                         stopping_rounds=25,
+#                                          categorical_encoding='enum',
+                                         keep_cross_validation_predictions=True
+                                        )
+
+
 gbm_model_deep.train(x, y, training_frame=train)#, validation_frame=test)
 try:
     print(gbm_model_deep.accuracy())
@@ -2170,17 +2129,7 @@ gc.collect()
 # In[116]:
 
 
-drf_model = H2ORandomForestEstimator(nfolds=3, seed=1234,
-                                     ntrees=200,
-                                     balance_classes=True,
-                                     nbins_cats=512,
-#                                      score_validation_sampling='stratified',
-                                     keep_cross_validation_predictions=True,
-                                     fold_assignment = 'stratified',
-#                                      categorical_encoding='enum',
-#                                      histogram_type='round_robin',
-                                     max_depth = 6
-                                    )
+
 drf_model.train(x, y, training_frame=train)#, validation_frame=test)
 try:
     print(drf_model.accuracy())
@@ -2907,14 +2856,7 @@ ax[1].set_title("rank_score")
 #     'SEC.DISBURSED.AMOUNT','SEC.OVERDUE.ACCTS','SEC.CURRENT.BALANCE','SEC.INSTAL.AMT',
 #     'Passport_flag','VoterID_flag','DELINQUENT.ACCTS.IN.LAST.SIX.MONTHS']
 
-# from h2o.estimators.pca import H2OPrincipalComponentAnalysisEstimator
 
-# pca_model = H2OPrincipalComponentAnalysisEstimator(k=3,
-#                                                    seed=1234,
-#                                                    max_iterations=5000,
-#                                                    transform='standardize',
-#                                                    ignored_columns = drop_cols
-#                                                    )
 # pca_model.train(x, training_frame=train)
 
 
@@ -2933,13 +2875,8 @@ ax[1].set_title("rank_score")
 # In[ ]:
 
 
-# from h2o.estimators.glrm import H2OGeneralizedLowRankEstimator
 
-# low_rank = H2OGeneralizedLowRankEstimator(k=5,#gamma_x=0.1, gamma_y=0.1,
-#                                           regularization_x='l2',
-#                                           regularization_y='l1',
-#                                           seed=1234
-#                                    )
+
 # dl_model.train(x, y, training_frame=train)#, validation_frame=test)
 # model_path = h2o.save_model(model=dl_model, path="submission/stacking/", force=True)
 # print(model_path)
@@ -3633,17 +3570,6 @@ print(roc_auc_score(target, oofs2.mean(1)))
 #     'SEC.DISBURSED.AMOUNT','SEC.OVERDUE.ACCTS','SEC.CURRENT.BALANCE','SEC.INSTAL.AMT',
 #     'Passport_flag','VoterID_flag','DELINQUENT.ACCTS.IN.LAST.SIX.MONTHS']
 
-# kmeans_model = H2OKMeansEstimator( k=2, 
-# #                                    fold_assignment = 'stratified',
-#                                    keep_cross_validation_predictions=True, 
-#                                    nfolds = 3,
-#                                    ignored_columns = drop_cols,
-#                                    seed=1234,
-#                                    categorical_encoding = 'one_hot_explicit',
-#                                    estimate_k = True,
-#                                    max_iterations = 1000
-                                   
-#                                   )
 # kmeans_model.train(x, y,training_frame=train, validation_frame=test)
 
 
@@ -3657,26 +3583,6 @@ print(roc_auc_score(target, oofs2.mean(1)))
 #     'SEC.DISBURSED.AMOUNT','SEC.OVERDUE.ACCTS','SEC.CURRENT.BALANCE','SEC.INSTAL.AMT',
 #     'Passport_flag','VoterID_flag','DELINQUENT.ACCTS.IN.LAST.SIX.MONTHS']
 
-# xgboost_model = H2OXGBoostEstimator(ntrees = 10000,
-#                                     max_bins=128,
-#                                     col_sample_rate=0.7,
-#                                     fold_assignment = 'stratified',
-#                                     eta = 0.1,
-#                                     keep_cross_validation_predictions=True, 
-#                                     nfolds = 3,
-#                                     ignored_columns = drop_cols,
-#                                     seed=1234,
-#                                     categorical_encoding = 'one_hot_explicit',
-#                                     grow_policy = 'depthwise', #lossguide(lgbm)
-#                                     max_depth = 5,
-#                                     min_child_weight = 3,
-#                                     quiet_mode = False,
-#                                     reg_lambda = 1.5,
-#                                     sample_rate=0.7,
-#                                     stopping_metric='auc',
-#                                     stopping_rounds=25,
-#                                     subsample=.7
-#                                   )
 
 # xgboost_model.train(x, y,training_frame=train, validation_frame=test)
 # xgboost_model.varimp_plot()

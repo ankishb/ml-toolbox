@@ -107,8 +107,7 @@
     ([sklearn-metric](https://scikit-learn.org/stable/modules/metrics.html#metrics (kernel function)))
     ([blog](https://leon.bottou.org/projects/lasvm))
 - [ ] KNN(coursera)/tsne-multicore/clustering
-- [ ] H2o models with all important parameters specifically with categorical_encoding 
-    Generalized Linear Model with all target distributions
+- [ ] H2o models 
 - [ ] Non negative linear regression (scipy)/ lasso(positive=True)
 - [ ] Regularized Greedy forest
     ([rgf official](https://github.com/RGF-team/rgf/tree/master/python-package))
@@ -185,7 +184,6 @@
 9. https://www.dummies.com/programming/big-data/data-science/data-science-how-to-create-interactions-between-variables-with-python/
 10. https://github.com/diefimov/MTH594_MachineLearning/blob/master/ipython/Lecture1.ipynb
 11. https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING (different way of encoding)
-12. https://scikit-learn.org/stable/modules/classes.html (sklearn complete classes/functions list)
 13. https://www.youtube.com/watch?v=TJU8NfDdqNQ (ml tutorials)
 14. https://www.kaggle.com/mjbahmani/top-5-deep-learning-frameworks-tutorial (many references and ebooks for ml)
 15. http://www.chioka.in/kaggle-competition-solutions/ (kaggle solutions)
