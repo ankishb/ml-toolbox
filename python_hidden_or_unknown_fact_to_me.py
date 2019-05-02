@@ -144,3 +144,106 @@ color = Color(55, 100, 255)
 print(color[0])
 print(color.red)
 
+
+
+
+
+
+
+
+
+
+
+
+Function arguments in variables
+
+function arguments are really just
+
+    a tuple (positional arguments)
+    a dict (keyword arguments)
+
+def f(x, y, w=0, h=0):
+    print "position: %s, %s -- shape: %s, %s"%(x, y, w, h)
+
+position = (3,4)
+size = {'h': 10, 'w': 20}
+
+>>> f( *position, **size)
+position: 3, 4 -- shape: 20, 10
+
+
+
+
+
+
+
+
+By "shallow copying" it means the content of the dictionary is not copied by value, but just creating a new reference.
+
+In contrast, a deep copy will copy all contents by value.
+
+
+b = a: Reference assignment, Make a and b points to the same object.
+
+Illustration of 'a = b': 'a' and 'b' both point to '{1: L}', 'L' points to '[1, 2, 3]'.
+
+b = a.copy(): Shallow copying, a and b will become two isolated objects, but their contents still share the same reference
+
+Illustration of 'b = a.copy()': 'a' points to '{1: L}', 'b' points to '{1: M}', 'L' and 'M' both point to '[1, 2, 3]'.
+
+b = copy.deepcopy(a): Deep copying, a and b's structure and content become completely isolated
+
+
+Illustration of 'b = copy.deepcopy(a)': 'a' points to '{1: L}', 'L' points to '[1, 2, 3]'; 'b' points to '{1: M}', 'M' points to a different instance of '[1, 2, 3]'.
+
+Ref: https://stackoverflow.com/questions/3975376/understanding-dict-copy-shallow-or-deep
+
+
+
+
+
+
+
+
+
+What did * do?
+
+It unpacked the values in list l as positional arguments. And then the unpacked values were passed to function ‘fun’ as positional arguments.
+
+So, unpacking the values in list and changing it to positional arguments meant writing fun(*l) was equivalent to writing fun(1,2,3). Keep in mind that l=[1,2,3]
+
+list_ = [1,2,3,4]
+In [16]: fun(1, *list_)
+
+def math_operation(operation, *args):
+    if operation is 'sum':
+        result = 0
+        for arg in args:
+            result += arg
+    if operation is 'sub':
+        result = 0
+        for arg in args:
+            result -= arg
+
+list_ = [1,2,3,4,5,6]
+math_operation('sum',list_)
+
+We can’t write math_operation(args) because we need to unpack the values in the tuple args before operating further.
+
+
+Let’s use ** from inside the function call. For this we want a dictionary. Remember, while using * in the function call, we required a list/tuple. For using ** in the function call, we require a dictionary.
+
+def fun(a, b, c):
+    print a, b, c
+
+In [38]: dict_={'b':5, 'c':7}
+
+Let’s call fun using ** in the function call.
+
+In [39]: fun(1, **dict_)
+1 5 7
+
+
+
+
+

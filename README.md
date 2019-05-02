@@ -199,3 +199,5 @@
 18. https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING (cat-enc)
 19. https://github.com/flennerhag/mlens/tree/master/mlens (higher level API for ensemble, superlearner, subsemble and advance fetures...)
 20. https://www.automl.org/book/ (All important topics)
+21. https://www.cs.ubc.ca/~nando/540-2013/lectures.html (nandi lectures)
+22. 
