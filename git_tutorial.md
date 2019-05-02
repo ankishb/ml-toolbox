@@ -1,4 +1,5 @@
 
+## Git log
 git log
 	logging history of git repo
 git log -n 5
@@ -12,6 +13,7 @@ git log -p
 git log --graph --decorate --oneline
 	it shows the graph (helpful while have more than one branches)
 
+---
 
 ## Undoing Changes
 
@@ -30,6 +32,8 @@ git revert HEAD
 - git revert is the best tool for undoing shared public changes
 - git reset is best used for undoing local private changes
 
+---
+
 #### git revert vs reset
 git revert make a new commit using the old specified commit, where as git reset, delete the all commit in between the current and specified commit, it will delete the complete history for those commits(not a good idea, whuiile working in collaborations)
 
@@ -39,3 +43,36 @@ git revert HEAD~3
     Revert the changes specified by the fourth last commit in HEAD and create a new commit with the reverted changes.
 git revert -n HEAD~3
     -n flag is for not committing messeage.
+
+---
+
+#### git rm
+git rm file1.py file2.cpp
+	remove file with name
+git rm -r dir/
+	recursively remove the files from directory
+git rm -f file.py
+	forcefully remove the file (can cause problem), because it override the safety check that the files in HEAD match the current content in the staging index and working directory.
+git rm Documentation/\*.txt
+	This example uses a wildcard file glob to remove all *.txt files that are children of the Documentation directory and any of its subdirectories.
+git rm -f git-*.sh
+
+#### Undo git rm
+
+git reset HEAD
+	A reset will revert the current staging index and working directory back to the HEAD commit. This will undo a git rm.
+git checkout .
+	It just make a new commit 
+
+
+
+
+
+
+
+
+
+
+
+## Refernces:
+- https://www.atlassian.com/git/tutorials/

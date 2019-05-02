@@ -68,6 +68,7 @@
 - [ ] Quantile/Robust scaler feature transormation
 - [ ] outliers handling using matrix factorization
 - [ ] numerical to catgorical tranformation
+- [ ] discriminant_analysis
 - [ ] 
 
 ---
@@ -99,7 +100,7 @@
 
 ---
 
-7. ML-Model:
+## ML-Model:
 - [x] XGBoost/LightGBM/CatBoost
 - [ ] ExtraTree/ Adaptive GBM/ Random-Forest
 - [x] Linear model/ Lasso/Ridge/Logistic/SVM
@@ -121,7 +122,8 @@
 - [ ] FTRL Proximal Model
     ([link1](https://www.kaggle.com/ogrellier/multi-process-ftrl))
     ([link2](https://www.kaggle.com/supernova117/ftrl-with-validation-and-auc))
-    
+- [ ] Naive Bayes Algorithm
+
 ---
 
 ## Advanced features
@@ -141,6 +143,9 @@
     ([feature-tool](https://medium.com/@rrfd/simple-automatic-feature-engineering-using-featuretools-in-python-for-classification-b1308040e183))
 - [ ] Text features such as no of words, no of characters etc
 - [ ] Category encoding for time series data
+- [ ] FeatureAgglomeration
+- [ ] Random Forest embedding
+- [ ] Feature transformation as [auto-sklearn](https://ml.informatik.uni-freiburg.de/papers/15-NIPS-auto-sklearn-supplementary.pdf)
 
 ---
 
@@ -165,11 +170,13 @@
 - [ ] Bortua Feature Selection
     ([bortua-oliver](https://www.kaggle.com/ogrellier/noise-analysis-of-porto-seguro-s-features))
     ([bortua-tilli](https://www.kaggle.com/tilii7/boruta-feature-elimination))
+- [ ] Univariate feature selection
 
 ---
 
 # Experiments:
 1. https://www.kaggle.com/ogrellier/scale-pos-weight-vs-duplication
+2. https://ml.informatik.uni-freiburg.de/papers/15-NIPS-auto-sklearn-supplementary.pdf
 
 
 ### Useful resources:
@@ -190,4 +197,5 @@
 16. http://ndres.me/kaggle-past-solutions/ (kaggle prev solutions)
 17. https://www.kaggle.com/shivamb/data-science-glossary-on-kaggle (best resources)
 18. https://stats.idre.ucla.edu/spss/faq/coding-systems-for-categorical-variables-in-regression-analysis-2/#DEVIATION%20EFFECT%20CODING (cat-enc)
-
+19. https://github.com/flennerhag/mlens/tree/master/mlens (higher level API for ensemble, superlearner, subsemble and advance fetures...)
+20. https://www.automl.org/book/ (All important topics)

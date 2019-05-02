@@ -1,5 +1,12 @@
 
 
+from h2o.estimators.deeplearning import H2ODeepLearningEstimator
+from h2o.estimators.gbm import H2OGradientBoostingEstimator
+from h2o.estimators.glm import H2OGeneralizedLinearEstimator
+from h2o.estimators.random_forest import H2ORandomForestEstimator
+from h2o.estimators.kmeans import H2OKMeansEstimator
+# from h2o.estimators.xgboost import H2OXGBoostEstimator
+
 ##################################################### GLM ###################################################################
 glm_model_inter = H2OGeneralizedLinearEstimator(
 nfolds=3, seed=1234,
@@ -13,7 +20,9 @@ balance_classes=True,
 remove_collinear_columns = True
 )
 
-glm_params = {
+
+def get_glm_details():
+	"""
     'keep_cross_validation_predictions':True,
     'nfolds'              : 3,
     'ignored_columns'     : drop_cols,
@@ -23,7 +32,6 @@ glm_params = {
     'categorical_encoding': 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
     'histogram_type'      : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
     'score_each_iteration': True, # scoring at each iteration
-    'score_tree_interval' : 5, # score after each 5 tree built
     'fold_assignment'     : 'Stratified', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
     'fold_column'         : None, # col name for cv fold
     'weights_column'      : col_name, # which should be present in the dataframe as an indiaction to weights of each row.
@@ -50,8 +58,6 @@ glm_params = {
     #     If the family is gamma, the response must be numeric and continuous and positive (Real or Int).
 	# theta: Theta value (equal to 1/r) for use with the negative binomial family. This value must be > 0 and defaults to 1e-10.
 
-
-	'seed'              : 1234,
 	'interaction_pairs' : None, # a list of tuple as [("CRSDepTime", "UniqueCarrier"), ("CRSDepTime", "Origin")]
 	'interactions'      : interaction_col_list, # a columns list ['a','b','c']
 	'max_iterations'    : 1000,
@@ -72,8 +78,10 @@ glm_params = {
     # Note: This is a simple method affecting only the intercept. You may want to use weights and offset for a better fit.
 	'remove_collinear_columns': True, # This can only be set if there is no regularization (lambda=0)
     'missing_values_handling' : 'MeanImputation', # [Skip, MeanImputation]
+	"""
+	pass
 
-}
+
 ##################################################### GLM ###################################################################
 
 
@@ -93,32 +101,32 @@ strategy: cartesian, # [RandomDiscrete (random select), cartesian (all case)]
 	{'strategy': "RandomDiscrete", 'stopping_metric': "misclassification", 'stopping_tolerance': 0.0005, 'stopping_rounds': 5}
 """
 
-from h2o.estimators.gbm import H2OGradientBoostingEstimator
-from h2o.grid.grid_search import H2OGridSearch
+# from h2o.estimators.gbm import H2OGradientBoostingEstimator
+# from h2o.grid.grid_search import H2OGridSearch
 
-gbm_params1 = { 'learn_rate': [i * 0.01 for i in range(1, 11)],
-                'max_depth': list(range(2, 11)),
-                'sample_rate': [0.8, 1.0],
-                'col_sample_rate': [i * 0.1 for i in range(1, 11)]}
+# gbm_params1 = { 'learn_rate': [i * 0.01 for i in range(1, 11)],
+#                 'max_depth': list(range(2, 11)),
+#                 'sample_rate': [0.8, 1.0],
+#                 'col_sample_rate': [i * 0.1 for i in range(1, 11)]}
 
-search_criteria = {'strategy': 'RandomDiscrete', 'max_models': 36, 'seed': 1}
+# search_criteria = {'strategy': 'RandomDiscrete', 'max_models': 36, 'seed': 1}
 
-gbm_grid1 = H2OGridSearch(model=H2OGradientBoostingEstimator,
-                          grid_id='gbm_grid1',
-                          hyper_params=gbm_params1,
-                          search_criteria=None) # Either leave it or use as strategy
-gbm_grid1.train(x=x, y=y,
-                training_frame=train,
-                validation_frame=valid,
-                ntrees=100,
-                seed=1)
+# gbm_grid1 = H2OGridSearch(model=H2OGradientBoostingEstimator,
+#                           grid_id='gbm_grid1',
+#                           hyper_params=gbm_params1,
+#                           search_criteria=None) # Either leave it or use as strategy
+# gbm_grid1.train(x=x, y=y,
+#                 training_frame=train,
+#                 validation_frame=valid,
+#                 ntrees=100,
+#                 seed=1)
 
-# Get the grid results, sorted by validation AUC
-gbm_gridperf1 = gbm_grid1.get_grid(sort_by='auc', decreasing=True)
+# # Get the grid results, sorted by validation AUC
+# gbm_gridperf1 = gbm_grid1.get_grid(sort_by='auc', decreasing=True)
 
-best_gbm1 = gbm_gridperf1.models[0]
-best_gbm_perf1 = best_gbm1.model_performance(test)
-best_gbm_perf1.auc()
+# best_gbm1 = gbm_gridperf1.models[0]
+# best_gbm_perf1 = best_gbm1.model_performance(test)
+# best_gbm_perf1.auc()
 
 ################################################# GridSearch ###################################################################
 
@@ -130,7 +138,7 @@ best_gbm_perf1.auc()
 gbm_model_deep = H2OGradientBoostingEstimator(  
 nfolds=3, seed=1234,
 fold_assignment = 'stratified',
-#                                                 score_validation_sampling='stratified',
+score_validation_sampling='stratified',
 ntrees = 10000,
 learn_rate = 0.05,
 max_depth = 4,
@@ -142,8 +150,9 @@ col_sample_rate = 0.7,
 keep_cross_validation_predictions=True
 )
 
-gbm_params = {
-	'nfolds'              :  3,
+def get_gbm_details():
+	"""
+    'nfolds'              :  3,
 	'ignored_columns'     : drop_cols,
     'ntrees'              : 200,
 	'max_depth'           : 10,# (default=20)
@@ -180,7 +189,9 @@ gbm_params = {
 	'max_abs_leafnode_pred' : None, # (only for clf), it reduce overfitting by limiting the maximum absolute value of a leaf node prediction
 	'pred_noise_bandwidth'  : 0 # The bandwidth (sigma) of Gaussian multiplicative noise ~N(1,sigma) for tree node predictions. If this parameter is specified with a value greater than 0, then every leaf node prediction is randomly scaled by a number drawn from a Normal distribution centered around 1 with a bandwidth given by this parameter
 	'nbins_top_level'       : None # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
-}
+	"""
+	pass
+
 """
 Leaf Node Assignment:
 
@@ -194,18 +205,19 @@ Leaf Node Assignment:
 
 ################################################# DRF ###################################################################
 
-drf_model_deep = H2ORandomForestEstimator( nfolds=3, seed=1234,
-                                           keep_cross_validation_predictions=True,
-                                           fold_assignment = 'stratified',
-                                           histogram_type = 'QuantilesGlobal',
-                                           categorical_encoding = 'eigen',
-                                           stopping_metric = 'auc',
-                                           ntrees = 100,
-                                           balance_classes = True
-                                           )
+drf_model_deep = H2ORandomForestEstimator( 
+nfolds=3, seed=1234,
+keep_cross_validation_predictions=True,
+fold_assignment = 'stratified',
+histogram_type = 'QuantilesGlobal',
+categorical_encoding = 'eigen',
+stopping_metric = 'auc',
+ntrees = 100,
+balance_classes = True
+)
 
-
-drf_params = {
+def get_drf_details():
+	"""
 	'nfolds': 3,
 	'keep_cross_validation_predictions':True,
 	'score_each_iteration' : True, # scoring at each iteration
@@ -236,22 +248,23 @@ drf_params = {
     'mtries'               : -1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
     'class_sampling_factors':1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
     'weights_column':col_name, # which should be present in the dataframe as an indiaction to weights of each row.
-}
+	"""
+	pass
 
 """
-    Does the algo stop splitting when all the possible splits lead to worse error measures?
-    	It does if you use min_split_improvement (min_split_improvement turned ON by default (0.00001).) When properly tuned, this option can help reduce overfitting.
-    
+Does the algo stop splitting when all the possible splits lead to worse error measures?
+	It does if you use min_split_improvement (min_split_improvement turned ON by default (0.00001).) When properly tuned, this option can help reduce overfitting.
 
-    How does DRF decide which feature to split on?
-  		It splits on the column and level that results in the greatest reduction in residual sum of the squares (RSS) in the subtree at that point. It considers all fields available from the algorithm. Note that any use of column sampling and row sampling will cause each decision to not consider all data points, and that this is on purpose to generate more robust trees. To find the best level, the histogram binning process is used to quickly compute the potential MSE of each possible split. The number of bins is controlled via nbins_cats for categoricals, the pair of nbins (the number of bins for the histogram to build, then split at the best point), and nbins_top_level (the minimum number of bins at the root level to use to build the histogram). This number will then be decreased by a factor of two per level.
 
-    For nbins_top_level, higher = more precise, but potentially more prone to overfitting. Higher also takes more memory and possibly longer to run.
+How does DRF decide which feature to split on?
+		It splits on the column and level that results in the greatest reduction in residual sum of the squares (RSS) in the subtree at that point. It considers all fields available from the algorithm. Note that any use of column sampling and row sampling will cause each decision to not consider all data points, and that this is on purpose to generate more robust trees. To find the best level, the histogram binning process is used to quickly compute the potential MSE of each possible split. The number of bins is controlled via nbins_cats for categoricals, the pair of nbins (the number of bins for the histogram to build, then split at the best point), and nbins_top_level (the minimum number of bins at the root level to use to build the histogram). This number will then be decreased by a factor of two per level.
 
-    What is the difference between nbins and nbins_top_level?
-    	nbins and nbins_top_level are both for numerics (real and integer). nbins_top_level is the number of bins DRF uses at the top of each tree. It then divides by 2 at each ensuing level to find a new number. nbins controls when DRF stops dividing by 2.
-    
-    binomial_double_trees: (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building. This option is disabled by default.
+For nbins_top_level, higher = more precise, but potentially more prone to overfitting. Higher also takes more memory and possibly longer to run.
+
+What is the difference between nbins and nbins_top_level?
+	nbins and nbins_top_level are both for numerics (real and integer). nbins_top_level is the number of bins DRF uses at the top of each tree. It then divides by 2 at each ensuing level to find a new number. nbins controls when DRF stops dividing by 2.
+
+binomial_double_trees: (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building. This option is disabled by default.
 """
 ################################################# DRF ###################################################################
 
@@ -260,18 +273,21 @@ drf_params = {
 
 ################################################# Kmean ###################################################################
 
-kmeans_model = H2OKMeansEstimator( k=2, 
-#                                    fold_assignment = 'stratified',
-                                   keep_cross_validation_predictions=True, 
-                                   nfolds = 3,
-                                   ignored_columns = drop_cols,
-                                   seed=1234,
-                                   categorical_encoding = 'one_hot_explicit',
-                                   estimate_k = True,
-                                   max_iterations = 1000
-                                   
-                                  )
-kmean_params = {
+kmeans_model = H2OKMeansEstimator( 
+k=2, 
+# fold_assignment = 'stratified',
+keep_cross_validation_predictions=True, 
+nfolds = 3,
+ignored_columns = drop_cols,
+seed=1234,
+categorical_encoding = 'one_hot_explicit',
+estimate_k = True,
+max_iterations = 1000
+)
+
+
+def get_kmean_details():
+	"""
 	'keep_cross_validation_predictions':True,
 	'ignored_columns'     : drop_cols, # a list of columns to be dropped
 	'score_each_iteration': True, # used when early_stopping is used
@@ -283,7 +299,8 @@ kmean_params = {
 	'seed'                : 1234
 	'init'                : 'Furthest', #[Random, Furthest, PlusPlus]
 	'categorical_encoding': 'AUTO',# [AUTO, enum(1 col), one_hot_explicit(N+1), binary, eigen(k cols)]
-}
+	"""
+	pass
 ################################################# Kmean ###################################################################
 
 
@@ -292,13 +309,16 @@ kmean_params = {
 ################################################# low rank ###################################################################
 
 from h2o.estimators.glrm import H2OGeneralizedLowRankEstimator
-low_rank = H2OGeneralizedLowRankEstimator(k=5,#gamma_x=0.1, gamma_y=0.1,
-                                          regularization_x='l2',
-                                          regularization_y='l1',
-                                          seed=1234
-                                   )
+low_rank = H2OGeneralizedLowRankEstimator(
+k=5,#gamma_x=0.1, gamma_y=0.1,
+regularization_x='l2',
+regularization_y='l1',
+seed=1234
+)
 
-low_rank_params = {
+
+def get_low_rank_details():
+	"""
 	'ignored_columns'      : drop_cols,
 	'score_each_iteration' : True,
 	'transform'            : 'Standardize', # [None, Standardize, Normalize, Demean, Descale]
@@ -317,7 +337,8 @@ low_rank_params = {
 	'recover_svd'          : False, # whether to recover singular values and eigenvectors of XY.
 	'regularization_x'     : 'l2', # [None, Quadratic, L2, L1, NonNegative, OneSparse, UnitOneSparse, Simplex]
 	'regularization_y'     : 'l2', # [None, Quadratic, L2, L1, NonNegative, OneSparse, UnitOneSparse, Simplex]
-}
+	"""
+	pass
 
 ################################################# low rank ###################################################################
 
@@ -333,14 +354,16 @@ low_rank_params = {
 
 from h2o.estimators.pca import H2OPrincipalComponentAnalysisEstimator
 
-pca_model = H2OPrincipalComponentAnalysisEstimator(k=3,
-                                                   seed=1234,
-                                                   max_iterations=5000,
-                                                   transform='standardize',
-                                                   ignored_columns = drop_cols
-                                                   )
+pca_model = H2OPrincipalComponentAnalysisEstimator(
+k=3,
+seed=1234,
+max_iterations=5000,
+transform='standardize',
+ignored_columns = drop_cols
+)
 
-pca_params = {
+def get_low_rank_details():
+	"""
 	'k':4, # rank of matrix approx [range 1-9]
 	'ignored_columns':drop_cols,
 	'transform':'Standardize', # transformation of training data, [Standardize, Normalize, Demean, or Descale]
@@ -359,16 +382,156 @@ pca_params = {
     # mtj_evd_symmmatrix: Eigenvalue decompositions for symmetric matrix using Matrix Toolkit Java (MTJ) (default)
     # mtj_svd_densematrix: Singular-value decompositions for dense matrix using Matrix Toolkit Java (MTJ)
     # jama: Eigenvalue decompositions for dense matrix using Java Matrix (JAMA)
+    """
+    pass
 
-}
 
-    # When running PCA, is it better to create a cluster that uses many smaller nodes or fewer larger nodes?
+# When running PCA, is it better to create a cluster that uses many smaller nodes or fewer larger nodes?
 
-    # For PCA, this is dependent on the specified pca_method parameter:
+# For PCA, this is dependent on the specified pca_method parameter:
 
-    #     For GramSVD, use fewer larger nodes for better performance. Forming the Gram matrix requires few intensive calculations and the main bottleneck is the JAMA library’s SVD function, which is not parallelized and runs on a single machine. We do not recommend selecting GramSVD for datasets with many columns and/or categorical levels in one or more columns.
-    #     For Randomized, use many smaller nodes for better performance, since H2O calls a few different distributed tasks in a loop, where each task does fairly simple matrix algebra computations.
-    #     For GLRM, the number of nodes depends on whether the dataset contains many categorical columns with many levels. If this is the case, we recommend using fewer larger nodes, since computing the loss function for categoricals is an intensive task. If the majority of the data is numeric and the categorical columns have only a small number of levels (~10-20), we recommend using many small nodes in the cluster.
-    #     For Power, we recommend using fewer larger nodes because the intensive calculations are single-threaded. However, this method is only recommended for obtaining principal component values (such as k << ncol(train)) because the other methods are far more efficient.
+#     For GramSVD, use fewer larger nodes for better performance. Forming the Gram matrix requires few intensive calculations and the main bottleneck is the JAMA library’s SVD function, which is not parallelized and runs on a single machine. We do not recommend selecting GramSVD for datasets with many columns and/or categorical levels in one or more columns.
+#     For Randomized, use many smaller nodes for better performance, since H2O calls a few different distributed tasks in a loop, where each task does fairly simple matrix algebra computations.
+#     For GLRM, the number of nodes depends on whether the dataset contains many categorical columns with many levels. If this is the case, we recommend using fewer larger nodes, since computing the loss function for categoricals is an intensive task. If the majority of the data is numeric and the categorical columns have only a small number of levels (~10-20), we recommend using many small nodes in the cluster.
+#     For Power, we recommend using fewer larger nodes because the intensive calculations are single-threaded. However, this method is only recommended for obtaining principal component values (such as k << ncol(train)) because the other methods are far more efficient.
 
 ################################################# PCA ###################################################################
+
+
+
+
+
+
+################################################# imp params #########################################################
+
+gbm_imp_params = {
+	'nfolds'              :  3,
+	'ignored_columns'     : drop_cols,
+    'ntrees'              : 200,
+	'max_depth'           : 10,# (default=20)
+	'min_rows'            : None, # Specify the minimum number of observations for a leaf
+	'nbins'               :  63, # Specify the number of bins for the histogram to build, then split at the best point.
+	'nbins_cats'          : None # (Extensively tuning needed)
+	'learn_rate'          : 0.01,
+	'learn_rate_annealing': None, # (danger as it reduce the lr_rate rapidly) (for lr:0.01, use lr:0.05, with anealing of 0.99, lead to better converger (fast))
+	'distribution'        :'AUTO', # Classification: binomial(binary), quasibinomial(binary), multinomial(Categorical) and for numeric: poisson, laplace, tweedie, gaussian, huber, gamma, quantile
+	'sample_rate'         : 0.7, # default 0.63 (samples without replacement)
+    'sample_rate_per_class':0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
+    'col_sample_rate'     : 0.7, # sampling without replacement
+    'col_sample_rate_per_tree':0.7, # sample without replacement.
+	'histogram_type'      : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extr Trees), QuantilesGlobal, RoundRobin]
+	'fold_assignment'     : 'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
+	'balance_classes'     : True, # only for classification (balance the classes by oversampling),
+	'min_split_improvement' : 1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
+	'categorical_encoding'  : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
+    'keep_cross_validation_predictions':True,
+	'stopping_metric'       : 'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+	'quantile_alpha'        : 0.01, # when distribution is quantile. (Specify the quantile to be used for Quantile Regression.)
+	'huber_alpha'           : 0.001, # Huber/M-regression (the threshold between quadratic and linear loss)
+	'max_abs_leafnode_pred' : None, # (only for clf), it reduce overfitting by limiting the maximum absolute value of a leaf node prediction
+	'pred_noise_bandwidth'  : 0 # The bandwidth (sigma) of Gaussian multiplicative noise ~N(1,sigma) for tree node predictions. If this parameter is specified with a value greater than 0, then every leaf node prediction is randomly scaled by a number drawn from a Normal distribution centered around 1 with a bandwidth given by this parameter
+	'nbins_top_level'       : None # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
+}
+drf_imp_params = {
+	'nfolds': 3,
+	'keep_cross_validation_predictions':True,
+	'fold_assignment'      : 'Random', # [Random, Modulo, Stratified]
+	'ignored_columns'      : drop_cols,
+	'balance_classes'      : True, # (balance the classes by oversampling),
+	'ntrees'               : 200,
+	'max_depth'            : 10,# (default=20)
+	'min_rows'             : None, # Specify the minimum number of observations for a leaf
+	'nbins'                : 63, # Specify the number of bins for the histogram to build, then split at the best point.
+	'nbins_top_level'      : None # Specify the minimum number of bins at the root level to use to build the histogram. 
+	'stopping_rounds'      : 25, # wait for n(25) itrs for early stopping
+	'stopping_metric'      : 'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+	'categorical_encoding' : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
+    'histogram_type'       : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extr Trees), QuantilesGlobal, RoundRobin]
+	'col_sample_rate_per_tree':0.7, # sample without replacement.
+    'sample_rate'          : 0.7, # default 0.63 (samples without replacement)
+    'sample_rate_per_class': 0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
+    'binomial_double_trees': True, # (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building.
+}
+
+glm_imp_params = {
+    'keep_cross_validation_predictions':True,
+    'nfolds'              : 3,
+    'ignored_columns'     : drop_cols,
+    'seed'                : 1234,
+    'distribution'        : 'AUTO', 
+    'categorical_encoding': 'AUTO', #[AUTO, enum, one_hot_explicit, binary, eigen, label_encoder, sort_by_response]
+    'histogram_type'      : 'AUTO', # [AUTO, UniformAdaptive, Random (extr tree), QuantilesGlobal, RoundRobin]
+    'fold_assignment'     : 'Stratified', # [Random, Modulo, Stratified]
+    'balance_classes'     : True, 
+    'alpha'               : 0.2, # elastic net panlity (here, i used for less focus on l1)
+    'lambda'              : 0.1, # regularization strength
+	'family':'binomial', 
+	'interactions'      : interaction_col_list, # a columns list ['a','b','c']
+	'max_iterations'    : 1000,
+	'non_negative'      : True, # will helpful in blending or for meta learners
+	'link'              : 'logit', 
+	'prior'            : -1, 
+}
+
+pca_imp_params = {
+	'k':4, # rank of matrix approx [range 1-9]
+	'ignored_columns':drop_cols,
+	'transform':'Standardize', # transformation of training data, [Standardize, Normalize, Demean, or Descale]
+	'pca_method':'GramSVD', # [GramSVD, Power, Randomized, GLRM]
+    }
+
+low_rank_imp_params = {
+	'ignored_columns'      : drop_cols,
+	'transform'            : 'Standardize', # [None, Standardize, Normalize, Demean, Descale]
+	'k'                    : 5, # rank of marrix
+	'loss'                 : 'Quadratic', # [Quadratic, Absolute, Huber, Poisson, Hinge]
+	'gamma_x'              : 0.001, # reg weights on X matrix
+	'gamma_y'              : 0.001, # reg weights on Y matrix
+	'multi_loss'           : 'Categorical', # treat cat_var differently. [Ordinal, Categorical]
+	'svd_method'           : 'GramSVD', # [GramSVD, Power, Randomized(not stable in current version)]
+	'regularization_x'     : 'l2', # [None, Quadratic, L2, L1, NonNegative, OneSparse, UnitOneSparse, Simplex]
+	'regularization_y'     : 'l2', # [None, Quadratic, L2, L1, NonNegative, OneSparse, UnitOneSparse, Simplex]
+}
+
+kmean_imp_params = {
+	'keep_cross_validation_predictions':True,
+	'ignored_columns'     : drop_cols, # a list of columns to be dropped
+	'k'                   : 3, # no of clusters
+	'standardize'         : True,
+	'init'                : 'Furthest', #[Random, Furthest, PlusPlus]
+	'categorical_encoding': 'AUTO',# [AUTO, enum(1 col), one_hot_explicit(N+1), binary, eigen(k cols)]
+}
+
+def get_imp_params(model_name, problem_type):
+	""" return imp parameters list
+	model_name: name of model [gbm, drf, glm, pca, low_rank, kmean]
+	"""
+	if model_name is 'gbm':
+		if problem_type is 'reg':
+			gbm_imp_params['sample_rate_per_class'] = None
+			gbm_imp_params['fold_assignment'] = 'Random'
+			gbm_imp_params['balance_classes'] = None
+		return gbm_imp_params
+
+	elif model_name is 'drf':
+		if problem_type is 'reg':
+			drf_imp_params['fold_assignment'] = 'Random'
+			drf_imp_params['balance_classes'] = None
+			drf_imp_params['binomial_double_trees'] = None
+
+		return drf_imp_params
+
+	elif model_name is 'glm':
+		return glm_imp_params
+
+	elif model_name is 'pca':
+		return pca_imp_params
+
+	elif model_name is 'low_rank':
+		return low_rank_imp_params
+
+	elif model_name is 'kmean':
+		return kmean_imp_params
+
+	else:
+		raise Exception('only [gbm, drf, glm, pca, low_rank, kmean] model name are supported')
