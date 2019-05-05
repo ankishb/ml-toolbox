@@ -22,28 +22,28 @@ def get_polynomial_feature(train, test, cols, degree, interact, bias=False, retu
         data-frame which extended feature obtained from up function
     example:
         X = np.array([[0, 0, 1], [0, 1, 0], [1, 0, 1], [1, 1, 1]])
-		X = pd.DataFrame(data=X, columns=['x1','x2', 'x3'])
-		new, new1 = get_polynomial_feature(X, X, cols=['x1', 'x2'], degree=2, interact=False)
+        X = pd.DataFrame(data=X, columns=['x1','x2', 'x3'])
+        new, new1 = get_polynomial_feature(X, X, cols=['x1', 'x2'], degree=2, interact=False)
     """
     from sklearn.preprocessing import PolynomialFeatures as pf
     complete_df = pd.concat([train, test], axis=0).reset_index(drop=True)
-    
+
     if len(cols) == 1:
         raise ValueError('columns should be more than 1.')
         
     print("intraction happens only in cols: ", cols)
     interact_cols = cols
     no_interact_cols = list(set(train.columns) - set(cols))
-    
+
     poly_feat = pf(degree=degree, interaction_only=interact, include_bias=bias)
     new_feat = poly_feat.fit_transform(complete_df[interact_cols])
-    
+
     new_feat = pd.DataFrame(data=new_feat, columns=poly_feat.get_feature_names())
     new_feat = pd.concat([complete_df[no_interact_cols], new_feat], axis=1)
-    
+
     train = new_feat.iloc[:train.shape[0]]
     test  = new_feat.iloc[train.shape[0]:].reset_index(drop=True)
-    
+
     del complete_df, new_feat
     gc.collect()
     if return_fun == True:
@@ -54,65 +54,124 @@ def get_polynomial_feature(train, test, cols, degree, interact, bias=False, retu
     
 
 def nmf_decomposition(train, test, n_component, alpha=0, l1_ratio=0, col_name=None):
-	"""return nmf transformation
-	Args:
-		train, test: dataframe
-		col_name: list of column name to be transform [if None, used all column]
-		n_component: no of component to be used
-	return:
-		Transformed feature space
-	example:
-		train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2)
-		train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2, alpha=0.1, l1_ratio=0.2)
-	"""
-	if col_name is None:
-		col_name = train.columns
+    """return nmf transformation
+    Args:
+    	train, test: dataframe
+    	col_name: list of column name to be transform [if None, used all column]
+    	n_component: no of component to be used
+    return:
+    	Transformed feature space
+    example:
+    	train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2)
+    	train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2, alpha=0.1, l1_ratio=0.2)
+    """
+    if col_name is None:
+    	col_name = train.columns
 
-	complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+    complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
 
-	nmf = NMF(n_components=None, random_state=1234, alpha=alpha, l1_ratio=l1_ratio)
-	nmf.fit(complete_df)
-	complete_nmf = nmf.transform(complete_df)
+    nmf = NMF(n_components=None, random_state=1234, alpha=alpha, l1_ratio=l1_ratio)
+    nmf.fit(complete_df)
+    complete_nmf = nmf.transform(complete_df)
 
-	complete_nmf = pd.DataFrame(data=complete_nmf)
-	complete_nmf.columns = ['nmf_'+str(i) for i in range(n_component)]
+    complete_nmf = pd.DataFrame(data=complete_nmf)
+    complete_nmf.columns = ['nmf_'+str(i) for i in range(n_component)]
 
-	train_nmf = complete_nmf.iloc[:train.shape[0]]
-	test_nmf = complete_nmf.iloc[train.shape[0]:].reset_index(drop=True)
+    train_nmf = complete_nmf.iloc[:train.shape[0]]
+    test_nmf = complete_nmf.iloc[train.shape[0]:].reset_index(drop=True)
 
-	del complete_nmf, complete_df
-	gc.collect()
-	return train_nmf, test_nmf, nmf
+    del complete_nmf, complete_df
+    gc.collect()
+    return train_nmf, test_nmf, nmf
+
 
 
 def svd_decomposition(train, test, n_component, col_name=None):
-	"""return svd transformation
-	Args:
-		train, test: dataframe
-		col_name: list of column name to be transform [if None, used all column]
-		n_component: no of component to be used
-	example:
-		train_svd, test_svd, svd = svd_decomposition(X.iloc[:10], X.iloc[10:15], 2)
-	"""
-	if col_name is None:
-		col_name = train.columns
+    """return svd transformation
+    Args:
+        train, test: dataframe
+        col_name: list of column name to be transform [if None, used all column]
+        n_component: no of component to be used
+    example:
+        train_svd, test_svd, svd = svd_decomposition(X.iloc[:10], X.iloc[10:15], 2)
+    """
+    if col_name is None:
+        col_name = train.columns
 
-	complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+    complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
 
-	svd = TruncatedSVD(n_components=n_component)
-	svd.fit(complete_df)
-	complete_svd = svd.transform(complete_df)
+    svd = TruncatedSVD(n_components=n_component)
+    svd.fit(complete_df)
+    complete_svd = svd.transform(complete_df)
 
-	complete_svd = pd.DataFrame(data=complete_svd)
-	complete_svd.columns = ['svd_'+str(i) for i in range(n_component)]
+    complete_svd = pd.DataFrame(data=complete_svd)
+    complete_svd.columns = ['svd_'+str(i) for i in range(n_component)]
 
-	train_svd = complete_svd.iloc[:train.shape[0]]
-	test_svd = complete_svd.iloc[train.shape[0]:].reset_index(drop=True)
+    train_svd = complete_svd.iloc[:train.shape[0]]
+    test_svd = complete_svd.iloc[train.shape[0]:].reset_index(drop=True)
 
-	del complete_svd, complete_df
-	gc.collect()
-	return train_svd, test_svd, svd
+    del complete_svd, complete_df
+    gc.collect()
+    return train_svd, test_svd, svd
 
+
+
+ from sklearn.decomposition import PCA
+
+ def get_pca(n_components=1, whiten=False, random_state=None):
+    """
+    whiten : bool, optional (default False) When True (False by default) the components_ vectors are multiplied by the square root of n_samples and then divided by the singular values to ensure uncorrelated outputs with unit component-wise variances.
+    """
+    pass
+
+
+from sklearn.decomposition import TruncatedSVD
+def get_svd_cat_wise(train, test=None, n_components=1, col_name=None):
+    """return svd transformation
+    Args:
+        train, test: dataframe
+        col_name: list of column name to be transform [if None, used all column]
+        n_component: no of component to be used
+    example:
+        train_test3 = get_svd_cat_wise(train_test2, n_components=1)
+    """
+    if col_name is None:
+        col_name = train.columns
+
+    if test is None:
+        complete_df = train[col_name]
+    else:
+        complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+    
+    complete_svd = pd.DataFrame()
+    for col in col_name:
+        svd = TruncatedSVD(n_components=n_components)
+        
+        if(len(np.unique(complete_df[col])) > 200):
+            print("please take care of ",col, ". It will raise memory error!")
+        tp__ = pd.get_dummies(complete_df[col])
+#         print( "==", tp__.shape)
+        tp = svd.fit_transform(tp__)
+        tp = pd.DataFrame(data=tp)
+        tp.columns = [col+'_'+str(i) for i in range(n_components)]
+        complete_svd = pd.concat([complete_svd, tp], axis=1)
+        print("|", end="")
+#     complete_svd = pd.DataFrame(data=complete_svd)
+#     complete_svd.columns = [col_name[j]+'_'+str(i)+'_'+str(j) for i in range(n_components) for j in range(len(col_name))]
+
+    if test is None:
+        train_svd = complete_svd
+    else:
+        train_svd = complete_svd.iloc[:train.shape[0]]
+        test_svd = complete_svd.iloc[train.shape[0]:].reset_index(drop=True)
+
+    del complete_svd, complete_df
+    gc.collect()
+    
+    if test is None:
+        return train_svd
+    else:
+        return train_svd, test_svd
 
 
 # The objective function is:

@@ -216,31 +216,50 @@ ntrees = 100,
 balance_classes = True
 )
 
-def get_drf_details():
-	"""
-	'nfolds': 3,
-	'keep_cross_validation_predictions':True,
-	'score_each_iteration' : True, # scoring at each iteration
-	'score_tree_interval'  : 5, # score after each 5 tree built
-	'fold_assignment'      : 'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
-	'fold_column'          : None, # col name for cv fold
-	'ignored_columns'      : drop_cols,
-	'balance_classes'      : True, # only for classification (balance the classes by oversampling),
-	'max_after_balance_size':1,# (0-inf) for oversampling choose > 1, else < 1.
-	'ntrees'               : 200,
-	'max_depth'            : 10,# (default=20)
-	'min_rows'             : None, # Specify the minimum number of observations for a leaf
-	'nbins'                : 63, # Specify the number of bins for the histogram to build, then split at the best point.
-	'nbins_top_level'      : None # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
-	# 'nbins_cats': # (Extensively tuning needed)
-	'stopping_rounds'      : 25, # wait for n(25) itrs for early stopping
-	'stopping_metric'      : 'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
-	'stopping_tolerance'   : 0.001, # tolerance factor for wait till stopping
-	'seed'                 : 1234,
-	'categorical_encoding' : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
-	'verbose'              : 25,
+drf_params = {
+    'max_depth'            : 10,# (default=20)
+    'min_rows'             : None, # Specify the minimum number of observations for a leaf
+    'col_sample_rate_per_tree':0.7, # sample without replacement.
+    'min_split_improvement': 1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
+    'sample_rate'          : 0.7, # default 0.63 (samples without replacement)
+
+    'ntrees'               : 200,
+    'score_each_iteration' : True, # scoring at each iteration
+    'score_tree_interval'  : 5, # score after each 5 tree built
+    'nbins'                : 63, # Specify the number of bins for the histogram to build, then split at the best point.
+    'stopping_rounds'      : 25, # wait for n(25) itrs for early stopping
+    'stopping_metric'      : 'rmse', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+    'stopping_tolerance'   : 0.01, # tolerance factor for wait till stopping
+    'seed'                 : 1234,
+    'categorical_encoding' : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
     'histogram_type'       : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
-	'col_sample_rate_per_tree':0.7, # sample without replacement.
+}
+
+def get_drf_details():
+    """
+    'nfolds': 3,
+    'keep_cross_validation_predictions':True,
+    'score_each_iteration' : True, # scoring at each iteration
+    'score_tree_interval'  : 5, # score after each 5 tree built
+    'fold_assignment'      : 'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
+    'fold_column'          : None, # col name for cv fold
+    'ignored_columns'      : drop_cols,
+    'balance_classes'      : True, # only for classification (balance the classes by oversampling),
+    'max_after_balance_size':1,# (0-inf) for oversampling choose > 1, else < 1.
+    'ntrees'               : 200,
+    'max_depth'            : 10,# (default=20)
+    'min_rows'             : None, # Specify the minimum number of observations for a leaf
+    'nbins'                : 63, # Specify the number of bins for the histogram to build, then split at the best point.
+    'nbins_top_level'      : None # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
+    # 'nbins_cats': # (Extensively tuning needed)
+    'stopping_rounds'      : 25, # wait for n(25) itrs for early stopping
+    'stopping_metric'      : 'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+    'stopping_tolerance'   : 0.001, # tolerance factor for wait till stopping
+    'seed'                 : 1234,
+    'categorical_encoding' : 'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
+    'verbose'              : 25,
+    'histogram_type'       : 'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
+    'col_sample_rate_per_tree':0.7, # sample without replacement.
     'min_split_improvement': 1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
     'sample_rate'          : 0.7, # default 0.63 (samples without replacement)
     'sample_rate_per_class': 0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
@@ -248,8 +267,8 @@ def get_drf_details():
     'mtries'               : -1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
     'class_sampling_factors':1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
     'weights_column':col_name, # which should be present in the dataframe as an indiaction to weights of each row.
-	"""
-	pass
+    """
+    pass
 
 """
 Does the algo stop splitting when all the possible splits lead to worse error measures?

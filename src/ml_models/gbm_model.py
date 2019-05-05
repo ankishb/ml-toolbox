@@ -9,6 +9,36 @@ import lightgbm as lgb
 import xgboost as xgb
 
 
+param = {
+        # speed
+        'bagging_freq'           : 5,
+        'bagging_fraction'       : 0.33,
+        'bagging_fraction'       : 0.33,
+        'feature_fraction'       : 0.7,
+
+        # accuracy
+        'max_bins'               : 128,
+        'learning_rate'          : 0.01,
+        'num_leaves'             : 30,
+    
+        # regularization
+        'min_gain_to_split'      : 10, 
+        'lambda_l1'              : 0.001,
+        'lambda_l2'              : 0.1
+        
+        # deal with overfitting
+        'min_data_in_leaf'       : 100,
+        'min_sum_hessian_in_leaf': 10.0,
+        'num_threads'            : 4,
+
+        'metric'                 : 'rmse',
+        'boost'                  : 'gbdt',
+        'tree_learner'           : 'serial',
+        'objective'              : 'root_mean_squared_error',
+        'verbosity'              : 1,
+
+    }
+
 def train_lgb_model(X_train, y_train, X_valid, y_valid, features, param, X_test, num_round):
     """
     Args:

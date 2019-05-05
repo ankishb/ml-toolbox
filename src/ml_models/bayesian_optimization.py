@@ -28,6 +28,181 @@ def baysian_opt():
 	pass
 
 
+def bayesian_blending(x1,x2,x3,x4,x5,x6,x7,x8):
+    blend_arr = np.array([x1,x2,x3,x4,x5,x6,x7,x8,0,0,0,0])
+    oof = np.dot(oof_all.values, blend_arr)
+    score = 100*np.sqrt(mean_squared_error(y_val, oof))
+    
+    return -score
+
+params = {
+    'x1'    : (0.1,0.7),
+    'x2'    : (0.1,0.7),
+    'x3'    : (0.1,0.7),
+    'x4'    : (0.1,0.7),
+    'x5'    : (0.1,0.7),
+    'x6'    : (0.1,0.7),
+    'x7'    : (0.1,0.7),
+    'x8'    : (0.1,0.7),
+#     'x9'    : (0,1),
+#     'x10'   : (0,1),
+#     'x11'   : (0,1),
+#     'x12'   : (0,1),
+    }
+_bo = BayesianOptimization(bayesian_blending, params, random_state=26656)
+_bo.maximize(init_points=100, n_iter=50, acq='ei')
+
+
+
+from catboost import Pool, CatBoostClassifier, CatBoostRegressor
+from sklearn.metrics import mean_squared_error
+from bayes_opt import BayesianOptimization
+
+def bayesian_opt_cat(X_train, y_train, X_valid, y_valid, features):
+        
+    def train_cat_model(r_str, b_temp, l2, depth):
+    
+        params = {}
+
+        params['random_strength']     = max(min(r_str, 1), 0)
+        params['bagging_temperature'] = max(b_temp, 0)
+        
+        params['l2_leaf_reg'] = max(l2, 0)
+#         params['min_data_in_leaf'] = max(data_leaf,1)
+        
+#         params['subsample'] = subsample
+        params['depth']     = int(depth)
+
+        param_const = {
+            'border_count'          : 63,
+            'early_stopping_rounds' : 50,
+            'random_seed'           : 1337,
+            'task_type'             : 'CPU', 
+            'loss_function'         : "RMSE", 
+    #         'subsample'             = 0.7, 
+            'iterations'            : 10000, 
+            'learning_rate'         : 0.01,
+            'thread_count'          : 4,
+#             'bootstrap_type'        : 'No'
+        }
+
+        for key, item in param_const.items():
+            params[key] = item
+    
+        
+
+        _train = Pool(X_train[features], label=y_train)#, cat_features=cate_features_index)
+        _valid = Pool(X_valid[features], label=y_valid)#, cat_features=cate_features_index)
+
+        watchlist = [_train, _valid]
+        clf = CatBoostRegressor(**params)
+        clf.fit(_train, 
+                eval_set=watchlist, 
+                verbose=0,
+                use_best_model=True)
+
+        oof  = clf.predict(X_valid[features])
+
+        score = mean_squared_error(y_valid, oof)
+
+        return -score
+
+    _bo = BayesianOptimization(train_cat_model, {
+
+        'r_str'      : (1, 5),
+        'b_temp'     : (0.01, 100),
+        'depth'      : (3,8), # int
+#         'subsample'  : (0.3, 0.8),
+#         'data_leaf'  : (2,7),
+        'l2'         : (0, 5),
+
+    }, random_state=23456)
+    _bo.maximize(init_points=25, n_iter=12, acq='ei')
+    
+    return _bo
+
+####################################################################################################################################################################################################################################################
+import lightgbm as lgb
+from sklearn.metrics import mean_squared_error
+from bayes_opt import BayesianOptimization
+
+def bayesian_opt_lgb(X_train, y_train, X_valid, y_valid, features):
+        
+    def train_lgb_model(f_frac, b_frac, 
+                        l1, l2, split_gain,
+                        leaves, data_in_leaf, hessian):
+    
+        param = {}
+
+        param['feature_fraction'] = max(min(f_frac, 1), 0)
+        param['bagging_fraction'] = max(min(b_frac, 1), 0)
+
+        param['lambda_l1'] = max(l1, 0)
+        param['lambda_l2'] = max(l2, 0)
+        param['min_split_gain'] = split_gain
+#     #     params['min_child_weight'] = min_child_weight
+
+        param['num_leaves'] = int(leaves)
+        param['min_data_in_leaf'] = int(data_in_leaf)
+        param['min_sum_hessian_in_leaf'] = max(hessian, 0)
+
+        param_const = {
+            'max_bins'               : 63,
+            'learning_rate'          : 0.01,
+            'num_threads'            : 4,
+            'metric'                 : 'rmse',
+            'boost'                  : 'gbdt',
+            'tree_learner'           : 'serial',
+            'objective'              : 'root_mean_squared_error',
+            'verbosity'              : 0,
+        }
+
+        for key, item in param_const.items():
+            param[key] = item
+    
+#         print(param)
+
+        _train = lgb.Dataset(X_train[features], label=y_train, feature_name=list(features))
+        _valid = lgb.Dataset(X_valid[features], label=y_valid,feature_name=list(features))
+
+        clf = lgb.train(param, _train, 10000, 
+                        valid_sets = [_train, _valid], 
+                        verbose_eval=0, 
+                        early_stopping_rounds = 25)                  
+
+        oof = clf.predict(X_valid[features], num_iteration=clf.best_iteration)
+        score = mean_squared_error(y_valid, oof)
+
+        return -score
+
+
+    _bo = BayesianOptimization(train_lgb_model, {
+        # speed
+#         'bagging_freq'           : 5, #int
+        'b_frac'       : (0.2,0.7),
+        'f_frac'       : (0.2,0.8),
+
+#         # accuracy
+# #         'max_bins'               : 127,
+#         'learning_rate'          : 0.01,
+        'leaves'             : (20,90), # int
+    
+        # regularization
+        'split_gain'      : (0, 10),
+        'l1'              : (0, 5),
+        'l2'              : (0, 5),
+        
+#         # deal with overfitting
+        'data_in_leaf'       : (20, 500), # int
+        'hessian': (0, 100),
+
+
+    }, random_state=23456)
+    _bo.maximize(init_points=25, n_iter=12, acq='ei')
+    
+    return _bo
+####################################################################################################################################################################################################################################################
+
 
 
 
@@ -190,7 +365,8 @@ def xgb_evaluate(max_depth, gamma, colsample_bytree):
 
 xgb_bo = BayesianOptimization(xgb_evaluate, {'max_depth': (3, 7), 
                                              'gamma': (0, 1),
-                                             'colsample_bytree': (0.3, 0.9)})
+                                             'colsample_bytree': (0.3, 0.9)}
+                                             )
 # Use the expected improvement acquisition function to handle negative numbers
 # Optimally needs quite a few more initiation points and number of iterations
 xgb_bo.maximize(init_points=3, n_iter=5, acq='ei')
@@ -219,8 +395,106 @@ params['max_depth'] = int(params['max_depth'])
 
 
 
+bayes_lgb_params = {
+        # speed
+#         'bagging_freq'           : 5, #int
+        'bagging_fraction'       : (0.2,0.7),
+        'feature_fraction'       : (0.2,0.8),
+
+        # accuracy
+        'max_bins'               : 127,
+        'learning_rate'          : 0.01,
+        'num_leaves'             : (20,90), # int
+    
+        # regularization
+        'min_gain_to_split'      : (0, 10),
+        'lambda_l1'              : (0, 5),
+        'lambda_l2'              : (0, 5),
+        
+        # deal with overfitting
+        'min_data_in_leaf'       : (20, 500), # int
+        'min_sum_hessian_in_leaf': (0, 100),
+        
+        'num_threads'            : 4,
+        'metric'                 : 'rmse',
+        'boost'                  : 'gbdt',
+        'tree_learner'           : 'serial',
+        'objective'              : 'root_mean_squared_error',
+        'verbosity'              : 1,
+
+    }
+
+import lightgbm as lgb
 
 
+def bayesian_opt_lgb(X_train, y_train, X_valid, y_valid, features, param):
+        
+    def train_lgb_model(param):
+    
+#         param['feature_fraction'] = max(min(feature_fraction, 1), 0)
+#         param['bagging_fraction'] = max(min(bagging_fraction, 1), 0)
+
+#         param['lambda_l1'] = max(lambda_l1, 0)
+#         param['lambda_l2'] = max(lambda_l2, 0)
+#         param['min_split_gain'] = min_split_gain
+#     #     params['min_child_weight'] = min_child_weight
+
+        param['num_leaves'] = int(param['num_leaves'])
+#         param['min_data_in_leaf'] = int(param['min_data_in_leaf'])
+#         param['min_sum_hessian_in_leaf'] = max(param['min_sum_hessian_in_leaf'], 0)
+
+        param_const = {
+        'num_threads'            : 4,
+        'metric'                 : 'rmse',
+        'boost'                  : 'gbdt',
+        'tree_learner'           : 'serial',
+        'objective'              : 'root_mean_squared_error',
+        'verbosity'              : 1,}
+
+        for key, item in param_const.items():
+            param[key] = item
+    
+        print(param)
+
+        _train = lgb.Dataset(X_train[features], label=y_train, feature_name=list(features))
+        _valid = lgb.Dataset(X_valid[features], label=y_valid,feature_name=list(features))
+
+        clf = lgb.train(param, _train, 10000, 
+                        valid_sets = [_train, _valid], 
+                        verbose_eval=200, 
+                        early_stopping_rounds = 25)                  
+
+        oof = clf.predict(X_valid[features], num_iteration=clf.best_iteration)
+        score = mean_squared_error(y_valid, oof)
+
+        return -0.1
+
+
+    _bo = BayesianOptimization(train_lgb_model, {
+        # speed
+#         'bagging_freq'           : 5, #int
+#         'bagging_fraction'       : (0.2,0.7),
+#         'feature_fraction'       : (0.2,0.8),
+
+#         # accuracy
+# #         'max_bins'               : 127,
+#         'learning_rate'          : 0.01,
+        'num_leaves'             : (20,90), # int
+    
+        # regularization
+#         'min_gain_to_split'      : (0, 10),
+#         'lambda_l1'              : (0, 5),
+#         'lambda_l2'              : (0, 5),
+        
+#         # deal with overfitting
+#         'min_data_in_leaf'       : (20, 500), # int
+#         'min_sum_hessian_in_leaf': (0, 100),
+
+
+    }, random_state=23456)
+    _bo.maximize(init_points=1, n_iter=5, acq='ei')
+    
+    return _bo
 
 
 

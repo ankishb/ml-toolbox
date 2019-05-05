@@ -2,8 +2,10 @@ import pandas as pd
 import numpy as np
 
 
-def reduce_mem_usage_without_print(data):
+def reduce_mem_usage_without_print(data, return_flag=True):
     """ Return a modified copy of dataframe. It will print the entire history of the all variable.
+    Args:
+        return_flag: whether to return the modified data
     """
     df = data.copy()
     print("="*30)
@@ -38,7 +40,9 @@ def reduce_mem_usage_without_print(data):
     print(' {:.2f} MB'.format(end_mem))
     print('Decreased by {:.1f}%'.format(100 * (start_mem - end_mem) / start_mem))
     print("="*30)
-    return 
+    if return_flag:
+        return df
+ 
 
 
 def reduce_mem_usage_with_print(data):
