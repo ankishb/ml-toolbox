@@ -1,3 +1,18 @@
+
+
+
+import pandas as pd
+
+def get_datetime(df, col_name, dayfirst=False, yearfirst=False, use_format=False):
+    """ return a series with date_time format
+    """
+    if use_format:
+        format = "%d/%m/%Y"
+    return pd.to_datetime(df[col_name], dayfirst=dayfirst, yearfirst=yearfirst, format=format)
+
+
+
+
 Attributes
 year 	The year of the datetime.
 month 	The month as January=1, December=12.
