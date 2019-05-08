@@ -1,3 +1,5 @@
+ Reference: https://codefellows.github.io/sea-f2-python-sept14/session05.html
+
  
  Why python2 had unicode type, while python3 have str type.
  In Python 2 you have 8-bit str type and unicode unicode type. The difference is that in 8-bit string you can have only 256 different characters. If you use only ASCII characters, there is no problem; however if you want to use other characters (national, emoji , etc.) you need to encode them and you have many different encodings for that so the same str may have different meaning depending on the assumed encoding.

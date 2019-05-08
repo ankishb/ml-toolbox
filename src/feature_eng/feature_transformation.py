@@ -3,6 +3,7 @@
 import gc
 import numpy as np
 import pandas as pd
+ from sklearn.decomposition import PCA
 from sklearn.decomposition import NMF
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import PolynomialFeatures as pf
@@ -71,8 +72,7 @@ def nmf_decomposition(train, test, n_component, alpha=0, l1_ratio=0, col_name=No
     complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
 
     nmf = NMF(n_components=None, random_state=1234, alpha=alpha, l1_ratio=l1_ratio)
-    nmf.fit(complete_df)
-    complete_nmf = nmf.transform(complete_df)
+    complete_nmf = nmf.fit_transform(complete_df)
 
     complete_nmf = pd.DataFrame(data=complete_nmf)
     complete_nmf.columns = ['nmf_'+str(i) for i in range(n_component)]
@@ -101,8 +101,7 @@ def svd_decomposition(train, test, n_component, col_name=None):
     complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
 
     svd = TruncatedSVD(n_components=n_component)
-    svd.fit(complete_df)
-    complete_svd = svd.transform(complete_df)
+    complete_svd = svd.fit_transform(complete_df)
 
     complete_svd = pd.DataFrame(data=complete_svd)
     complete_svd.columns = ['svd_'+str(i) for i in range(n_component)]
@@ -113,6 +112,61 @@ def svd_decomposition(train, test, n_component, col_name=None):
     del complete_svd, complete_df
     gc.collect()
     return train_svd, test_svd, svd
+
+
+
+
+
+
+
+def get_decomposition(train, test=None, n_component=2, col_name=None, which_method='svd',):
+    """return svd transformation
+    Args:
+        train, test: dataframe
+        col_name: list of column name to be transform [if None, used all column]
+        n_component: no of component to be used
+    example:
+        train_svd, test_svd, svd = svd_decomposition(X.iloc[:10], X.iloc[10:15], 2)
+    """
+    if col_name is None:
+        col_name = train.columns
+
+    if test is None:
+        complete_df = train[col_name]
+    else:
+        complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+
+    if which_method is 'svd':
+        method = TruncatedSVD(n_components=n_component, random_state=1234)
+    elif which_method is 'nmf':
+        method = NMF(n_components=n_components, random_state=1234, alpha=alpha, l1_ratio=l1_ratio)
+    elif which_method is 'pca':
+        method = PCA(n_components=n_components, random_state=1234, whitten=False)
+    else:
+        raise Exception("Please make sure which_method is one of [svd, nmf, [pca]]")
+
+    complete_method = method.fit_transform(complete_df)
+
+    complete_method = pd.DataFrame(data=complete_method)
+    complete_method.columns = [which_method+'_'+str(i) for i in range(n_component)]
+
+    train_method = complete_method.iloc[:train.shape[0]]
+    if test is None:
+        return train_method
+    else:
+        test_method = complete_method.iloc[train.shape[0]:].reset_index(drop=True)
+        return train_method, test_method
+        
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -147,8 +201,8 @@ def get_svd_cat_wise(train, test=None, n_components=1, col_name=None):
     for col in col_name:
         svd = TruncatedSVD(n_components=n_components)
         
-        if(len(np.unique(complete_df[col])) > 200):
-            print("please take care of ",col, ". It will raise memory error!")
+        # if(len(np.unique(complete_df[col])) > 200):
+        #     print("please take care of ",col, ". It will raise memory error!")
         tp__ = pd.get_dummies(complete_df[col])
 #         print( "==", tp__.shape)
         tp = svd.fit_transform(tp__)
@@ -235,46 +289,19 @@ def get_svd_cat_wise(train, test=None, n_components=1, col_name=None):
 
 ##########################################################################################
 ##########################################################################################
- class sklearn.decomposition.FastICA(n_components=None, algorithm=’parallel’, whiten=True, fun=’logcosh’, fun_args=None, max_iter=200, tol=0.0001, w_init=None, random_state=None)[source]
+ class sklearn.decomposition.FastICA(n_components=None, whiten=True, fun=’logcosh’, w_init=None, random_state=1234):
+    """ perform Independent Component Analysis
+    Args:
+        fun : ‘logcosh’, ‘exp’, or ‘cube’
 
+    """
     FastICA: a fast algorithm for Independent Component Analysis.
 
-    Read more in the User Guide.
-    Parameters:	
 
-    n_components : int, optional
-
-        Number of components to use. If none is passed, all are used.
-    algorithm : {‘parallel’, ‘deflation’}
-
-        Apply parallel or deflational algorithm for FastICA.
-    whiten : boolean, optional
-
-        If whiten is false, the data is already considered to be whitened, and no whitening is performed.
-    fun : string or function, optional. Default: ‘logcosh’
-
-        The functional form of the G function used in the approximation to neg-entropy. Could be either ‘logcosh’, ‘exp’, or ‘cube’. You can also provide your own function. It should return a tuple containing the value of the function, and of its derivative, in the point. Example:
-
-        def my_g(x):
-
-            return x ** 3, (3 * x ** 2).mean(axis=-1)
-
-    fun_args : dictionary, optional
-
-        Arguments to send to the functional form. If empty and if fun=’logcosh’, fun_args will take value {‘alpha’ : 1.0}.
-    max_iter : int, optional
-
-        Maximum number of iterations during fit.
-    tol : float, optional
-
-        Tolerance on update at each iteration.
     w_init : None of an (n_components, n_components) ndarray
 
         The mixing matrix to be used to initialize the algorithm.
-    random_state : int, RandomState instance or None, optional (default=None)
-
-        If int, random_state is the seed used by the random number generator; If RandomState instance, random_state is the random number generator; If None, the random number generator is the RandomState instance used by np.random.
-
+    
     Attributes:	
 
     components_ : 2D array, shape (n_components, n_features)

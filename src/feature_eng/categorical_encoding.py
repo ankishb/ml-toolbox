@@ -315,39 +315,24 @@ def target_encoding_oliver(train_df, valid_df, test_df, col_name, target_col, mi
     return train_enc, valid_enc, test_enc
 
 
-def mean_encoding_wo_kfold(X_train, X_valid, test_df, col_list, target_col, alpha=0, add_random=False, rmean=0, rstd=0.1, folds=3, random_state=1234):
+def mean_encoding_wo_kfold(X_train, X_valid, test_df, target_col, col_list=None, min_samples_leaf=1, smoothing=1, noise_level=0,):
     """ return encoded data (train_enc, valid_enc, test_enc) for only col_name
     Args:
-        train_df: input dataset with col_name and target_col present in it.
+        X_train, X_valid, test_df
         col_list: list of columns (single column)
         target_col: name of target columns
-        alpha: regularization parameter (need tuning)
-        min_samples_leaf: min count of leafs (deal with rare category in highly cardinal feature)
-        smoothing: smoothens the effect of rare category
-        add_random: if True, use following params also [rmean, rstd] 
-        rmean: mean of gaussian noise (0 is best)
-        rstd: std of gaussian noise (0.001-0.1)
-        folds: no of cv fold 
-        add_random: whether to fill nan value with global mean or not
     example:
-        mean_encoding(train_, test, ['p_len', 's_len'], 'target')
+        train_4, valid_4, test_df4 = mean_encoding(pd.concat([train_2,pd.DataFrame(data=new_target, columns=['target'])],axis=1), valid_2, test_df2,  list(train_2.columns), 'target')
     """
+    if col_list is None:
+        col_list = list(X_train.columns)
 
     train_enc = pd.DataFrame()
     valid_enc = pd.DataFrame()
     test_enc  = pd.DataFrame()
 
     for col in col_list:
-
-#         train_enc_col = np.zeros((X_train.shape[0], folds))
-#         test_enc_col  = np.zeros((test_df.shape[0], folds))
-
-
-        tr, vl, ts = target_encoding_oliver(X_train, X_valid, test_df, col, target_col)
-
-#         train_enc_col[tr_ind, cur_fold] = tr
-#         train_enc_col[val_ind, cur_fold] = vl
-#         test_enc_col[:, cur_fold] = ts
+        tr, vl, ts = target_encoding_oliver(X_train, X_valid, test_df, col, target_col, min_samples_leaf, smoothing, noise_level)
 
         encoded_train = pd.DataFrame(data=tr, columns=[col])
         encoded_valid = pd.DataFrame(data=vl, columns=[col])
@@ -356,14 +341,9 @@ def mean_encoding_wo_kfold(X_train, X_valid, test_df, col_list, target_col, alph
 
         train_enc = pd.concat([train_enc, encoded_train], axis=1)
         valid_enc = pd.concat([valid_enc, encoded_valid], axis=1)
-        test_enc = pd.concat([test_enc, encoded_test], axis=1)
+        test_enc  = pd.concat([test_enc, encoded_test], axis=1)
 
     return train_enc, valid_enc, test_enc
-
-
-train_4, valid_4, test_df4 = mean_encoding(pd.concat([train_2,pd.DataFrame(data=new_target, columns=['target'])],axis=1), 
-                                            valid_2, test_df2,  list(train_2.columns), 'target')
-train_4.shape, valid_4.shape, test_df4.shape
 
 
 
