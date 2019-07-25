@@ -29,7 +29,7 @@
 
 ## Feature diversity specially for catgorical variable such as 
 <span style="color:red">some **Remember: Handle nan carefully while label encoding, for float, it will treat all nan as same, whereas for int, it will consider all nan as different value.** text</span>
-- [ ] eigen-decomoposition
+- [x] eigen-decomoposition
 - [x] one-hot
 - [x] target-encoding
     ([lstf-av](https://github.com/mohsinkhn/ltfs-av/blob/dev/TargetEncoder.py))
@@ -95,14 +95,14 @@
     <span style="color:red">some **Add example of cuisine prediction using phase2vec model built using word2vec from gensim (kaggle dataset).** text</span>
     ([ltfs-av](https://github.com/mohsinkhn/ltfs-av))
     ([blog](http://kavita-ganesan.com/how-to-incorporate-phrases-into-word2vec-a-text-mining-approach/#.WuiiKtMvyds))
-- [ ] data on fly 
-- [ ] Segmentation (U-net)
+- [x] data on fly 
+- [x] Segmentation (U-net)
 
 ---
 
 ## ML-Model:
 - [x] XGBoost/LightGBM/CatBoost
-- [ ] ExtraTree/ Adaptive GBM/ Random-Forest
+- [x] ExtraTree/ Adaptive GBM/ Random-Forest
 - [x] Linear model/ Lasso/Ridge/Logistic/SVM
     <span style="color:red">some **For large dataset, sunning svm is not wise, there is an online approximation of SVM solver, please follow following link.** text</span>
     ([sklearn-metric](https://scikit-learn.org/stable/modules/metrics.html#metrics (kernel function)))

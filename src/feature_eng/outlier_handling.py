@@ -58,8 +58,12 @@ def get_quantile(df, col, q1, q2):
     df1 = df[[col]].dropna()
     lower_bound = np.percentile(df1, q=q1)
     upper_bound = np.percentile(df1, q=q2)
-    print("low: ", np.round(lower_bound,3), "  ", end=" ")
-    print("high: ", np.round(upper_bound,3))
+    lower_bound = np.round(lower_bound,3)
+    upper_bound = np.round(upper_bound, 3)
+    min_ = np.round(np.min(df1[col]), 3)
+    max_ = np.round(np.max(df1[col]), 3)
+    print("{4:<25} min: {0:<10} max: {1:<10} low: {2:<10} high: {3:<10}".format(min_, max_, lower_bound, upper_bound, col))
+
 
 
 def remove_outlier(data, flag, cols=None):

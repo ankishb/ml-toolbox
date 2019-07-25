@@ -15,8 +15,7 @@ import os
 
 from keras.layers.advanced_activations import LeakyReLU
 
-LeakyReLU(alpha=0.2)
-Dropout(0.25)
+
 
 keras.regularizers.l1(0.)
 keras.regularizers.l2(0.)
@@ -63,44 +62,97 @@ def conv_block( inputs,
     return x
 
 
+####################################################################################
+####################################################################################
+Conv2D
+SeparableConv2D
+DepthwiseConv2D
+Conv2DTranspose
+Cropping2D
+UpSampling2D
+ZeroPadding2D
+####################################################################################
+####################################################################################
+
+
 
 [source]
 Conv2D
-keras.layers.Conv2D(filters, kernel_size, strides=1, padding='valid', dilation_rate=1, activation=None, use_bias=True, kernel_initializer='he_normal', bias_initializer='zeros', kernel_regularizer=l2(1e-4))
-
+def conv2d_layer( inputs, 
+            num_filters,
+            kernel_size=3,
+            strides=1,
+            activation='relu',
+            l2_reg=1e-4,
+            padding='valid',
+            kernel_init='he_normal',
+            dil_rate=1):
+    return keras.layers.Conv2D(filters=num_filters, kernel_size=kernel_size, strides=strides, padding=padding, dilation_rate=dil_rate, activation=activation, use_bias=True, kernel_initializer=kernel_init, bias_initializer='zeros', kernel_regularizer=l2(l2_reg))
 
 
 
 
 [source]
 SeparableConv2D
-keras.layers.SeparableConv2D(filters, kernel_size, strides=1, padding='valid', dilation_rate=1, depth_multiplier=1, activation=None, use_bias=True, depthwise_initializer='he_normal', pointwise_initializer='he_normal', bias_initializer='zeros', depthwise_regularizer=l2(1e-4), pointwise_regularizer=l2(1e-4))
+def sep_conv2d_layer(num_filters,
+                    kernel_size=3,
+                    strides=1,
+                    activation='relu',
+                    l2_reg=1e-4,
+                    padding='valid',
+                    kernel_init='he_normal',
+                    dil_rate=1):
+    """ Separable convolutions consist in first performing a depthwise spatial convolution (which acts on each input channel separately) followed by a pointwise convolution which mixes together the resulting output channels. The depth_multiplier argument controls how many output channels are generated per input channel in the depthwise step.
+    """
+    x = keras.layers.SeparableConv2D(filters=num_filters, kernel_size=kernel_size, strides=strides, padding=padding, dilation_rate=dil_rate, depth_multiplier=1, activation=activation, use_bias=True, depthwise_initializer=kernel_init, pointwise_initializer=kernel_init, bias_initializer='zeros', depthwise_regularizer=l2(l2_reg), pointwise_regularizer=l2(l2_reg))
+    return x
 
-Separable convolutions consist in first performing a depthwise spatial convolution (which acts on each input channel separately) followed by a pointwise convolution which mixes together the resulting output channels. The depth_multiplier argument controls how many output channels are generated per input channel in the depthwise step.
 
 
 
 
 [source]
 DepthwiseConv2D
-keras.layers.DepthwiseConv2D(kernel_size, strides=1, padding='valid', depth_multiplier=1, activation=None, use_bias=True, depthwise_initializer='he_normal', bias_initializer='zeros', depthwise_regularizer=l2(1e-4))
-
+def depth_conv2d_layer( num_filters,
+                        kernel_size=3,
+                        strides=1,
+                        activation='relu',
+                        depth_mul=1,
+                        depth_l2_reg=1e-4,
+                        padding='valid',
+                        kernel_init='he_normal',
+                        dil_rate=1):
+    x = keras.layers.DepthwiseConv2D(kernel_size=kernel_size, strides=strides, padding=padding, depth_multiplier=depth_mul, activation=activation, use_bias=True, depthwise_initializer=kernel_init, bias_initializer='zeros', depthwise_regularizer=l2(l2_reg))
+    return x;
 
 
 
 [source]
 Conv2DTranspose
-keras.layers.Conv2DTranspose(filters, kernel_size, strides=1, padding='valid', output_padding=None, dilation_rate=1, activation=None, use_bias=True, kernel_initializer='he_normal', bias_initializer='zeros', kernel_regularizer=l2(1e-4))
-
-
-Arguments
+def conv2d_trans_layer( num_filters,
+                        kernel_size=3,
+                        strides=1,
+                        activation='relu',
+                        depth_mul=1,
+                        depth_l2_reg=1e-4,
+                        padding='valid',
+                        kernel_init='he_normal',
+                        dil_rate=1,
+                        output_pad=None):
+    """
+    Arguments:
     output_padding: An integer or tuple/list of 2 integers, specifying the amount of padding along the height and width of the output tensor. Can be a single integer to specify the same value for all spatial dimensions. The amount of output padding along a given dimension must be lower than the stride along that same dimension. If set to None (default), the output shape is inferred.
     dilation_rate: an integer or tuple/list of 2 integers, specifying the dilation rate to use for dilated convolution. Can be a single integer to specify the same value for all spatial dimensions. Currently, specifying any dilation_rate value != 1 is incompatible with specifying any stride value != 1.
 
-new_rows = ((rows - 1) * strides[0] + kernel_size[0]
-            - 2 * padding[0] + output_padding[0])
-new_cols = ((cols - 1) * strides[1] + kernel_size[1]
-            - 2 * padding[1] + output_padding[1])
+    new_rows = ((rows - 1) * strides[0] + kernel_size[0]
+                - 2 * padding[0] + output_padding[0])
+    new_cols = ((cols - 1) * strides[1] + kernel_size[1]
+                - 2 * padding[1] + output_padding[1])
+    """
+    x = keras.layers.Conv2DTranspose(filters=num_filters, kernel_size=kernel_size, strides=strides, padding=padding, output_padding=output_pad, dilation_rate=dil_rate, activation=activation, use_bias=True, kernel_initializer=kernel_init, bias_initializer='zeros', kernel_regularizer=l2(l2_reg))
+    return x
+
+
 
 
 
@@ -149,17 +201,6 @@ Arguments
 
 
 
-####################################################################################
-####################################################################################
-Conv2D
-SeparableConv2D
-DepthwiseConv2D
-Conv2DTranspose
-Cropping2D
-UpSampling2D
-ZeroPadding2D
-####################################################################################
-####################################################################################
 
 
 

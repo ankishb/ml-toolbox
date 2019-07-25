@@ -318,22 +318,14 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.svm import SVC
 
-passive_agg = PassiveAggressiveClassifier(C=params['alpha'], fit_intercept=True, max_iter=None, 
-        tol=None, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, 
-        shuffle=True, verbose=0, n_jobs=-1, random_state=1234, loss='hinge', 
-        class_weight='balanced', average=False, n_iter=None)
+passive_agg = PassiveAggressiveClassifier(C=params['alpha'], fit_intercept=True, max_iter=None, tol=None, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, shuffle=True, verbose=0, n_jobs=-1, random_state=1234, loss='hinge', class_weight='balanced', average=False, n_iter=None)
 
 
-ridge_clf = RidgeClassifier(alpha=params['alpha'], fit_intercept=True, 
-                 normalize=True, class_weight='balanced', random_state=1234)
+ridge_clf = RidgeClassifier(alpha=params['alpha'], fit_intercept=True, normalize=True, class_weight='balanced', random_state=1234)
 
-svm = SVC(C=1.0, kernel='rbf', degree=3, coef0=0.0, shrinking=True, probability=False, 
-          tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, 
-          decision_function_shape='ovr', random_state=None)
+svm = SVC(C=1.0, kernel='rbf', degree=3, coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, class_weight=None, verbose=True, max_iter=-1, decision_function_shape='ovr', random_state=None)
 
-logistic_reg = LogisticRegression(penalty='l2', dual=False, C=params['alpha'], fit_intercept=True, 
-    intercept_scaling=1, class_weight=None, random_state=1234, max_iter=100,  
-                                  multi_class='warn', verbose=0, n_jobs=-1)
+logistic_reg = LogisticRegression(penalty='l2', dual=False, C=params['alpha'], fit_intercept=True, intercept_scaling=1, class_weight=None, random_state=1234, max_iter=100, multi_class='warn', verbose=0, n_jobs=-1)
 
 
 

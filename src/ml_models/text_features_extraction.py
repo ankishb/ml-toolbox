@@ -1,5 +1,4 @@
 
-
 import numpy as np 
 import pandas as pd 
 import gc
@@ -7,94 +6,168 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
 
+
 def tfidf_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', ngram=3, 
-	stopwords='english', svd_component=120, svd_flag=False, max_features=None):
-	"""return tfidf feature
-	Args:
-		train, test: dataframe
-		col_name: column name of text feature
-		min_df: if Int, then it represent count of the minimum words in corpus (remove very rare word)
-		analyzer: [‘word’, ‘char’]
-		ngram: max range of ngram
-		token_pattern: [using: r'\w{1,}'] [by default: '(?u)\b\w\w+\b']
-		stopwords: ['english' or customized by remove specific words]
-		svd_component: n_component of svd feature transform
-		svd_flag: Wheteher to run svd on top of that or not (by default: False)
-		max_features: max no of features to keep, based on frequency. It will keep words with higher freq
-	return:
-		Transformed feature space of the text data, as well as tfidf function instance
-		if svd_flag== True : train_tf, test_tf, tfv, svd
-		else : train_tf, test_tf, tfv
-	example:
-		train_tfv, test_tfv, tfv = tfidf_feature(X_train, X_test, ['text'], min_df=3)
-		train_svd, test_svd, complete_tfv, tfv, svd = tfidf_feature(X_train, X_test, ['text'], 
-			min_df=3, svd_component=3, svd_flag=True)
+    stopwords='english', svd_component=120, svd_flag=False, max_features=None):
+    """return tfidf feature
+    Args:
+        train, test: dataframe
+        col_name: column name of text feature
+        min_df: if Int, then it represent count of the minimum words in corpus (remove very rare word)
+        analyzer: [‘word’, ‘char’]
+        ngram: max range of ngram
+        token_pattern: [using: r'\w{1,}'] [by default: '(?u)\b\w\w+\b']
+        stopwords: ['english' or customized by remove specific words]
+        svd_component: n_component of svd feature transform
+        svd_flag: Wheteher to run svd on top of that or not (by default: False)
+        max_features: max no of features to keep, based on frequency. It will keep words with higher freq
+    return:
+        Transformed feature space of the text data, as well as tfidf function instance
+        if svd_flag== True : train_tf, test_tf, tfv, svd
+        else : train_tf, test_tf, tfv
+    example:
+        train_tfv, test_tfv, tfv = tfidf_feature(X_train, X_test, ['text'], min_df=3)
+        train_svd, test_svd, complete_tfv, tfv, svd = tfidf_feature(X_train, X_test, ['text'], 
+            min_df=3, svd_component=3, svd_flag=True)
 
-	"""
-	tfv = TfidfVectorizer(min_df=min_df,  max_features=max_features, 
-	            strip_accents='unicode', analyzer=analyzer,max_df=1.0, 
-	            token_pattern=token_pattern, ngram_range=(1, ngram), 
-	            use_idf=1, smooth_idf=1, sublinear_tf=1,
-	            stop_words = stopwords)
+    """
+    tfv = TfidfVectorizer(min_df=min_df,  max_features=max_features, 
+                strip_accents='unicode', analyzer=analyzer,max_df=1.0, 
+                token_pattern=token_pattern, ngram_range=(1, ngram), 
+                use_idf=1, smooth_idf=1, sublinear_tf=1,
+                stop_words = stopwords)
 
-	complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
-# 	return complete_df
+    complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+    # 	return complete_df
 
-	tfv.fit(list(complete_df['text'].values))
+    tfv.fit(list(complete_df[:].values))
 
-	if svd_flag is False:
-		train_tfv =  tfv.transform(train[col_name].values.ravel()) 
-		test_tfv  = tfv.transform(test[col_name].values.ravel())
+    if svd_flag is False:
+        train_tfv =  tfv.transform(train[col_name].values.ravel()) 
+        test_tfv  = tfv.transform(test[col_name].values.ravel())
 
-		del complete_df
-		gc.collect()
-		return train_tfv, test_tfv, tfv
-	else:
-		complete_tfv = tfv.transform(complete_df[col_name].values.ravel())
-		svd = TruncatedSVD(n_components=svd_component)
-		svd.fit(complete_tfv)
-		complete_svd = svd.transform(complete_tfv)
+        del complete_df
+        gc.collect()
+        return train_tfv, test_tfv, tfv
+    else:
+        complete_tfv = tfv.transform(complete_df[:].values.ravel())
+        svd = TruncatedSVD(n_components=svd_component)
+        svd.fit(complete_tfv)
+        complete_svd = svd.transform(complete_tfv)
 
-		complete_svd = pd.DataFrame(data=complete_svd)
-		complete_svd.columns = ['svd_'+str(i) for i in range(svd_component)]
+        complete_svd = pd.DataFrame(data=complete_svd)
+        complete_svd.columns = ['svd_'+str(i) for i in range(svd_component)]
 
-		train_svd = complete_svd.iloc[:train.shape[0]]
-		test_svd = complete_svd.iloc[train.shape[0]:].reset_index(drop=True)
+        train_svd = complete_svd.iloc[:train.shape[0]]
+        test_svd = complete_svd.iloc[train.shape[0]:].reset_index(drop=True)
 
-		del complete_svd, complete_df
-		gc.collect()
-		return train_svd, test_svd, complete_tfv, tfv, svd
+        del complete_svd, complete_df
+        gc.collect()
+        return train_svd, test_svd, complete_tfv, tfv, svd
+
+
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.decomposition import TruncatedSVD, NMF
+
+def tfidf_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', ngram=3, 
+    stopwords='english', n_component=120, decom_flag=False, which_method='svd', max_features=None):
+    """return tfidf feature
+    Args:
+        train, test: dataframe
+        col_name: column name of text feature
+        min_df: if Int, then it represent count of the minimum words in corpus (remove very rare word)
+        analyzer: [‘word’, ‘char’]
+        ngram: max range of ngram
+        token_pattern: [using: r'\w{1,}'] [by default: '(?u)\b\w\w+\b']
+        stopwords: ['english' or customized by remove specific words]
+        n_component: n_component of svd feature transform
+        decom_flag: Wheteher to run svd/nmf on top of that or not (by default: False)
+        which_method: which to run [svd or nmf] on top of tfidf (by default: False)
+        max_features: max no of features to keep, based on frequency. It will keep words with higher freq
+    return:
+        Transformed feature space of the text data, as well as tfidf function instance
+        if svd_flag== True : train_tf, test_tf, tfv, svd
+        else : train_tf, test_tf, tfv
+    example:
+        train_tfv, test_tfv, tfv = tfidf_feature(X_train, X_test, ['text'], min_df=3)
+        train_svd, test_svd, complete_tfv, tfv, svd = tfidf_feature(X_train, X_test, ['text'], 
+            min_df=3, svd_component=3, svd_flag=True)
+
+    """
+    tfv = TfidfVectorizer(min_df=min_df,  max_features=max_features, 
+                strip_accents='unicode', analyzer=analyzer,max_df=1.0, 
+                token_pattern=token_pattern, ngram_range=(1, ngram), 
+                use_idf=1, smooth_idf=1, sublinear_tf=1,
+                stop_words = stopwords)
+
+    complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+#         return complete_df
+#         print(complete_df.shape, complete_df.columns)
+
+    tfv.fit(list(complete_df[:].values))
+
+    if decom_flag is False:
+        train_tfv =  tfv.transform(train[col_name].values.ravel()) 
+        test_tfv  = tfv.transform(test[col_name].values.ravel())
+
+        del complete_df
+        gc.collect()
+        return train_tfv, test_tfv, tfv
+    else:
+        complete_tfv = tfv.transform(complete_df[:].values.ravel())
+        
+        if which_method is 'svd':
+            svd = TruncatedSVD(n_components=n_component)
+            svd.fit(complete_tfv)
+            complete_dec = svd.transform(complete_tfv)
+        else:
+            nmf = NMF(n_components=n_component, random_state=1234, alpha=0, l1_ratio=0)
+            nmf.fit(complete_tfv)            
+            complete_dec = nmf.fit_transform(complete_tfv)            
+        
+        
+        complete_dec = pd.DataFrame(data=complete_dec)
+        complete_dec.columns = [which_method+'_'+str(i) for i in range(n_component)]
+
+        train_dec = complete_dec.iloc[:train.shape[0]]
+        test_dec = complete_dec.iloc[train.shape[0]:].reset_index(drop=True)
+
+        del complete_dec, complete_df
+        gc.collect()
+        return train_dec, test_dec, complete_tfv, tfv
+
 
 def countvect_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', 
-					ngram=3, stopwords='english', max_features=None):
-	"""return CountVectorizer feature
-	Args:
-		train, test: dataset
-		col_name: columns name of the text feature
-		min_df: if Int, then it represent count of the minimum words in corpus (remove very rare word)
-		analyzer: [‘word’, ‘char’]
-		ngram: max range of ngram
-		token_pattern: [using: r'\w{1,}'] [by default: '(?u)\b\w\w+\b']
-		stopwords: ['english' or customized by remove specific words]
-		max_features: max no of features to keep, based on frequency. It will keep words with higher freq
-	return:
-		Count feature space of the text data, as well as its function instance
-	"""
-	ctv = CountVectorizer(min_df=min_df,  max_features=max_features, 
-	            strip_accents='unicode', analyzer=analyzer, 
-	            token_pattern=token_pattern, ngram_range=(1, ngram), 
-	            stop_words = stopwords)
+                    ngram=3, stopwords='english', max_features=None):
+    """return CountVectorizer feature
+    Args:
+        train, test: dataset
+        col_name: columns name of the text feature
+        min_df: if Int, then it represent count of the minimum words in corpus (remove very rare word)
+        analyzer: [‘word’, ‘char’]
+        ngram: max range of ngram
+        token_pattern: [using: r'\w{1,}'] [by default: '(?u)\b\w\w+\b']
+        stopwords: ['english' or customized by remove specific words]
+        max_features: max no of features to keep, based on frequency. It will keep words with higher freq
+    return:
+        Count feature space of the text data, as well as its function instance
+    """
+    ctv = CountVectorizer(min_df=min_df,  max_features=max_features, 
+                strip_accents='unicode', analyzer=analyzer, 
+                token_pattern=token_pattern, ngram_range=(1, ngram), 
+                stop_words = stopwords)
 
-	complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
-	ctv.fit(list(complete_df['text'].values))
+    complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
+    ctv.fit(list(complete_df[:].values))
 
-	train_tf =  ctv.transform(train[col_name].values.ravel()) 
-	test_tf  = ctv.transform(test[col_name].values.ravel())
+    train_tf =  ctv.transform(train[col_name].values.ravel()) 
+    test_tf  = ctv.transform(test[col_name].values.ravel())
 
-	del complete_df
-	gc.collect()
-	return train_tf, test_tf, ctv
-	
+    del complete_df
+    gc.collect()
+    return train_tf, test_tf, ctv
+
 
 
 

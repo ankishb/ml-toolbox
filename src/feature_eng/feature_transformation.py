@@ -57,17 +57,17 @@ def get_polynomial_feature(train, test, cols, degree, interact, bias=False, retu
 def nmf_decomposition(train, test, n_component, alpha=0, l1_ratio=0, col_name=None):
     """return nmf transformation
     Args:
-    	train, test: dataframe
-    	col_name: list of column name to be transform [if None, used all column]
-    	n_component: no of component to be used
+        train, test: dataframe
+        col_name: list of column name to be transform [if None, used all column]
+        n_component: no of component to be used
     return:
-    	Transformed feature space
+        Transformed feature space
     example:
-    	train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2)
-    	train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2, alpha=0.1, l1_ratio=0.2)
+        train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2)
+        train_nmf, test_nmf, nmf = nmf_decomposition(X.iloc[:10], X.iloc[10:15], n_component=2, alpha=0.1, l1_ratio=0.2)
     """
     if col_name is None:
-    	col_name = train.columns
+        col_name = train.columns
 
     complete_df = pd.concat([train[col_name], test[col_name]], axis=0)
 

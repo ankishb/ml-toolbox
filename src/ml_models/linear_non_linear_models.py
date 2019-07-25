@@ -389,3 +389,13 @@ best, _ = run_hyperopt_reg(train_, valid_, y_tr, y_val, 20, 'svm', std_norm=Fals
 print(best)
 print("="*50)
 
+
+
+
+
+
+
+
+from sklearn.neural_network import MLPClassifier
+
+mlp_clf = MLPClassifier(hidden_layer_sizes=(100, ), activation='relu', solver='adam', alpha=0.001, batch_size='auto', learning_rate='adaptive', learning_rate_init=0.01, power_t=0.5, max_iter=200, shuffle=True, random_state=1567, tol=0.0001, verbose=True, warm_start=True, momentum=0.9, nesterovs_momentum=True, early_stopping=True, validation_fraction=0.3, beta_1=0.9, beta_2=0.999, epsilon=1e-08, n_iter_no_change=10)
