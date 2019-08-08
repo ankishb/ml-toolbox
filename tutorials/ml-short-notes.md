@@ -403,7 +403,55 @@ Kernels can also be constructed by composing these rules
     - Distance based methods, Perceptron, SVM, linear regression, etc.
     - Many of the unsupervised learning algorithms too can be kernelized (e.g., K-means clustering, Principal Component Analysis, etc. - will see later)
 
+## Speeding up kernel Method:
+- slow at training and testing samples
+- Like in ridge regression, we need to store the entire training sample to makae a prediction **or** the basis vector of original data, which can be huge to store. **But there are method, which can helps us in computing low dim features**
+- Landmarks and Random feature
+- The idea here is that instead of computing high dim **phi(x), we can replaced it with low dims psi(x), with following property fulfilled i.e. psi(x)psi(y) ~~ phi(x)phi(y)**
+- Dual form of Ridge helps a lot, even we deal with linear model, as the computation become cheaper with dual,if D>N
 
+1. Landmarks:
+    - Select L training data [z1, z2, ..., zL] as landmarks
+    - psi(xn) = [k(z1, xn), k(z2, xn), ..., k(zL, xn)]
+    - k(xn, xm) = psi(xn)psi(xm)
+    - fast both on training and testing
+2. Random feature:
+    - k(xn, xm) = E_{w~p(w)} [t_w(xn) t_w(xm)]
+    - use monte carlo to compute the kernel matrix.
+    1. Sample w from distirbition
+    2. For that w, compute **t_w**, which is a L dims vector
+    3. For Exp: RBF kernel: **k(xn, xm) = E_{w~p(w)} [cos(w*xn) cos(w*xm)]**
+
+- Another method to speed up SVM kernel method
+  - cluster the support vector (alpha_n)
+- Low rank approximation of kernel matrix
+
+
+## STATISTICS:
+## Ordinary Least square
+- When we assume that there is no error in observation
+- So we minimize the residual error **vertical distance between data sample and slope(line)**
+- **It is scale invariant**
+
+
+
+## Total Least square
+- When we assume that there is error in observation **More Practical**
+- So we minimize the residual error **diagnoal distance between data sample and slope(line)**, which consider the erro in both varaible along x as well as in y direction.
+- In essence error is residual error 
+- **It is not scale invariant**
+
+## Imp points about regression (Scale Invariancy Property):
+- You can translate features any which way you want without changing the model. 
+- With scaling you need to be a little more careful when using a regularized model – these models are not scaling invariant. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, you should be rescaling the columns. 
+- Typically this involves forcing the columns to have unit variance.
+
+1. OLS is scale invariant. If you have a model y^=w0+w1x1+w2x2 and you replace x1 with x′1=x1/2 and re-estimate the model, you’ll get a new model y^=w0+2w1x′1+w2x2 which gives exactly the same preditions. The new x′1 is half as big, so its coefficient is now twice as big.
+2. Ridge and L1-penalized regression (and hence elastic net) are not scale invariant. Ridge shrinks the big weights more than the small ones, so if you rescale the features, you change what the big weights are.
+3. L0 regression is scale invariant; the feature is in or out of the model, so the size doesn’t matter.
+4. PCA is not scale invariant. People therefore often rescale the data (standardize it) before they do PCA. 
+
+### Assumptions:
 
 ## Recurrent Neural Network:
 - weight sharing across the sequence
@@ -520,13 +568,150 @@ F1        | 2PR/(P+R)
 - AUC of 0.5, means close to random.
 
 ## regression Metrics: Page 15 lec23 CS771
+### R2 (R-squared): [Best](https://statisticsbyjim.com/regression/interpret-r-squared-regression/)
+- It is an accuracy statistics in order to access a regression model
+- It is the percentage of variance in Y explained by model
+- Higher is R2, better the model is.
+- **R2 = 1 - (RSS / TSS)**, where **RSS = sum (y - yhat)^2** and **TSS = sum (y - mean(y))^2**
+- R squared is also known as:
+    1. the fraction of variance explained.
+    2. the sum of squares explained.
+    3. Coefficient of determination
+- R2 can be negative
+- R2 = 0, means that model is just predicting the average of output
+
+
+> Note: R2 cann't tells us about bias in the model, it is possible that higher R2 score is due to biased model. **So Never conclude that lower R2 model are not good, they can be good, Always look at residual plot to determine that**.
 
 ---
 
+## Types of Regression model:
+- Linear Regresion
+- Logistic Regression
+- Polynomial Regression
+- Ridge
+- Lasso
+- Elastic-Net
+- Robust Regression
+- QuasiBionomail regression (Where target varaible's distribution assumed as skewed)
+- least square model (ordinal Least square)
+- Total Least square
+
+## Difference between least square estimation and maximum likelihood estimation:
+- LSE is to minimize the least square error
+- MLE is to maximize the log likelihood as the loss function and minimze it with respect to the parameter.
+- They are not equivalent untill, we assume gaussian distribution as probability density function in MLE.
+
+## Assumption in Oordinary Least Square:
+1. The regression model is linear in the coefficients and the error term
+2. The error term has a population mean of zero
+3. All independent variables are uncorrelated with the error term
+4. Observations of the error term are uncorrelated with each other
+    - One observation of the error term should not predict the next observation. For instance, if the error for one observation is positive and that systematically increases the probability that the following error is positive, that is a positive correlation. If the subsequent error is more likely to have the opposite sign, that is a negative correlation. This problem is known both as serial correlation and autocorrelation
+5. The error term has a constant variance (no heteroscedasticity)
+7. The error term is normally distributed (optional)
+    - OLS does not require that the error term follows a normal distribution to produce unbiased estimates with the minimum variance. However, satisfying this assumption allows you to perform statistical hypothesis testing and generate reliable confidence intervals and prediction intervals.
+
+
+## Q. Do least square and linear regression same thing?
+- Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell you how the model is fitted. Least square fitting is simply one of the possibilities. Other methods for training a linear model is in the comment.
+
+- Non-linear least squares is common (https://en.wikipedia.org/wiki/Non-linear_least_squares). For example, the popular **Levenberg–Marquardt algorithm** solves something like:
+
+β^=argminβS(β)≡argminβ∑i=1m[yi−f(xi,β)]2
+
+It is a least squares optimization but the model is not linear.
+**They are not the same thing.**
+- In summary: linear regression is optimization problem, with the intent to find best possible parameter for the linear line, where as least square method is potential loss function for an optimization problem. Which means, loss is (y - f(x))^2, where f(x) can be any function, linear/non-linear.
 
 
 
+## Bias And Varaince:
+The prediction error for any machine learning algorithm can be broken down into three parts:
+
+    Bias Error
+    Variance Error
+    Irreducible Error
+### Mathematical expression: [Do derivation by urself, its confusing]
+y = f(x) + epsilon
+err(x) = E[(y - yhat)^2]
+err(x) = [(f(x) + epsilon - yhat)^2]
+err(x) = [(f(x) + epsilon - yhat + E[yhat] - E[yhat])^2]
+
+err(x) = (f(x) - E[yhat])^2 + E[f(x)^2] - E[yhat]^2 + epsilon^2
+err(x) = Bias^2 + variance + Irreducible-error
+
+The irreducible error cannot be reduced regardless of what algorithm is used. It is the error introduced from the chosen framing of the problem and may be caused by factors like unknown variables that influence the mapping of the input variables to the output variable
+### Bias:
+
+    Low Bias: Suggests less assumptions about the form of the target function.
+    High-Bias: Suggests more assumptions about the form of the target function.
+
+Examples of low-bias machine learning algorithms include: Decision Trees, k-Nearest Neighbors and Support Vector Machines.
+
+Examples of high-bias machine learning algorithms include: Linear Regression, Linear Discriminant Analysis and Logistic Regression
+
+### Variance:
+Machine learning algorithms that have a high variance are strongly influenced by the specifics of the training data. This means that the specifics of the training have influences the number and types of parameters used to characterize the mapping function.
+
+    Low Variance: Suggests small changes to the estimate of the target function with changes to the training dataset.
+    High Variance: Suggests large changes to the estimate of the target function with changes to the training dataset.
+
+Generally, nonparametric machine learning algorithms that have a lot of flexibility have a high variance. For example, decision trees have a high variance, that is even higher if the trees are not pruned before use.
+
+Examples of low-variance machine learning algorithms include: Linear Regression, Linear Discriminant Analysis and Logistic Regression.
+
+Examples of high-variance machine learning algorithms include: Decision Trees, k-Nearest Neighbors and Support Vector Machines
+
+#### To reduce the variance further:
+1. Ensemble of different models
+2. (Not much imp)Ensemble of different parameters of same model (As, while solving an optimization, there can be many optima points)
+3. Increase the dataset size
+4. Another
+    - set random field
+    - Early stopping
+    - pruning of trees
+
+---
+
+## Covariance:
+- sum_i (xi - E[x]) ( yi - E[y]) / sqrt(sum_i (xi - E[x])) sqrt(sum_i ( yi - E[y]))
+
+## Correlation: [best](https://www.analyticsvidhya.com/blog/2015/06/correlation-common-questions/)
+- **Correlation** is normalized **Covariance**
+- range is [-1, 1]
+- pearson correlation has range of [-1, 1], **with string assumption of Linearity**
+
+### Imp points on correlation:
+- It is not of tranitive nature, which means if A and B are correlated && B and C are correlated, it doesn't tell about correlation of A and C.
+- Pearson correlation is **very sensitive to outliers**
+
+
+
+### Spearmann coefficient
+- sigma(x, y) = 1 - (6* sum_i (d_i)^2) / (n*(n-1)), where d is distance between corresponding rank between two variable
+    1. Rank the data points of x and y, as highest value with rank of 1.
+    2. Take manhattan distance between 2 variable, square them and add them all.
+    3. Put in formaula above.
+
+
+##  dimensionality reduction algorithms:
+- PCA (linear)
+- t-SNE (stochastic neighbourhood embedding)(non-parametric/ nonlinear)
+- Isomap (nonlinear)
+- LLE (Local Likelihood Embedding) (nonlinear)
+- SNE (nonlinear)
+- Laplacian Eigenmaps (nonlinear)
+
+### t-sne:
+t-SNE is based on probability distributions with random walk on neighborhood graphs to find the structure within the data. 
+- Local approaches seek to map nearby points on the manifold to nearby points in the low-dimensional representation. Global approaches on the other hand attempt to preserve geometry at all scales, i.e mapping nearby points to nearby points and far away points to far away points  
+
+
+---
 
 ## Imp:
 1. Hadamard : element wise multiplication
 2. Image Processing Algo: https://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-3-greyscale-conversion/
+3. [Data science prep by amazon](https://www.quora.com/What-is-the-best-site-for-preparing-data-science-interview)
+4. [Various Question for all section](https://www.analyticsvidhya.com/blog/2018/06/comprehensive-data-science-machine-learning-interview-guide/)
