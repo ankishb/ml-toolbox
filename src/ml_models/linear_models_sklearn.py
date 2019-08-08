@@ -196,9 +196,7 @@ clf.fit(X, y)
 
 
 
-from sklearn.linear_model import SGDClassifier
-sgd_clf_params = loss=’hinge’, penalty=’l2’, alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=None, tol=None, shuffle=True, verbose=0, epsilon=0.1, n_jobs=None, random_state=None, learning_rate=’optimal’, eta0=0.0, power_t=0.5, early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, class_weight=None, warm_start=False, average=False, n_iter=None
-sgd_clf = SGDClassifier(sgd_clf_params)
+sgd_clf = SGDClassifier(loss='log', penalty='elasticnet', alpha=0.0001, l1_ratio=0.15, fit_intercept=True, max_iter=1000, tol=0.001, shuffle=True, verbose=0, epsilon=0.1, n_jobs=4, random_state=1337, learning_rate='optimal', eta0=0.0, power_t=0.5, early_stopping=True, validation_fraction=0.25, n_iter_no_change=5, class_weight='balanced', warm_start=False, average=False, n_iter=1000)
 
 
 

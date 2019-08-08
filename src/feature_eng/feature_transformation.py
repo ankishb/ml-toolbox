@@ -3,7 +3,7 @@
 import gc
 import numpy as np
 import pandas as pd
- from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA
 from sklearn.decomposition import NMF
 from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import PolynomialFeatures as pf

@@ -70,8 +70,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD, NMF
 
-def tfidf_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', ngram=3, 
-    stopwords='english', n_component=120, decom_flag=False, which_method='svd', max_features=None):
+def tfidf_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', ngram=3, stopwords='english', n_component=120, decom_flag=False, which_method='svd', max_features=None):
     """return tfidf feature
     Args:
         train, test: dataframe
@@ -96,7 +95,7 @@ def tfidf_feature(train, test, col_name, min_df=3, analyzer='word', token_patter
 
     """
     tfv = TfidfVectorizer(min_df=min_df,  max_features=max_features, 
-                strip_accents='unicode', analyzer=analyzer,max_df=1.0, 
+                strip_accents='unicode', analyzer=analyzer, max_df=1.0, 
                 token_pattern=token_pattern, ngram_range=(1, ngram), 
                 use_idf=1, smooth_idf=1, sublinear_tf=1,
                 stop_words = stopwords)
@@ -138,8 +137,7 @@ def tfidf_feature(train, test, col_name, min_df=3, analyzer='word', token_patter
         return train_dec, test_dec, complete_tfv, tfv
 
 
-def countvect_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', 
-                    ngram=3, stopwords='english', max_features=None):
+def countvect_feature(train, test, col_name, min_df=3, analyzer='word', token_pattern=r'\w{1,}', ngram=3, stopwords='english', max_features=None):
     """return CountVectorizer feature
     Args:
         train, test: dataset
