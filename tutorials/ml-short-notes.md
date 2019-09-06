@@ -91,7 +91,13 @@ Out: {0: 1.0, 1: 403.74}
 1. Sort the data values from low to high
 2. Multiply the percentile with total number of value. For 25 student and 99percentile, it will be 25*0.99.
 3. Round to nearest whole number. 1.5-->2, 2.7-->3, 1.2-->1, 5-->5
-4. Pick the value at that index, given by step 3
+4. If the value obtained at step `2` is not whole number:
+      Pick the value at that index, given by step `3`
+    Else
+      Ans will be the average of value at (index, index+1)
+```
+or example, suppose you have 25 test scores, and in order from lowest to highest they look like this: 43, 54, 56, 61, 62, 66, 68, 69, 69, 70, 71, 72, 77, 78, 79, 85, 87, 88, 89, 93, 95, 96, 98, 99, 99. To find the 90th percentile for these (ordered) scores, start by multiplying 90% times the total number of scores, which gives 90% ∗ 25 = 0.90 ∗ 25 = 22.5 (the index). Rounding up to the nearest whole number, you get 23
+```
 
 ## Find Inverse of matrix:
 - use GAUSS ELIMINATION METHOD
@@ -122,9 +128,9 @@ h := 1 /* Initialization of the pivot row */
 ```
 
 ## Optimization (Part-1):
-- A function is convex, when **f(y) >= f(x)+dy/dx (y-x)**, which is nothing but the value at function is always greater than its tangent.
+- A function is convex, when `f(y) >= f(x)+dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
 - Convex function has its second derivative(hessian) as semi-definite.
-```proof
+```
 At critical point, f'(x) = 0;
 using taylor series: f(x+h) = f(x) + h*f'(x) + 1/2 h*f''(x)*h
 f(x+h) = f(x) + 1/2 h*f''(x)*h, as f'(x) = 0
@@ -134,33 +140,33 @@ So hessian >=0, which is positive semidefinte
 ```
 
 ## gradient Desent:
-- can optimize any function, **convex/non-convex**
+- can optimize any function, `convex/non-convex`
 - the idea is to take gradient and move in the opposite direction of it. **As grad tells us the direction in which slope is increasing**.
-- we also use **learning rate** to give less signifies to update using current gradient.
+- we also use `learning rate` to give less signifies to update using current gradient.
 
 ## learning rate:
 - constant
-- momentum based **1/t, 1/sqrt(t), 1/(1-t), RMSProp< Nestrov Momentum**
-- adaptive lr **Adam, AdaGrad,...**
-- cyclic learning rate **very effective**, the idea is insetead of finding one local minima, it find many many extrema and build the ensemble using all those optima pts.
+- momentum based `1/t`, `1/sqrt(t)`, `1/(1-t)`, RMSProp< Nestrov Momentum**
+- `adaptive lr` **Adam, AdaGrad,...**
+- `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many many extrema and build the ensemble using all those optima pts.
 
 ## Gradient Based Optimization:
-- GD: update as per the gradient of all data
+- `GD`: update as per the gradient of all data
     - GD converge to optimal at the rate of **(1/k)**, which means if you need an accuracy of **1e-4**, then it need something on the order of one thousand steps.
-- SGD: Take one random sample and upadte acc to that, it will have **high variance**
-- Batch GD: **Reduce Variance**
-- Subgradient: At non-differential point, we get a range by looking at grad value on the right and left, then pick a value and pretend it like a differential function
-- Constrained opt (Lagrangian Based && Projected Grad)
+- `SGD`: Take one random sample and upadte acc to that, it will have **high variance**
+- `Batch GD`: **Reduce Variance**
+- `Subgradient`: At non-differential point, we get a range by looking at grad value on the right and left, then pick a value and pretend it like a differential function
+- `Constrained opt` (Lagrangian Based && Projected Grad)
 - Coordinate Descent Algo: Where we update one dimension feature from D-dim space
-- Alternative Optimization: **Exp: EM**
-- Newton Method(Second Order Method, another is L-BFGS):
+- `Alternative Optimization`: **Exp: EM**
+- `Newton Method`(Second Order Method, another is `L-BFGS`):
     1. It tells about its curvature, shape, etc
     2. Each step is finding the minima of **quadratic function** in local space.
     3. No need of learning rate
-    4. As f(y) = f(x) + (y-x) df/dx + (y-x)^2 d^2f/dx^2
-    f(wt+1) =f(wt)+df/dwt (w-wt) + 1/2 (w-wt)^2 d^2f/dw^2
-    **w = argmax_w f(wt+1)**
-    **wt+1 = wt + (hessian)^-1 grad**
+    4. As `f(y) = f(x) + (y-x) df/dx + (y-x)^2 d^2f/dx^2`
+    `f(wt+1) =f(wt)+df/dwt (w-wt) + 1/2 (w-wt)^2 d^2f/dw^2`
+    `w = argmax_w f(wt+1)`
+    `wt+1 = wt + (hessian)^-1 grad`
     5. Expensive Because of hessian
     6. Very Fast, if f(w) is convex
 
@@ -176,27 +182,20 @@ So hessian >=0, which is positive semidefinte
 - For sparse data (tf-idf) ==> AdaGrad, AdaDelta(improved over AdaGrad)
     Best, if we are using sparse data such as tf-idf features for words.
 
-- Momentum:
+1. Momentum:
 **Another way to think about momentum, suppose our update as oscilating while moving to its local minima, so when we taking average of many points value, its oscillation in verticle direction suppress, but in horizontal direction as all grad effect sums up, so it will have nice big grad value.**
+    V_w = beta V_w + (1-beta) dw
+    V_b = beta V_b + (1-beta) db
 
-```
-V_w = beta V_w + (1-beta) dw
-V_b = beta V_b + (1-beta) db
+    w = w - alpha V_w
+    b = b - alpha V_b
 
-w = w - alpha V_w
-b = b - alpha V_b
-```
 The momentum term increases for dimensions whose gradients point in the same directions and reduces updates for dimensions whose gradients change directions. As a result, we gain faster convergence and reduced oscillation.
-
-
-
-- AdaGrad: weakness: lr_rate decaying
+2. `AdaGrad`: weakness: lr_rate decaying
 Notice that the weights that receive high gradients will have their effective learning rate reduced, while weights that receive small or infrequent updates will have their effective learning rate increased. This agressive behaviour, stops Deep-NN to learn very early.
-
-- RMSProp:
+3. RMSProp:
 The RMSProp update adjusts the Adagrad method in a very simple way in an attempt to reduce its aggressive, monotonically decreasing learning rate. In particular, it uses a moving average of squared gradients instead. Hence, RMSProp still modulates the learning rate of each weight based on the magnitudes of its gradients, which has a beneficial equalizing effect, but unlike Adagrad the updates do not get monotonically smaller
-
-- AdaDelta: Removed weakness of adadelta
+4. AdaDelta: Removed weakness of adadelta
 Best, if we are using sparse data such as tf-idf features for words.
 
 > If our data is sparse and our features have very different frequencies, we might not want to update all of them to the same extent, but perform a larger update for rarely occurring features.
@@ -220,51 +219,51 @@ Best, if we are using sparse data such as tf-idf features for words.
 ## Loss function (**Convex Surrogate Losses Function**):
 - Surrogate losses, because it define the upper bound on the real losses and minimize that. So minimze the surrogate losses function make sure pushing down real losses too.
 - **0/1 loss**: 1[ywx <= 0], this is NP hard, no efficient solution. For example for wx = -0.0000001, with increase of 00000009 it will still be -1, but 000000011 increase will take it to right side that is +1.
-- **Perceptron**: `max(0, -ywx)`
-- **Hinge Loss**: `max(0, 1-ywx)`
-- **logistic**: `log(1+exp(-ywx))/log2`
-- **Exponential Loss**: `exp(-ywx)`
-- **Absolute loss**: `|y - wx|` **Robust to outliers**
-- **epsilon-insensitive loss**: `|y-wx| + epsilon`
+- `Perceptron`: `max(0, -ywx)`
+- `Hinge Loss`: `max(0, 1-ywx)`
+- `logistic`: `log(1+exp(-ywx))/log2`
+- `Exponential Loss`: `exp(-ywx)`
+- `Absolute loss`: `|y - wx|` **Robust to outliers**
+- `epsilon-insensitive loss`: `|y-wx| + epsilon`
 
 ## Hyperplane:
-- **`W x + b = 0`**, a hyperplane
-    1. **b==0**, then plane is passing through origin
-    2. **b>0**, hyperplane moves parallel in direction of w
-    3. **b<0**, hyperplane moves opposite direction
+- `W x + b = 0`, a hyperplane
+    1. `b==0`, then plane is passing through origin
+    2. `b>0`, hyperplane moves parallel in direction of w
+    3. `b<0`, hyperplane moves opposite direction
 
 
-# regularization:
+## regularization:
 - avoid overfitting
 - better generalization
 
 ### Types of regularization
-- **L_p Norm**:
+1. `L_p Norm`:
     - p < 1, it shrink from diamond to shape, which stretches towards axes, it has sparsity nature, but also non-convex, so non preferable generally.
     - p = 1 ==> diamond, this is least value of p, with convexity properties, Also have sparse nature.
     - p = 2 ==> euclidean loss, helps in generalize better, by reducing weights so much that boundriess becomes smooth
     - **Why small weights are prefered, because by changing the input x by epsilon, its prediction should not change, which is possible with smalle weights only.**
     - p > 2, it move from circle to square as p = INF
     - p = INF, also called max norm.
-- **L0**:
+2. `L0`:
     - point shape
     - NP hard
     - Count of non-negative feature value.
-- **L1**:
+3. `L1`:
     - **lasso Regression**
     - Diamond shape(if the linear predictor or line of solution meet the corner point, it creats sparsity in solution)
     - sparse feaure
     - deal with multicolinearity problem
-- **L2**:
+4. `L2`:
     - **Ridge** regression
     - circular shape
     - small weights **if there is any noise in feature, then having small weights generally doesn't effect too much**
-- **Dropout** Reg (in deep learning)
+5. `Dropout` Reg (in deep learning)
 - for unsupervised learning:
-    - sum_i w_i*(x_i - x_j)^2
+    - `sum_i w_i*(x_i - x_j)^2`
 - As p decrease in **L_p**, the shape of l_p shrink from edge(imagine dianmond and shrink its edges.) and tends to have sharp corners.
 
-# Impotant Points
+## Impotant Points
 - Non-Linear Boundary using linear predictors, for circular dataset, using linear predictor, such as **f(w0 + w1*x1 + w2*x2)** will not work, But if we use **f(w0 + w1*x1^2 + w2*x2^2)**, it can find a circular boundary. **w0** helps in finding the threshold, the radius of circle.
 
 
@@ -272,9 +271,9 @@ Best, if we are using sparse data such as tf-idf features for words.
 - one is [m X n] and other is [n X p], the time complexity will be **[mnp]**
 
 ## Linear Regression:
-- closed form solution is **[w = (X' X + lambda I_d)^(-1) X' Y]**, the time analysis is as 
-    1. X'X : DND
-    2. X' X + lambda I_d : D D
+- closed form solution is `[w = (X' X + lambda I_d)^(-1) X' Y]`, the time analysis is as 
+    1. `X'X : DND`
+    2. `X' X + lambda I_d : D D`
     3. Inverse of D X D matrix is D^3
     4. then [DXD][DXN][NX1] will be DDN
     5. [DXN][NX1] will be DN 
@@ -288,48 +287,46 @@ Best, if we are using sparse data such as tf-idf features for words.
 
 
 ## SVM (Maximum margin hyperplane): 
-- **ywx > gamma**, it add a pre-specified margin.
+- `ywx > gamma`, it add a pre-specified margin.
 - For gamma=0, it becomes perceptron
-- Reason behind the name \Support Vector Machine"?
-    1. SVM optimization discovers the most important examples (called \support vectors") in training data
-    2. These examples act as \balancing" the margin boundaries (hence called \support")
-- margin(gamma) is distance as **(wx+b) / ||w||**
-- to maximize the margin, we minimize the **||w||**
+- Reason behind the name "Support Vector Machine"?
+    1. SVM optimization discovers the most important examples (called "support vectors") in training data
+    2. These examples act as `balancing` the margin boundaries (hence called `support`)
+- margin(gamma) is distance as `(wx+b) / ||w||`
+- to maximize the margin, we minimize the `||w||`
 
 ## soft-margin SVM:
-- Very small C: Large margin but also large training error.
-- Very large C: Small training error but also small margin.
+- `Very small C`: Large margin but also large training error.
+- `Very large C`: Small training error but also small margin.
 - C controls the trade-off between large margin and small training error
 
-- Dual formaulation, where we have argmax_a (a.1 - a G a)
+- Dual formaulation, where we have `argmax_a (a.1 - a G a)`
 - The dual formulation is nice due to two primary reasons:
-Allows conveniently handling the margin based constraint (via Lagrangians)
-Important: Allows learning nonlinear separators by replacing inner products (e.g., Gmn = ym yn xm xn)
-by kernelized similarities (kernelized SVMs)
+  1. Allows conveniently handling the margin based constraint (via Lagrangians)
+  2. Important: Allows learning nonlinear separators by replacing inner products (e.g., `Gmn = ym yn xm xn`) by kernelized similarities (kernelized SVMs)
+
+- What if we have solution, w and b, but not slacks, can we find it, **YES**, slacks's value is nothing but the hinge loss on the corresponding example.
+  - slack = `0, when  yn (w xn + b) >= 1`
+    and `(1 - yn (w xn + b))`   otherwise
+
+- Soft Margin loss, is same as `regularized hinge loss`. `min_{w,b} = ||w||^2 + C sum_n hingle_loss(yn, (w xn + b))`
+  1. first term --> large margin
+  2. 2nd term   --> small slack
 
 > One Biggest Advantage of Soft Margin SVM over hard margin, is that there is always going to be some solution, whether it is linearly seperable or not. **For example, lets suppose data is not linearly seperable, so hard margin will give up, but in soft margin, it use slacks to incorporate some mistakes/error, and will come up with a solution anyway.**
-
-> What if we have solution, w and b, but not slacks, can we find it, **YES**, slacks's value is nothing but the hinge loss on the corresponding example.
-slack = |0                   if yn (w xn + b) >= 1
-        |1 - yn (w xn + b)   otherwise
-
-> Soft Margin loss, is same as regularized hinge loss.
-min_{w,b} = ||w||^2 + C sum_n hingle_loss(yn, (w xn + b))
-1. first term --> large margin
-2. 2nd term   --> small slack
 
 
 ## Multiclass SVM:
 - It use K weight vector, one for each class
 - maximum margin problem will be same except the fact that now, loss will include all weight vector
 - want score w.r.t correct class to be at least 1 more than score w.r.t all other classes
-- **W_y X >= 1 + w_yhat X** yhat --> incorrect class and y --> correct class
-- Same as Multiclass Hinge loss as **max{0, 1+max{k=yhat}(W_k X - W_y X)}**
+- `W*y X >= 1 + w*yhat X` yhat --> incorrect class and y --> correct class
+- Same as Multiclass Hinge loss as `max{0, 1+max{k=yhat}(W_k X - W_y X)}`
 
 1. One vs All:
     - For k classes, we make k binary classifier
 2. All pairs:
-    - Choose pairs of 2 from k, so in total we will have **K(k-1)/2** classifiers, Not very practicals for large number of classes.
+    - Choose pairs of 2 from k, so in total we will have `K(k-1)/2` classifiers, Not very practicals for large number of classes.
 
 
 ## One Class Clf (Outlier/Novelty detection): 
@@ -346,60 +343,61 @@ min_{w,b} = ||w||^2 + C sum_n hingle_loss(yn, (w xn + b))
 
 ## Nonlinearity handling (kernel trick):
 1. Separte 1-D data of 2 classes, 
-    - Exp: .......****.......
+    - Exp: `.......****.......`
     - Project data into 2 dimension of shape parabola or upper triangle as 
-    1. x --> [x, x^2]
-    2. x --> [x, |x|]
+    1. `x --> [x, x^2]`
+    2. `x --> [x, |x|]`
 2. Seperate circular data
-    - [x1, x2] --> [x1^2, x1*x2, x2^2]
+    - `[x1, x2] --> [x1^2, x1*x2, x2^2]`
 3. Possible Mapping:
-    - x --> x^2, x^3, x^n
-    - cos(x), log(n)
+    - `x --> x^2, x^3, x^n`
+    - `cos(x)`, `log(n)`
     - any function
 
 
 ## kernel:
-- Implicit mapping for data, which means we operate an function on input, which automatically compute operation on higher dimesional space. 
-- Exp: K(X,Y) = (X*Y)^2, where X and Y are 2 dim feature. With this operation, it implicity have **dot([x1^2, x1*x2, x2^2], [y1^2, y1*y2, y2^2])**, ie **phi(X).phi(Y)**
+- `Implicit mapping` for data, which means we operate an function on input, which automatically compute operation on higher dimesional space. 
+- Exp: `K(X,Y) = (X*Y)^2`, where X and Y are 2 dim feature. With this operation, it implicity have `dot([x1^2, x1*x2, x2^2], [y1^2, y1*y2, y2^2])`, ie `phi(X).phi(Y)`
+
 > Note: We didn't need to define the phi operation explicitly.
 
-Imp Points:
+### Imp Points:
 1. Any kernel function, which map X-->F, with mapping as **phi**, should satisfy **mercer condition**
 
 > F need to be a vector space, with dot product operaion defined on it, F space is also called hilbert space.
 
-## Mercer’s Condition (Kernel Functions)
+#### Mercer’s Condition (Kernel Functions)
 For k to be a kernel function
 1. k must define a dot product for some Hilbert Space F
 2. Above is true if k is symmetric and positive semi-definite (p.s.d.) function (though there are
 exceptions; there are also "indefinite" kernels).
     - The function k is p.s.d. if the following holds
-    **integ integ f (x)k(x; z)f (z)dxdz ≥ 0**
+    `integ integ f (x)k(x; z)f (z)dxdz ≥ 0`
 
 ## properties of kernel function:
 Let k1, k2 be two kernel functions then the following are as well:
-1. k(x; z) = k1(x; z) + k2(x; z): direct sum
-2. k(x; z) = αk1(x; z): scalar product
-3. k(x; z) = k1(x; z)k2(x; z): direct product
+1. `k(x; z) = k1(x; z) + k2(x; z)`: direct sum
+2. `k(x; z) = αk1(x; z)`: scalar product
+3. `k(x; z) = k1(x; z)k2(x; z)`: direct product
 Kernels can also be constructed by composing these rules
 
 ## Types of kernel:
-1. Linear kernel: X*Y (identity mapping)
-2. Quadratic kernel: (X*Y)^2 or (1 + X*Y)^2
-3. Polynomial kernel: (1 + X*Y)^d
-4. Radial Basis Function: (Gaussian kernel) : exp(-gamma |X-Y|^2)
+1. Linear kernel: `X*Y` (identity mapping)
+2. Quadratic kernel: `(X*Y)^2 or (1 + X*Y)^2`
+3. Polynomial kernel: `(1 + X*Y)^d`
+4. Radial Basis Function: (Gaussian kernel) : `exp(-gamma |X-Y|^2)`
     - infinite dim basis function (implicitly)
     - Also called stationary kernel, as distance between X and Y is constant
 
 ## Kernel Matrix:
 - nXn matrix, which is pairwise similarity between n samples
 - K is a symmetric and positive definite matrix
-- For a P.D. matrix: z>Kz > 0; (also, all eigenvalues positive)
+- For a P.D. matrix: `z>Kz > 0`; (also, all eigenvalues positive)
 - Also known as the Gram Matrix
 
 
 ## Kernel tricks
-1.  Any learning model in which, during training and test, inputs only appear as dot products (xi. xj) can be kernelized (i.e., non-linearlized), by replacing the xi.xj terms by φ(xi).φ(xj) = k(xi, xj)
+1.  Any learning model in which, during training and test, inputs only appear as dot products (xi. xj) can be kernelized (i.e., non-linearlized), by replacing the xi.xj terms by `φ(xi).φ(xj) = k(xi, xj)`
 2. Most learning algorithms can be easily kernelized
     - Distance based methods, Perceptron, SVM, linear regression, etc.
     - Many of the unsupervised learning algorithms too can be kernelized (e.g., K-means clustering, Principal Component Analysis, etc. - will see later)
@@ -408,20 +406,20 @@ Kernels can also be constructed by composing these rules
 - slow at training and testing samples
 - Like in ridge regression, we need to store the entire training sample to makae a prediction **or** the basis vector of original data, which can be huge to store. **But there are method, which can helps us in computing low dim features**
 - Landmarks and Random feature
-- The idea here is that instead of computing high dim **phi(x), we can replaced it with low dims psi(x), with following property fulfilled i.e. psi(x)psi(y) ~~ phi(x)phi(y)**
+- The idea here is that instead of computing high dim `phi(x)`, we can replaced it with low dims psi(x), with following property fulfilled i.e. `psi(x)psi(y) ~~ phi(x)phi(y)`
 - Dual form of Ridge helps a lot, even we deal with linear model, as the computation become cheaper with dual,if D>N
 
 1. Landmarks:
     - Select L training data [z1, z2, ..., zL] as landmarks
-    - psi(xn) = [k(z1, xn), k(z2, xn), ..., k(zL, xn)]
-    - k(xn, xm) = psi(xn)psi(xm)
+    - `psi(xn) = [k(z1, xn), k(z2, xn), ..., k(zL, xn)]`
+    - `k(xn, xm) = psi(xn)psi(xm)`
     - fast both on training and testing
 2. Random feature:
-    - k(xn, xm) = E_{w~p(w)} [t_w(xn) t_w(xm)]
+    - `k(xn, xm) = E_{w~p(w)} [t_w(xn) t_w(xm)]`
     - use monte carlo to compute the kernel matrix.
     1. Sample w from distirbition
-    2. For that w, compute **t_w**, which is a L dims vector
-    3. For Exp: RBF kernel: **k(xn, xm) = E_{w~p(w)} [cos(w*xn) cos(w*xm)]**
+    2. For that w, compute `t_w`, which is a L dims vector
+    3. For Exp: RBF kernel: `k(xn, xm) = E_{w~p(w)} [cos(w*xn) cos(w*xm)]`
 
 - Another method to speed up SVM kernel method
   - cluster the support vector (alpha_n)
@@ -604,12 +602,13 @@ F1        | 2PR/(P+R)
 - They are not equivalent untill, we assume gaussian distribution as probability density function in MLE.
 
 ## Assumption in Oordinary Least Square:
-1. The regression model is linear in the coefficients and the error term
+1. The regression model is linear in the coefficients, as well in the error term
 2. The error term has a population mean of zero
 3. All independent variables are uncorrelated with the error term
 4. Observations of the error term are uncorrelated with each other
     - One observation of the error term should not predict the next observation. For instance, if the error for one observation is positive and that systematically increases the probability that the following error is positive, that is a positive correlation. If the subsequent error is more likely to have the opposite sign, that is a negative correlation. This problem is known both as serial correlation and autocorrelation
 5. The error term has a constant variance (no heteroscedasticity)
+  - `Homoscedasticity` describes a situation in which the error term (that is, the “noise” or random disturbance in the relationship between the independent variables and the dependent variable) is the same across all values of the independent variables
 7. The error term is normally distributed (optional)
     - OLS does not require that the error term follows a normal distribution to produce unbiased estimates with the minimum variance. However, satisfying this assumption allows you to perform statistical hypothesis testing and generate reliable confidence intervals and prediction intervals.
 
@@ -629,46 +628,42 @@ It is a least squares optimization but the model is not linear.
 
 ## Bias And Varaince:
 The prediction error for any machine learning algorithm can be broken down into three parts:
+1. Bias Error
+2. Variance Error
+3. Irreducible Error
 
-    Bias Error
-    Variance Error
-    Irreducible Error
 ### Mathematical expression: [Do derivation by urself, its confusing]
+```c++
 y = f(x) + epsilon
 err(x) = E[(y - yhat)^2]
 err(x) = [(f(x) + epsilon - yhat)^2]
 err(x) = [(f(x) + epsilon - yhat + E[yhat] - E[yhat])^2]
-
 err(x) = (f(x) - E[yhat])^2 + E[f(x)^2] - E[yhat]^2 + epsilon^2
 err(x) = Bias^2 + variance + Irreducible-error
-
+```
 The irreducible error cannot be reduced regardless of what algorithm is used. It is the error introduced from the chosen framing of the problem and may be caused by factors like unknown variables that influence the mapping of the input variables to the output variable
+
 ### Bias:
-
-    Low Bias: Suggests less assumptions about the form of the target function.
-    High-Bias: Suggests more assumptions about the form of the target function.
-
-Examples of low-bias machine learning algorithms include: Decision Trees, k-Nearest Neighbors and Support Vector Machines.
-
-Examples of high-bias machine learning algorithms include: Linear Regression, Linear Discriminant Analysis and Logistic Regression
+1. `Low Bias`: Suggests less assumptions about the form of the target function.
+  - `Decision Trees, k-Nearest Neighbors and Support Vector Machines` are low bias ML Algo.
+2. `High-Bias`: Suggests more assumptions about the form of the target function.
+  - `Linear Regression, Linear Discriminant Analysis and Logistic Regression` are high bias ML Algo
 
 ### Variance:
 Machine learning algorithms that have a high variance are strongly influenced by the specifics of the training data. This means that the specifics of the training have influences the number and types of parameters used to characterize the mapping function.
+1. `Low Variance`: Suggests small changes to the estimate of the target function with changes to the training dataset.
+  - `Linear Regression, Linear Discriminant Analysis and Logistic Regression`
+2. `High Variance`: Suggests large changes to the estimate of the target function with changes to the training dataset.
+  - `Decision Trees, k-Nearest Neighbors and Support Vector Machines`
 
-    Low Variance: Suggests small changes to the estimate of the target function with changes to the training dataset.
-    High Variance: Suggests large changes to the estimate of the target function with changes to the training dataset.
-
-Generally, nonparametric machine learning algorithms that have a lot of flexibility have a high variance. For example, decision trees have a high variance, that is even higher if the trees are not pruned before use.
-
-Examples of low-variance machine learning algorithms include: Linear Regression, Linear Discriminant Analysis and Logistic Regression.
-
-Examples of high-variance machine learning algorithms include: Decision Trees, k-Nearest Neighbors and Support Vector Machines
+> Generally, nonparametric machine learning algorithms that have a lot of flexibility have a high variance. For example, decision trees have a high variance, that is even higher if the trees are not pruned before use.
 
 #### To reduce the variance further:
 1. Ensemble of different models
 2. (Not much imp)Ensemble of different parameters of same model (As, while solving an optimization, there can be many optima points)
 3. Increase the dataset size
-4. Another
+4. Increase diversity in features
+5. Another
     - set random field
     - Early stopping
     - pruning of trees
@@ -676,24 +671,39 @@ Examples of high-variance machine learning algorithms include: Decision Trees, k
 ---
 
 ## Covariance:
-- sum_i (xi - E[x]) ( yi - E[y]) / sqrt(sum_i (xi - E[x])) sqrt(sum_i ( yi - E[y]))
+- `cov(x,y) = sum_i (xi - E[x]) ( yi - E[y])`
+- it is used to measure the direction of linearity(relationship) in x and y
 
 ## Correlation: [best](https://www.analyticsvidhya.com/blog/2015/06/correlation-common-questions/)
+- `coerr = cov(x,y)/(var(x) var(y))`
+- `cov(x,y) = sum_i (xi - E[x]) ( yi - E[y]) / sqrt(sum_i (xi - E[x])) sqrt(sum_i ( yi - E[y]))`
+- it measure the strength as well as direction of colinearity.
 - **Correlation** is normalized **Covariance**
 - range is [-1, 1]
+- `helps in feature selection(filter method)`
 - pearson correlation has range of [-1, 1], **with string assumption of Linearity**
-
-### Imp points on correlation:
-- It is not of tranitive nature, which means if A and B are correlated && B and C are correlated, it doesn't tell about correlation of A and C.
 - Pearson correlation is **very sensitive to outliers**
+
+> It is not of tranitive nature, which means if A and B are correlated && B and C are correlated, it doesn't tell about correlation of A and C.
 
 
 
 ### Spearmann coefficient
-- sigma(x, y) = 1 - (6* sum_i (d_i)^2) / (n*(n-1)), where d is distance between corresponding rank between two variable
+- `sigma(x, y) = 1 - (6* sum_i (d_i)^2) / (n*(n-1))`, where d is distance between corresponding rank between two variable
     1. Rank the data points of x and y, as highest value with rank of 1.
     2. Take manhattan distance between 2 variable, square them and add them all.
     3. Put in formaula above.
+
+## Why colinearity is bad in linear model?
+- If the model is consider all variable, to learn the characteristics, then those correlated feature will confuses it in making good decsion
+- For linear regression, our `assumption of independent variable` get violated. 
+  - Let's understand this problem specifically: Our objective is to model the dependent/response variable based on independent variable. This means that each independent variable has its own coeeficient, independent of other feature. But with multicolinearity, a minute change in one feature, changes other, but coefficent can't have this behaviour, because of our assumption
+- example of multicolinearity: two feature are `x` and other is `x+10`
+- Tree Based Model(specifically `boosting tree`) are free from this problem, because it split a node based on only one feature at a time.
+- `bagging methods` can have very small effect, but usually `unobserved`.
+
+> corrleation: we talk between two variable, `multicolinearity` is used, when correlation occurs in multiple feature. For exp: `x`, `x*2 + 3` and `x/10`
+
 
 
 ##  dimensionality reduction algorithms:
@@ -870,6 +880,29 @@ In A and B, we can clearly see that B is better, because of right child have hom
 #### Lemmantization:
 - Lemmatization, unlike Stemming, reduces the inflected words properly ensuring that the root word belongs to the language. In Lemmatization root word is called Lemma. A lemma (plural lemmas or lemmata) is the canonical form, dictionary form, or citation form of a set of words.
   1. WordNet-lemmantization
+
+
+```python
+from nltk.stem.wordnet import WordNetLemmatizer 
+lem = WordNetLemmatizer()
+
+from nltk.stem.porter import PorterStemmer 
+stem = PorterStemmer()
+
+word = "multiplying" 
+lem.lemmatize(word, "v")
+>> "multiply" 
+stem.stem(word)
+>> "multipli"
+```
+
+
+
+
+
+
+
+
 
 
 ## Regular expression
@@ -1201,9 +1234,9 @@ Note: If you use this approach on an exam, you may also want to mention why this
 
 
 #### Interpret Results
-- Reject the hypothesis, if `P-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
+- Reject the hypothesis, if `p-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
 - `A P-value measures the strength of evidence in support of a null hypothesis.`
-
+- P-value is the probability for the null hypothesis to be True.
 
 ---
 

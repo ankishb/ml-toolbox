@@ -1,4 +1,60 @@
 
+## XGBOOST:
+Boosted Tree Iteratively fit a new model in the current representation or predicted output as
+```
+y^0 = 0
+y^1 = y^0 + f1(x)
+....
+y^t = y^(t-1) + ft(x)
+```
+
+> ft(x) = (y^t - y^(t-1)) = error
+
+Objective function = loss(y, y^t) + reg_loss
+
+obj(t) = loss(y,y^(t)) + Ω(fi) 
+    = loss(y, y^(t−1) + ft(x))^2 + Ω(ft)
+
+If we consider using mean squared error (MSE) as our loss function, the objective becomes
+obj(t) = (y −(y^(t−1) + ft(x)))^2 + Ω(f) 
+= [2(y^(t−1)−y) ft(x) + ft(x)^2] + Ω(ft) 
+
+In the general case, we take the Taylor expansion of the loss function up to the second order:
+obj(t) = [loss(y,y^(t−1)) + grad ft(x) + hessian f^2t(x)] + Ω(ft)
+
+grad = ∂y^(t−1)loss(y,y^(t−1))
+hessian = ∂2y^(t−1)loss(y,y^(t−1))
+
+
+For reg_loss, it use complexity of tree(number of leafs and weights at leaf nodes)
+reg_loss = γT+ w^2
+
+Overall Objective function: [grad*weight + (hessian + γ)*weight^2] + γ*T
+
+Optimal weight: -grad/(hessian + γ)
+So obejctive: grad^2/(hessian + γ) + γ * T
+
+Where first terms tell how good it the split is or ho good the tree structure is
+
+To split at node:
+gain  = [gain of left child + gain of right child - gain, if we don't split] - complexity at that split
+
+where gain: grad^2/(hessian + γ)
+
+- xgboost doesn't handle categorical variable
+- use dummy variable/one hot encoding for cat variable
+
+### Unique feature of xgboost
+1. regularization
+2. handling sparse data
+3. cache awareness, to save compuitation from recomputing gradient
+4. parallel learning
+5. scalable (used by CERN on petabytes of data)
+6. weighted quantile sketch (weight column to each sample row)
+7. out of core usuage(optimize the disk space for huge dataset)
+
+---
+
 
 XGBoost: It need all data in the int/float form
 LightGBM: It can handle categorical columns, if dtype is chosen to be category, or if we explicitly provide columns name, shown in following example
@@ -11,9 +67,12 @@ or better
 ```python
 cat_col = train.select_dtypes('object').columns.tolist()
 
-d_train = lgb.Dataset(X_train, label = y_train, 
-                      feature_name = list(X_train.columns), 
-                      categorical_feature = cat_cols)
+d_train = lgb.Dataset(
+    X_train, 
+    label = y_train, 
+    feature_name = list(X_train.columns), 
+    categorical_feature = cat_cols
+)
 ```
 
 To handle missing values, use `use_missing=True`
@@ -80,30 +139,38 @@ Never tune these parameters unless you have an explicit requirement to tune them
 ## LightGBM docs summary:
 
 ### For Faster Speed:
-
-    Use bagging by setting bagging_fraction and bagging_freq
-    Use feature sub-sampling by setting feature_fraction
-    Use small max_bin
-    Use save_binary to speed up data loading in future learning
-    Use parallel learning, refer to Parallel Learning Guide
+1. Use bagging by setting `bagging_fraction` and `bagging_freq`
+2. Use feature sub-sampling by setting `feature_fraction`
+3. Use small `max_bin`
+4. Use `save_binary` to speed up data loading in future learning
 
 ### For Better Accuracy:
-
-    Use large max_bin (may be slower)
-    Use small learning_rate with large num_iterations
-    Use large num_leaves (may cause over-fitting)
-    Use bigger training data
-    Try dart
+1. Use large `max_bin` (may be slower)
+2. Use small `learning_rate` with large `num_iterations`
+3. Use large `num_leaves` (may cause over-fitting)
+4. Use bigger training data
+5. Try dart
 
 ### Deal with Over-fitting:
-
-    Use small max_bin
-    Use small num_leaves
-    Use min_data_in_leaf and min_sum_hessian_in_leaf
-    Use bagging by set bagging_fraction and bagging_freq
-    Use feature sub-sampling by set feature_fraction
-    Use bigger training data
-    Try lambda_l1, lambda_l2 and min_gain_to_split for regularization
-    Try max_depth to avoid growing deep tree
+1. Use small `max_bin`
+2. Use small `num_leaves`
+3. Use `min_data_in_leaf` and `min_sum_hessian_in_leaf`
+4. Use bagging by set `bagging_fraction` and `bagging_freq`
+5. Use feature sub-sampling by set `feature_fraction`
+6. Use bigger training data
+7. Try `lambda_l1`, `lambda_l2` and `min_gain_to_split` for regularization
+8. Try `max_depth` to avoid growing deep tree
 
 Reference: https://sites.google.com/view/lauraepp/parameters
+
+
+
+
+
+
+
+
+
+
+
+
