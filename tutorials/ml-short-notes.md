@@ -25,6 +25,22 @@ t-statistics:
 Final the coeeficient of feature in model and also find the std dev error and t-stat = (coeff/std-dev error)
 
 
+## Regression Analysis:
+regression analysis estimates the relationship between two or more variables.
+- It indicates the significant relationships between dependent variable and independent variable.
+- It indicates the strength of impact of multiple independent variables on a dependent variable.
+
+
+## types of Regressions?
+1. Linear Regression
+2. Logistic Regression
+3. Polynomial Regression
+4. Stepwise Regression
+5. Ridge Regression
+6. Lasso Regression
+7. ElasticNet Regression
+
+
 # logistic regeression
 - Linear regression try to put a linear line on samples, **Just imagine**, Can a linear line give a solution which seprate **[0,1]**. **Well, it can, Look at following exp**, because we need a threshold to decide which side the samples lie. But for biased/imbalanced dataset, the linear line will be biased along one side and solution may not be good, whereas logistic regression helps to put a sigmoid like curve on the samples, which seems good.
 
@@ -47,7 +63,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 
 # Ridge Regression:
 - L2 regularization
-- same solution as least square with **lambda I in inverse**, it also make inverse possible, if matrix is low rank.
+- same solution as least square with `lambda I in inverse`, it also make inverse possible, if matrix is low rank.
 - early stopping (not a regularization, but it helps in same way)
 
 
@@ -62,6 +78,14 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 # Convex function
 - if second derivative is always **positive**.
 - if hessian is positive definite.
+
+
+## Model Flexibility vs model interpretability:
+- Flexibility increase from left to right
+- Interpretation decrease from left to right
+  `subset-selection/lasso, linear regression, Decision tree/general additive model, SVM, Bagging, boosting`
+
+> More flexible means more complex in stat, because they are more prone to overfitting
 
 ---
 
@@ -104,29 +128,88 @@ or example, suppose you have 25 test scores, and in order from lowest to highest
 - Procede like following: **a11, a21, a31, -- a22, a32, a33, -- a23, a13, a12**
 - In brief, proceed through each columns, but lower left triangle, and then move upward and take left turn, it reach to a12.
 ```c++
-h := 1 /* Initialization of the pivot row */
- k := 1 /* Initialization of the pivot column */
- while h ≤ m and k ≤ n
-   /* Find the k-th pivot: */
-   i_max := argmax (i = h ... m, abs(A[i, k]))
-   if A[i_max, k] = 0
-     /* No pivot in this column, pass to next column */
-     k := k+1
-   else
-      swap rows(h, i_max)
-      /* Do for all rows below pivot: */
-      for i = h + 1 ... m:
-         f := A[i, k] / A[h, k]
-         /* Fill with zeros the lower part of pivot column: */
-         A[i, k]  := 0
-         /* Do for all remaining elements in current row: */
-         for j = k + 1 ... n:
-            A[i, j] := A[i, j] - A[h, j] * f
-      /* Increase pivot row and column */
-      h := h+1 
-      k := k+1
+1. Init A X = B as [A | B]
+2. Find pivot and rearrange row such that, diagnol represent the big number from the following rows
+  For exp: 
+  [1,  2, 4]    [49, 2, 2]
+  [2, 10, 1] => [2, 10, 1]
+  [49, 2, 2]    [1,  2, 4]
+3. start with first pivot (49) and compute factor f as (2/49) and subtract the entire row from f*pivot that will be (2/49)*(49) as A[i][j] = A[i][j] - f*pivot
+4. repeat for each pivot and iterate downward for each row
+5. In the end, we will get matrix in row echlon form, which give as coeffiencient of X.
+  [1, x12, x13, x14]
+  [0,  1 , x23, x24]
+  [0,  0 ,  1 , x34]
+
+Note: there is a catch, if matrix A is [m X n] dimension:
+  1. m == n , then we have unique solution (x33 = B3)
+  2. m > n , no solution
+  3. m < n , many solution (choose any value for x34, and then x33 = B3 - x34)
 ```
 
+#### Solving linear equation using gaussian elimination method
+```c++
+//Gauss Elimination
+#include<iostream>
+#include<iomanip>
+using namespace std;
+int main()
+{
+    int n,i,j,k;
+    cout.precision(4);        //set precision
+    cout.setf(ios::fixed);
+    cout<<"\nEnter the no. of equations\n";        
+    cin>>n;                //input the no. of equations
+    float a[n][n+1],x[n];        //declare an array to store the elements of augmented-matrix    
+    cout<<"\nEnter the elements of the augmented-matrix row-wise:\n";
+    for (i=0;i<n;i++)
+        for (j=0;j<=n;j++)    
+            cin>>a[i][j];    //input the elements of array
+    for (i=0;i<n;i++)                    //Pivotisation
+        for (k=i+1;k<n;k++)
+            if (abs(a[i][i])<abs(a[k][i]))
+                for (j=0;j<=n;j++)
+                {
+                    double temp=a[i][j];
+                    a[i][j]=a[k][j];
+                    a[k][j]=temp;
+                }
+    cout<<"\nThe matrix after Pivotisation is:\n";
+    for (i=0;i<n;i++)            //print the new matrix
+    {
+        for (j=0;j<=n;j++)
+            cout<<a[i][j]<<setw(16);
+        cout<<"\n";
+    }    
+    for (i=0;i<n-1;i++)            //loop to perform the gauss elimination
+        for (k=i+1;k<n;k++)
+            {
+                double t=a[k][i]/a[i][i];
+                for (j=0;j<=n;j++)
+                    a[k][j]=a[k][j]-t*a[i][j];    //make the elements below the pivot elements equal to zero or elimnate the variables
+            }
+    
+    cout<<"\n\nThe matrix after gauss-elimination is as follows:\n";
+    for (i=0;i<n;i++)            //print the new matrix
+    {
+        for (j=0;j<=n;j++)
+            cout<<a[i][j]<<setw(16);
+        cout<<"\n";
+    }
+    for (i=n-1;i>=0;i--)                //back-substitution
+    {                        //x is an array whose values correspond to the values of x,y,z..
+        x[i]=a[i][n];                //make the variable to be calculated equal to the rhs of the last equation
+        for (j=i+1;j<n;j++)
+            if (j!=i)            //then subtract all the lhs values except the coefficient of the variable whose value                                   is being calculated
+                x[i]=x[i]-a[i][j]*x[j];
+        x[i]=x[i]/a[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
+    }
+    cout<<"\nThe values of the variables are as follows:\n";
+    for (i=0;i<n;i++)
+        cout<<x[i]<<endl;            // Print the values of x, y,z,....    
+    return 0;
+}
+```
 ## Optimization (Part-1):
 - A function is convex, when `f(y) >= f(x)+dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
 - Convex function has its second derivative(hessian) as semi-definite.
@@ -234,6 +317,7 @@ Best, if we are using sparse data such as tf-idf features for words.
 
 
 ## regularization:
+- `shrinking of coefficient`
 - avoid overfitting
 - better generalization
 
@@ -255,6 +339,8 @@ Best, if we are using sparse data such as tf-idf features for words.
     - sparse feaure
     - deal with multicolinearity problem
 4. `L2`:
+    - `higher lambda, more shrinkage(approx 0)`
+    - `importance`: we don't want our model to be unstable with the addition of any noise. Note that, if there is noise in input feature, the coefficient for that feature will change the direction of hyperplane.
     - **Ridge** regression
     - circular shape
     - small weights **if there is any noise in feature, then having small weights generally doesn't effect too much**
@@ -262,6 +348,8 @@ Best, if we are using sparse data such as tf-idf features for words.
 - for unsupervised learning:
     - `sum_i w_i*(x_i - x_j)^2`
 - As p decrease in **L_p**, the shape of l_p shrink from edge(imagine dianmond and shrink its edges.) and tends to have sharp corners.
+
+> Note: Least square method is scale invariant as y = beta0 + x1*beta1 + x2*beta2. So LS method can learn appropriate coeff betas with the scaled features, but with regularization, it can creates some problem, it `increase the panality for those features`. Better method to standarize the data before using it in ridge regression.
 
 ## Impotant Points
 - Non-Linear Boundary using linear predictors, for circular dataset, using linear predictor, such as **f(w0 + w1*x1 + w2*x2)** will not work, But if we use **f(w0 + w1*x1^2 + w2*x2^2)**, it can find a circular boundary. **w0** helps in finding the threshold, the radius of circle.
@@ -547,6 +635,20 @@ A medical researcher wants to compare the effectiveness of two medications. The 
 
 A type I error occurs if the researcher rejects the null hypothesis and concludes that the two medications are different when, in fact, they are not. If the medications have the same effectiveness, the researcher may not consider this error too severe because the patients still benefit from the same level of effectiveness regardless of which medicine they take. However, if a type II error occurs, the researcher fails to reject the null hypothesis when it should be rejected. That is, the researcher concludes that the medications are the same when, in fact, they are different. This error is potentially life-threatening if the less-effective medication is sold to the public instead of the more effective one.
 
+#### Table of error types:
+- `H0` is Null Hypothesis
+
+ _ | H0 is true | H0 is false
+--- | --- | ---
+Reject H0 |  Type-I error, (false positive) (prob = α) | Correct inference (true positive) (prob = 1 - β)
+Fail to Reject H0 |  Correct inference (true negative) (prob = 1 - α) | Type II error (false negative) (prob = β)
+
+1. The type I error rate or significance level is the probability of rejecting the null hypothesis given that it is true. 
+  - Often, the significance level is set to 0.05.
+  - It implies that it is acceptable to have a 5% probability of incorrectly rejecting the null hypothesis.
+2. Type II error occurs when the null hypothesis is false, but erroneously fails to be rejected. 
+  - A type II error is often called a false negative (where an actual hit was disregarded by the test and is seen as a miss) in a test checking for a single condition with a definitive result of true or false.
+
 ## Precision & recall:
 - Precision: Of the positive predicted output, what percentage is actually positive.
 - Recall: Of the positive actual output, what percentage our model predict it positive 
@@ -601,7 +703,7 @@ F1        | 2PR/(P+R)
 - MLE is to maximize the log likelihood as the loss function and minimze it with respect to the parameter.
 - They are not equivalent untill, we assume gaussian distribution as probability density function in MLE.
 
-## Assumption in Oordinary Least Square:
+## assumption in Oordinary Least Square:
 1. The regression model is linear in the coefficients, as well in the error term
 2. The error term has a population mean of zero
 3. All independent variables are uncorrelated with the error term
@@ -618,22 +720,28 @@ F1        | 2PR/(P+R)
 
 - Non-linear least squares is common (https://en.wikipedia.org/wiki/Non-linear_least_squares). For example, the popular **Levenberg–Marquardt algorithm** solves something like:
 
-β^=argminβS(β)≡argminβ∑i=1m[yi−f(xi,β)]2
+`β^=argminβS(β)≡argminβ∑i=1m[yi−f(xi,β)]2`
 
 It is a least squares optimization but the model is not linear.
 **They are not the same thing.**
 - In summary: linear regression is optimization problem, with the intent to find best possible parameter for the linear line, where as least square method is potential loss function for an optimization problem. Which means, loss is (y - f(x))^2, where f(x) can be any function, linear/non-linear.
 
+> f linear regression is  "low bias/high variance", there must be some alternative method that is biased but that has lower variance. Various forms of regularized regression exist, including lasso regression and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. I believe that regularizing a regression using lasso or ridge will always decrease the variance in the estimator, and it will always introduce bias if the true value of the coefficient is not zero.
 
+---
 
 ## Bias And Varaince:
+Generally to measure the model, we draw a `chart of performance error vs model complexity`, this will leads us to the better decision.
+  - with more complexity in model(higher order polynomial features), we will have `low-bias and higher-variance`
+  - with less model complexity, we will have `high-bias and low-variance`.
+
 The prediction error for any machine learning algorithm can be broken down into three parts:
 1. Bias Error
 2. Variance Error
 3. Irreducible Error
 
 ### Mathematical expression: [Do derivation by urself, its confusing]
-```c++
+```python
 y = f(x) + epsilon
 err(x) = E[(y - yhat)^2]
 err(x) = [(f(x) + epsilon - yhat)^2]
@@ -668,6 +776,19 @@ Machine learning algorithms that have a high variance are strongly influenced by
     - Early stopping
     - pruning of trees
 
+
+## Cross-validation:
+We took `5000` predictor to build a model for our 100 samples, we want to select best `100` predictors
+
+### The right way:
+- We build all such model, and select `top 100` based on cv error
+
+### In wrong way:
+- we use `correlation` for `each predictor with the target/label` and choose the `best 100 correlated predictor`.
+- now `cv error` will be very low, as it has already seen the label. 
+- test error will be very high in this case, because cv gets wrong due to step 1.
+
+
 ---
 
 ## Covariance:
@@ -699,6 +820,7 @@ Machine learning algorithms that have a high variance are strongly influenced by
 - For linear regression, our `assumption of independent variable` get violated. 
   - Let's understand this problem specifically: Our objective is to model the dependent/response variable based on independent variable. This means that each independent variable has its own coeeficient, independent of other feature. But with multicolinearity, a minute change in one feature, changes other, but coefficent can't have this behaviour, because of our assumption
 - example of multicolinearity: two feature are `x` and other is `x+10`
+- Multicollinearity can increase the variance of the coefficient estimates and make the estimates very sensitive to minor changes in the model. The result is that the coefficient estimates are unstable.
 - Tree Based Model(specifically `boosting tree`) are free from this problem, because it split a node based on only one feature at a time.
 - `bagging methods` can have very small effect, but usually `unobserved`.
 
@@ -843,6 +965,26 @@ ax.set_ylabel('Count', fontsize=18);
 
 ---
 ## Decision Tree:
+Our objective is to find the regions, which can uniquely predict the value of input feature. 
+- In case of `regression`, objective function becomes: `sum_j{1:J} sum_{i belong to R_j} (y_i - yhat_{R_j}^2`
+- This is most important to undertand. To compute error, we proceed as follows: For each region `j`, we collect true labels of each such sample which lie in that region and then take average of their prediction(value from that region j), and then compute `(y - yhat)^2`.
+- The tree are built in Greedy fashion. At each node, we split on the basis of higher information gain of feature.
+- Although each split of the tree makes two partitions, it can fit interactions, while the additive model cannot. So tree model are capable of fitting a richer class of functions:
+
+### Pruning (weakest link pruning):
+- use greedy approach, to prune tree from bottom to up approach
+- In case of `regression`, objective function becomes: `sum_m{1:|T|} sum_{xi belong to Rm} (y_i - yhat_{Rm}^2 + alpha |T|`, where `|T|` is the number of `terminal nodes/leaf nodes`.
+
+### Algorithm:
+```python
+1. Use recurive binary splitting to grow a larger tree on training data, stopping only when each terminal node has fewer than some minimum number of observation. For exp, we split till we have 5 observation in each region
+2. apply cost complexity pruning to larger tree in order to obtain a sequence of best subtree as a function of alpha.
+3. Use k-fold cross validation to choose alpha
+4. return best subtree from step 2 that corresponds to the chosen value of alpha
+```
+
+
+
 - The `Information Gain` (IG) can be defined as follows:
   `IG(Dp) = I(Dp) − Nleft/Np I(Dleft) − Nright/Np I(Dright)` where I could be `entropy`, `Gini index`, or `classification error`, Dp, Dleft, and Dright are the dataset of the parent, left and right child node.
 - consider an following example for understanding why classification error is not a good metrics to rule based method like decision tree.
@@ -858,14 +1000,57 @@ In A and B, we can clearly see that B is better, because of right child have hom
 
 - Higher the information gain, lesser will be the entropy. It tell as that there is less uniformatity, which is what we desire. **A rule should involve more homogenity**
 
-#### Gini   : 
+### Gini index:
+  - `G = sum_{k = 1:K} pmk * (1 - pmk)`
+  - `measure of total variance across K classes`
+  - also known for `purity measure`
+  - smaller if better. For exp: if pmk is 0 or 1, then G = 0
+  - alternative to cross entropy, `D = - (sum_{k = 1:K} pmk log(pmk))`
+  - You have a bag of marbles with 64 red marbles and 36 blue marbles. What is the value of the Gini Index for that bag?  Ans: `Gini Index = .64*(1-.64) + .36*(1-.36) = .4608`
+
+#### Gini: 
   `1 - sum_{j: Classes} p_j^2`
-#### Entripy: 
+
+#### Entropy: 
   `- sum_{j: Classes} p_j log(p_j)`
 - why gini is preferred over entropy?
   1. First of all both are pretty much same (You can draw both metric on graph, entripy is parabolic, where as gini's curve follow same nature, but curve is little below of entropy)
   2. Gini has computational advantage. `No need of expensive logrithm`
 
+---
+
+## Bagging:
+Bagging is very powerful method. It is generally the combination of many decorrelated models. 
+- reduce the variance as `(sig1 + sig2 +... sign) / n`
+- `out of bag` error, which is error computes on leave out observation. As in bootstrap sampling, it choose `68%` of observation to fit the model, the other `32%` will be used for validation, which is called as `out of bag error`.
+
+## Random forest:
+- it use a simple but powerful idea to reduce variance, by choose `m` predictors out of `p` feature. for exp: `m = sqrt(p)`
+- use less number of predictors/features for each bag, it can reduce the variance, beacuse of no/less correlation between each bag.
+- **limitations of Random forest are** :
+  1. Correlated features will be given equal or similar importance, but overall reduced importance compared to the same tree built without correlated counterparts.
+  2. Random Forests and decision trees, in general, give preference to features with high cardinality ( Trees are biased to these type of variables ).
+
+> Note: In stat, we use predictor terms instead of features.
+
+---
+
+> An interseting method for feature selection is we can select only those predictors, which have high variance. Note that there is no cheating, because it doesn't use label to do that. We can just build a tree and find the variance of each feature, from the splitting decision.
+
+
+## Boosting:
+- build tree sequentially on residuals
+1. start with equal weight `Dt(n) = 1/n` for each sample.
+2. find error `et = sum_n Dt(n) |yt == yhatt|`
+3. Compute importance `alphat = 1/2 log((1 - et)/et)`
+4. update weight `D{t+1}(n) = Dt(n) exp(beta)`, where `beta = -alpha for correct prediction` and `alpha for incorrect`
+5. Normalize `D{t+1}(n)`
+6. Go to step 2. untill converge
+
+
+## important stuff on bagging and boosting
+- To perform Random Forests we need to select 2 parameters: number of samples B and m= number of variables sampled at each split.
+- In order to perform Boosting, we need to select 3 parameters: number of samples B, tree depth d, and step size 
 ---
 
 ## Text Normalization:
@@ -905,272 +1090,7 @@ stem.stem(word)
 
 
 
-## Regular expression
-Here is a quick cheat sheet for various rules in regular expressions:
 
-Identifiers:
-
-    \d = any number
-    \D = anything but a number
-    \s = space
-    \S = anything but a space
-    \w = any letter
-    \W = anything but a letter
-    . = any character, except for a new line
-    \b = space around whole words
-    \. = period. must use backslash, because . normally means any character.
-
-Modifiers:
-
-    {1,3} = for digits, u expect 1-3 counts of digits, or "places"
-    + = match 1 or more
-    ? = match 0 or 1 repetitions.
-    * = match 0 or MORE repetitions
-    $ = matches at the end of string
-    ^ = matches start of a string
-    | = matches either/or. Example x|y = will match either x or y
-    [] = range, or "variance"
-    {x} = expect to see this amount of the preceding code.
-    {x,y} = expect to see this x-y amounts of the precedng code
-
-White Space Charts:
-
-    \n = new line
-    \s = space
-    \t = tab
-    \e = escape
-    \f = form feed
-    \r = carriage return
-
-Characters to REMEMBER TO ESCAPE IF USED!
-
-    . + * ? [ ] $ ^ ( ) { } | \
-
-Brackets:
-
-    [] = quant[ia]tative = will find either quantitative, or quantatative.
-    [a-z] = return any lowercase letter a-z
-    [1-5a-qA-Z] = return all numbers 1-5, lowercase letters a-q and uppercase A-Z
-
-The code:
-
-So, we have the string we intend to search. We see that we have ages that are integers 2-3 numbers in length. We could also expect digits that are just 1, under 10 years old. We probably wont be seeing any digits that are 4 in length, unless we're talking about biblical times or something.
-
-import re
-
-exampleString = '''
-Jessica is 15 years old, and Daniel is 27 years old.
-Edward is 97 years old, and his grandfather, Oscar, is 102. 
-'''
-
-Now we define the regular expression, using a simple findall method to find all examples of the pattern we specify as the first parameter within the string we specify as the second parameter.
-
-ages = re.findall(r'\d{1,3}',exampleString)
-names = re.findall(r'[A-Z][a-z]*',exampleString)
-
-print(ages)
-print(names)
-
-
-
----
-
-## Regex cheatsheet [https://www.rexegg.com/regex-quickstart.html]
-Regex Accelerated Course and Cheat Sheet
-For easy navigation, here are some jumping points to various sections of the page:
-
-✽ Characters
-✽ Quantifiers
-✽ More Characters
-✽ Logic
-✽ More White-Space
-✽ More Quantifiers
-✽ Character Classes
-✽ Anchors and Boundaries
-✽ POSIX Classes
-✽ Inline Modifiers
-✽ Lookarounds
-✽ Character Class Operations
-✽ Other Syntax
-
-
-(direct link)
-Characters
-Character Legend  Example Sample Match
-\d  Most engines: one digit
-from 0 to 9 file_\d\d file_25
-\d  .NET, Python 3: one Unicode digit in any script file_\d\d file_9੩
-\w  Most engines: "word character": ASCII letter, digit or underscore \w-\w\w\w A-b_1
-\w  .Python 3: "word character": Unicode letter, ideogram, digit, or underscore \w-\w\w\w 字-ま_۳
-\w  .NET: "word character": Unicode letter, ideogram, digit, or connector \w-\w\w\w 字-ま‿۳
-\s  Most engines: "whitespace character": space, tab, newline, carriage return, vertical tab  a\sb\sc a b
-c
-\s  .NET, Python 3, JavaScript: "whitespace character": any Unicode separator a\sb\sc a b
-c
-\D  One character that is not a digit as defined by your engine's \d  \D\D\D  ABC
-\W  One character that is not a word character as defined by your engine's \w \W\W\W\W\W  *-+=)
-\S  One character that is not a whitespace character as defined by your engine's \s \S\S\S\S  Yoyo
-
-
-(direct link)
-Quantifiers
-Quantifier  Legend  Example Sample Match
-+ One or more Version \w-\w+  Version A-b1_1
-{3} Exactly three times \D{3} ABC
-{2,4} Two to four times \d{2,4} 156
-{3,}  Three or more times \w{3,}  regex_tutorial
-* Zero or more times  A*B*C*  AAACC
-? Once or none  plurals?  plural
-
-
-(direct link)
-More Characters
-Character Legend  Example Sample Match
-. Any character except line break a.c abc
-. Any character except line break .*  whatever, man.
-\.  A period (special character: needs to be escaped by a \)  a\.c  a.c
-\ Escapes a special character \.\*\+\?    \$\^\/\\  .*+?    $^/\
-\ Escapes a special character \[\{\(\)\}\]  [{()}]
-
-
-(direct link)
-Logic
-Logic Legend  Example Sample Match
-| Alternation / OR operand  22|33 33
-( … ) Capturing group A(nt|pple)  Apple (captures "pple")
-\1  Contents of Group 1 r(\w)g\1x regex
-\2  Contents of Group 2 (\d\d)\+(\d\d)=\2\+\1 12+65=65+12
-(?: … ) Non-capturing group A(?:nt|pple)  Apple
-
-
-(direct link)
-More White-Space
-Character Legend  Example Sample Match
-\t  Tab T\t\w{2}  T     ab
-\r  Carriage return character see below 
-\n  Line feed character see below 
-\r\n  Line separator on Windows AB\r\nCD  AB
-CD
-\N  Perl, PCRE (C, PHP, R…): one character that is not a line break \N+ ABC
-\h  Perl, PCRE (C, PHP, R…), Java: one horizontal whitespace character: tab or Unicode space separator    
-\H  One character that is not a horizontal whitespace   
-\v  .NET, JavaScript, Python, Ruby: vertical tab    
-\v  Perl, PCRE (C, PHP, R…), Java: one vertical whitespace character: line feed, carriage return, vertical tab, form feed, paragraph or line separator    
-\V  Perl, PCRE (C, PHP, R…), Java: any character that is not a vertical whitespace    
-\R  Perl, PCRE (C, PHP, R…), Java: one line break (carriage return + line feed pair, and all the characters matched by \v)    
-
-
-(direct link)
-More Quantifiers
-Quantifier  Legend  Example Sample Match
-+ The + (one or more) is "greedy" \d+ 12345
-? Makes quantifiers "lazy"  \d+?  1 in 12345
-* The * (zero or more) is "greedy"  A*  AAA
-? Makes quantifiers "lazy"  A*? empty in AAA
-{2,4} Two to four times, "greedy" \w{2,4} abcd
-? Makes quantifiers "lazy"  \w{2,4}?  ab in abcd
-
-
-(direct link)
-Character Classes
-Character Legend  Example Sample Match
-[ … ] One of the characters in the brackets [AEIOU] One uppercase vowel
-[ … ] One of the characters in the brackets T[ao]p  Tap or Top
-- Range indicator [a-z] One lowercase letter
-[x-y] One of the characters in the range from x to y  [A-Z]+  GREAT
-[ … ] One of the characters in the brackets [AB1-5w-z]  One of either: A,B,1,2,3,4,5,w,x,y,z
-[x-y] One of the characters in the range from x to y  [ -~]+  Characters in the printable section of the ASCII table.
-[^x]  One character that is not x [^a-z]{3} A1!
-[^x-y]  One of the characters not in the range from x to y  [^ -~]+ Characters that are not in the printable section of the ASCII table.
-[\d\D]  One character that is a digit or a non-digit  [\d\D]+ Any characters, inc-
-luding new lines, which the regular dot doesn't match
-[\x41]  Matches the character at hexadecimal position 41 in the ASCII table, i.e. A [\x41-\x45]{3}  ABE
-
-
-(direct link)
-Anchors and Boundaries
-Anchor  Legend  Example Sample Match
-^ Start of string or start of line depending on multiline mode. (But when [^inside brackets], it means "not") ^abc .* abc (line start)
-$ End of string or end of line depending on multiline mode. Many engine-dependent subtleties. .*? the end$  this is the end
-\A  Beginning of string
-(all major engines except JS) \Aabc[\d\D]*  abc (string...
-...start)
-\z  Very end of the string
-Not available in Python and JS  the end\z this is...\n...the end
-\Z  End of string or (except Python) before final line break
-Not available in JS the end\Z this is...\n...the end\n
-\G  Beginning of String or End of Previous Match
-.NET, Java, PCRE (C, PHP, R…), Perl, Ruby   
-\b  Word boundary
-Most engines: position where one side only is an ASCII letter, digit or underscore  Bob.*\bcat\b  Bob ate the cat
-\b  Word boundary
-.NET, Java, Python 3, Ruby: position where one side only is a Unicode letter, digit or underscore Bob.*\b\кошка\b Bob ate the кошка
-\B  Not a word boundary c.*\Bcat\B.*  copycats
-
-
-(direct link)
-POSIX Classes
-Character Legend  Example Sample Match
-[:alpha:] PCRE (C, PHP, R…): ASCII letters A-Z and a-z  [8[:alpha:]]+ WellDone88
-[:alpha:] Ruby 2: Unicode letter or ideogram  [[:alpha:]\d]+  кошка99
-[:alnum:] PCRE (C, PHP, R…): ASCII digits and letters A-Z and a-z [[:alnum:]]{10} ABCDE12345
-[:alnum:] Ruby 2: Unicode digit, letter or ideogram [[:alnum:]]{10} кошка90210
-[:punct:] PCRE (C, PHP, R…): ASCII punctuation mark [[:punct:]]+  ?!.,:;
-[:punct:] Ruby: Unicode punctuation mark  [[:punct:]]+  ‽,:〽⁆
-
-
-(direct link)
-Inline Modifiers
-None of these are supported in JavaScript. In Ruby, beware of (?s) and (?m).
-Modifier  Legend  Example Sample Match
-(?i)  Case-insensitive mode
-(except JavaScript) (?i)Monday  monDAY
-(?s)  DOTALL mode (except JS and Ruby). The dot (.) matches new line characters (\r\n). Also known as "single-line mode" because the dot treats the entire input as a single line (?s)From A.*to Z  From A
-to Z
-(?m)  Multiline mode
-(except Ruby and JS) ^ and $ match at the beginning and end of every line (?m)1\r\n^2$\r\n^3$ 1
-2
-3
-(?m)  In Ruby: the same as (?s) in other engines, i.e. DOTALL mode, i.e. dot matches line breaks  (?m)From A.*to Z  From A
-to Z
-(?x)  Free-Spacing Mode mode
-(except JavaScript). Also known as comment mode or whitespace mode  (?x) # this is a
-# comment
-abc # write on multiple
-# lines
-[ ]d # spaces must be
-# in brackets abc d
-(?n)  .NET, PCRE 10.30+: named capture only Turns all (parentheses) into non-capture groups. To capture, use named groups.  
-(?d)  Java: Unix linebreaks only  The dot and the ^ and $ anchors are only affected by \n 
-(?^)  PCRE 10.32+: unset modifiers  Unsets ismnx modifiers  
-
-
-(direct link)
-Lookarounds
-Lookaround  Legend  Example Sample Match
-(?=…) Positive lookahead  (?=\d{10})\d{5} 01234 in 0123456789
-(?<=…)  Positive lookbehind (?<=\d)cat  cat in 1cat
-(?!…) Negative lookahead  (?!theatre)the\w+ theme
-(?<!…)  Negative lookbehind \w{3}(?<!mon)ster Munster
-
-
-(direct link)
-Character Class Operations
-Class Operation Legend  Example Sample Match
-[…-[…]] .NET: character class subtraction. One character that is in those on the left, but not in the subtracted class. [a-z-[aeiou]] Any lowercase consonant
-[…-[…]] .NET: character class subtraction.  [\p{IsArabic}-[\D]] An Arabic character that is not a non-digit, i.e., an Arabic digit
-[…&&[…]]  Java, Ruby 2+: character class intersection. One character that is both in those on the left and in the && class. [\S&&[\D]]  An non-whitespace character that is a non-digit.
-[…&&[…]]  Java, Ruby 2+: character class intersection.  [\S&&[\D]&&[^a-zA-Z]] An non-whitespace character that a non-digit and not a letter.
-[…&&[^…]] Java, Ruby 2+: character class subtraction is obtained by intersecting a class with a negated class [a-z&&[^aeiou]] An English lowercase letter that is not a vowel.
-[…&&[^…]] Java, Ruby 2+: character class subtraction  [\p{InArabic}&&[^\p{L}\p{N}]] An Arabic character that is not a letter or a number
-
-
-(direct link)
-Other Syntax
-Syntax  Legend  Example Sample Match
-\K  Keep Out
-Perl, PCRE (C, PHP, R…), Python's alternate regex engine, Ruby 2+: drop everything that was matched so far from the overall match to be returned  prefix\K\d+ 12
-\Q…\E Perl, PCRE (C, PHP, R…), Java: treat anything between the delimiters as a literal string. Useful to escape metacharacters.
 
 ---
 
