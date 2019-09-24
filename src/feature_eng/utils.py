@@ -25,3 +25,10 @@ def get_mapping(df, col_name):
         class_mapping_reverse[value] = key
 
     return class_mapping, class_mapping_reverse
+
+
+with open('punctuation.txt', 'w') as f:
+    json.dump(extra_punct, f)
+
+with open('contraction_mapping.txt') as f:
+    contraction_mapping = json.loads(f.read())
