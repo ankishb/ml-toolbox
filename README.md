@@ -1,5 +1,7 @@
 # ml-toolbox
 
+This repo contains some generic function, to deal with data and to build ML models for that. It contains some special feature(implementation and collection of ML models with docs of important parameters as well). I consistently update files, to make more generic as i practice on real-world data(in hackhathons). 
+
 ## Add EDA tool for classification using hue.
 - [ ] boxplot
 - [ ] kdeplot
