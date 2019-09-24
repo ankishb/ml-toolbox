@@ -4,43 +4,53 @@ import gc
 
 
 
-def fill_outlier(data, flag, filling=None, cols=None):
+def fill_outlier(data, l_per=1, h_per=99, flag='both', filling='bound', cols=None):
     """fill outlier either with nan or bounds values
     Args:
-        df  : feature
+        df  : table
+        l_per: lower-percentile
+        h_per: higher-percentile
         filling: ['nan','bound'] (by default, it is 'bound')
-        flag: string ['lower','upper','both']
+        flag: string ['lower','upper','both'] (by default, it is 'both')
     return: dataframe
     example:
         fill_outlier(X1, "both", filling="np.nan")
     """
+    print("-----outlier handling------")
     df = data.copy()
-    df1 = df.dropna()
+#     df1 = df.dropna()
+    collect_cols = []
     if cols is None:
         cols = list(df.columns)
         # select appropriate columns by dtypes
     cols = df.select_dtypes(exclude='object').columns
     for col in cols:
-        lower_bound = np.percentile(df1[col], q=1)
-        upper_bound = np.percentile(df1[col], q=99)
-        print(col, "(", df[col].dtype, ") ==>","low: ", np.round(lower_bound,2), 
-              " high: ", np.round(upper_bound,2))
-        
-        if filling is None or filling == "bound":
-            lower_bound_fill = lower_bound
-            upper_bound_fill = upper_bound
-        else:
-            lower_bound_fill = np.nan
-            upper_bound_fill = np.nan
-        if flag == 'upper':
-            df[col] = np.where(df[col]>upper_bound, upper_bound_fill, df[col])
-        elif flag == 'lower':
-            df[col] = np.where(df[col]<lower_bound, lower_bound_fill, df[col])
-        else: 
-            # when both are selected
-            df[col] = np.where(df[col]>upper_bound, upper_bound_fill, df[col])
-            df[col] = np.where(df[col]<lower_bound, lower_bound_fill, df[col])
-    print("null count: ", df.isnull().sum().values)
+        try:
+            lower_bound = np.percentile(df[col].dropna(), q=l_per)
+            upper_bound = np.percentile(df[col].dropna(), q=h_per)
+#             print("{} ( {} ) ==> low: {} high: {}".format(col, df[col].dtype, np.round(lower_bound,2), np.round(upper_bound,2)))
+
+            if filling is 'bound':
+                lower_bound_fill = lower_bound
+                upper_bound_fill = upper_bound
+            else:
+                lower_bound_fill = np.nan
+                upper_bound_fill = np.nan
+
+            if flag == 'upper':
+                df[col] = np.where(df[col]>upper_bound, upper_bound_fill, df[col])
+            elif flag == 'lower':
+                df[col] = np.where(df[col]<lower_bound, lower_bound_fill, df[col])
+            else: 
+                # when both are selected
+                df[col] = np.where(df[col]>upper_bound, upper_bound_fill, df[col])
+                df[col] = np.where(df[col]<lower_bound, lower_bound_fill, df[col])
+        except:
+            collect_cols.append(col)
+#     print("null count: ", df.isnull().sum().values)
+    if(len(collect_cols) > 0):
+        print("There are some columns, which needed extra care: \n\n", collect_cols)
+    print("\n-----Done with outlier handling-----")
 #     new = pd.DataFrame(data=new, columns=df1.columns)
     return df
 
