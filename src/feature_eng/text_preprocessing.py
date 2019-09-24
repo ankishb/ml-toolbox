@@ -1,4 +1,78 @@
 
+W2V_CONFIG = {
+             "cols": ["branch_id", "manufacturer_id",
+                      "supplier_id",
+                      "Current_pincode_ID", "State_ID"],
+             "vector_size": 32,
+             "window_size":6,
+             "epochs": 2,
+             "min_count": 1,
+             "sample": 1e-1
+             }
+
+all_sentences = list(new_df['sentence'].str.split(" ").values)
+print("sentence length: ", len(all_sentences))
+
+w2v_model = Word2Vec(min_count=W2V_CONFIG["min_count"],
+                 window=W2V_CONFIG["window_size"],
+                 size=W2V_CONFIG["vector_size"],
+                 sample=W2V_CONFIG["sample"],
+                 workers=4)
+w2v_model.build_vocab(all_sentences, progress_per=10000)
+
+print("Vocabulary corpus: ", len(w2v_model.wv.vocab))
+w2v_model.train(all_sentences, total_examples=w2v_model.corpus_count, 
+                epochs=100, report_delay=1)
+
+print("one example: ")
+w2v_model.wv.get_vector('bra_67'), w2v_model.wv.get_vector('bra_67').shape
+
+
+
+
+    Type:   Word2VecTrainables
+
+Parameters: 
+
+    sentences (iterable of iterables, optional) – The sentences iterable can be simply a list of lists of tokens, but for larger corpora, consider an iterable that streams the sentences directly from disk/network. See BrownCorpus, Text8Corpus or LineSentence in word2vec module for such examples. See also the tutorial on data streaming in Python. If you don’t supply sentences, the model is left uninitialized – use if you plan to initialize it in some other way.
+    corpus_file (str, optional) – Path to a corpus file in LineSentence format. You may use this argument instead of sentences to get performance boost. Only one of sentences or corpus_file arguments need to be passed (or none of them, in that case, the model is left uninitialized).
+    size (int, optional) – Dimensionality of the word vectors.
+    window (int, optional) – Maximum distance between the current and predicted word within a sentence.
+    min_count (int, optional) – Ignores all words with total frequency lower than this.
+    workers (int, optional) – Use these many worker threads to train the model (=faster training with multicore machines).
+    sg ({0, 1}, optional) – Training algorithm: 1 for skip-gram; otherwise CBOW.
+    hs ({0, 1}, optional) – If 1, hierarchical softmax will be used for model training. If 0, and negative is non-zero, negative sampling will be used.
+    negative (int, optional) – If > 0, negative sampling will be used, the int for negative specifies how many “noise words” should be drawn (usually between 5-20). If set to 0, no negative sampling is used.
+    ns_exponent (float, optional) – The exponent used to shape the negative sampling distribution. A value of 1.0 samples exactly in proportion to the frequencies, 0.0 samples all words equally, while a negative value samples low-frequency words more than high-frequency words. The popular default value of 0.75 was chosen by the original Word2Vec paper. More recently, in https://arxiv.org/abs/1804.04212, Caselles-Dupré, Lesaint, & Royo-Letelier suggest that other values may perform better for recommendation applications.
+    cbow_mean ({0, 1}, optional) – If 0, use the sum of the context word vectors. If 1, use the mean, only applies when cbow is used.
+    alpha (float, optional) – The initial learning rate.
+    min_alpha (float, optional) – Learning rate will linearly drop to min_alpha as training progresses.
+    seed (int, optional) – Seed for the random number generator. Initial vectors for each word are seeded with a hash of the concatenation of word + str(seed). Note that for a fully deterministically-reproducible run, you must also limit the model to a single worker thread (workers=1), to eliminate ordering jitter from OS thread scheduling. (In Python 3, reproducibility between interpreter launches also requires use of the PYTHONHASHSEED environment variable to control hash randomization).
+    max_vocab_size (int, optional) – Limits the RAM during vocabulary building; if there are more unique words than this, then prune the infrequent ones. Every 10 million word types need about 1GB of RAM. Set to None for no limit.
+    max_final_vocab (int, optional) – Limits the vocab to a target vocab size by automatically picking a matching min_count. If the specified min_count is more than the calculated min_count, the specified min_count will be used. Set to None if not required.
+    sample (float, optional) – The threshold for configuring which higher-frequency words are randomly downsampled, useful range is (0, 1e-5).
+    hashfxn (function, optional) – Hash function to use to randomly initialize weights, for increased training reproducibility.
+    iter (int, optional) – Number of iterations (epochs) over the corpus.
+    trim_rule (function, optional) –
+
+    Vocabulary trimming rule, specifies whether certain words should remain in the vocabulary, be trimmed away, or handled using the default (discard if word count < min_count). Can be None (min_count will be used, look to keep_vocab_item()), or a callable that accepts parameters (word, count, min_count) and returns either gensim.utils.RULE_DISCARD, gensim.utils.RULE_KEEP or gensim.utils.RULE_DEFAULT. The rule, if given, is only used to prune vocabulary during build_vocab() and is not stored as part of the model.
+
+    The input parameters are of the following types:
+            word (str) - the word we are examining
+            count (int) - the word’s frequency count in the corpus
+            min_count (int) - the minimum count threshold.
+
+    sorted_vocab ({0, 1}, optional) – If 1, sort the vocabulary by descending frequency before assigning word indexes. See sort_vocab().
+    batch_words (int, optional) – Target size (in words) for batches of examples passed to worker threads (and thus cython routines).(Larger batches will be passed if individual texts are longer than 10000 words, but the standard cython code truncates to that maximum.)
+    compute_loss (bool, optional) – If True, computes and stores loss value which can be retrieved using get_latest_training_loss().
+    callbacks (iterable of CallbackAny2Vec, optional) – Sequence of callbacks to be executed at specific stages during training.
+
+alpha: 0.025 with lin. decay until 0.0001 (min_alpha)
+
+
+
+
+
 import time
 import spacy #load spacy
 import re
@@ -317,3 +391,186 @@ def correct_contraction(x, dic):
 
 train['Review Text'] = train['Review Text'].progress_apply(lambda x: correct_contraction(x, contraction_mapping))
 test['Review Text']  = test['Review Text'].progress_apply(lambda x: correct_contraction(x, contraction_mapping))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import re
+cList = {
+  "ain't": "am not",
+  "aren't": "are not",
+  "can't": "cannot",
+  "can't've": "cannot have",
+  "'cause": "because",
+  "could've": "could have",
+  "couldn't": "could not",
+  "couldn't've": "could not have",
+  "didn't": "did not",
+  "doesn't": "does not",
+  "don't": "do not",
+  "hadn't": "had not",
+  "hadn't've": "had not have",
+  "hasn't": "has not",
+  "haven't": "have not",
+  "he'd": "he would",
+  "he'd've": "he would have",
+  "he'll": "he will",
+  "he'll've": "he will have",
+  "he's": "he is",
+  "how'd": "how did",
+  "how'd'y": "how do you",
+  "how'll": "how will",
+  "how's": "how is",
+  "I'd": "I would",
+  "I'd've": "I would have",
+  "I'll": "I will",
+  "I'll've": "I will have",
+  "I'm": "I am",
+  "I've": "I have",
+  "isn't": "is not",
+  "it'd": "it had",
+  "it'd've": "it would have",
+  "it'll": "it will",
+  "it'll've": "it will have",
+  "it's": "it is",
+  "let's": "let us",
+  "ma'am": "madam",
+  "mayn't": "may not",
+  "might've": "might have",
+  "mightn't": "might not",
+  "mightn't've": "might not have",
+  "must've": "must have",
+  "mustn't": "must not",
+  "mustn't've": "must not have",
+  "needn't": "need not",
+  "needn't've": "need not have",
+  "o'clock": "of the clock",
+  "oughtn't": "ought not",
+  "oughtn't've": "ought not have",
+  "shan't": "shall not",
+  "sha'n't": "shall not",
+  "shan't've": "shall not have",
+  "she'd": "she would",
+  "she'd've": "she would have",
+  "she'll": "she will",
+  "she'll've": "she will have",
+  "she's": "she is",
+  "should've": "should have",
+  "shouldn't": "should not",
+  "shouldn't've": "should not have",
+  "so've": "so have",
+  "so's": "so is",
+  "that'd": "that would",
+  "that'd've": "that would have",
+  "that's": "that is",
+  "there'd": "there had",
+  "there'd've": "there would have",
+  "there's": "there is",
+  "they'd": "they would",
+  "they'd've": "they would have",
+  "they'll": "they will",
+  "they'll've": "they will have",
+  "they're": "they are",
+  "they've": "they have",
+  "to've": "to have",
+  "wasn't": "was not",
+  "we'd": "we had",
+  "we'd've": "we would have",
+  "we'll": "we will",
+  "we'll've": "we will have",
+  "we're": "we are",
+  "we've": "we have",
+  "weren't": "were not",
+  "what'll": "what will",
+  "what'll've": "what will have",
+  "what're": "what are",
+  "what's": "what is",
+  "what've": "what have",
+  "when's": "when is",
+  "when've": "when have",
+  "where'd": "where did",
+  "where's": "where is",
+  "where've": "where have",
+  "who'll": "who will",
+  "who'll've": "who will have",
+  "who's": "who is",
+  "who've": "who have",
+  "why's": "why is",
+  "why've": "why have",
+  "will've": "will have",
+  "won't": "will not",
+  "won't've": "will not have",
+  "would've": "would have",
+  "wouldn't": "would not",
+  "wouldn't've": "would not have",
+  "y'all": "you all",
+  "y'alls": "you alls",
+  "y'all'd": "you all would",
+  "y'all'd've": "you all would have",
+  "y'all're": "you all are",
+  "y'all've": "you all have",
+  "you'd": "you had",
+  "you'd've": "you would have",
+  "you'll": "you you will",
+  "you'll've": "you you will have",
+  "you're": "you are",
+  "you've": "you have"
+}
+
+c_re = re.compile('(%s)' % '|'.join(cList.keys()))
+
+def expandContractions(text, c_re=c_re):
+    def replace(match):
+        return cList[match.group(0)]
+    return c_re.sub(replace, text.lower())
+
+# examples
+print(expandContractions('Don\'t you get it?'))
+print(expandContractions('I ain\'t got time for y\'alls foolishness'))
+print(expandContractions('You won\'t live to see tomorrow.'))
+print(expandContractions('You\'ve got serious cojones coming in here like that.'))
+print(expandContractions('I hadn\'t enough'))
+
+
+
+d = {
+
+  "you'd've": "you would have",
+
+  "you'll": "you you will",
+
+  "you'll've": "you you will have",
+
+  "you're": "you are",
+
+  "you've": "you have"
+
+}
+
+​
+
+['(%s)' % '|'.join(d.keys())]
+
+["(you'd've|you'll|you'll've|you're|you've)"]
+
+re.compile('(%s)' % '|'.join(d.keys()))
+
+re.compile(r"(you'd've|you'll|you'll've|you're|you've)", re.UNICODE)
