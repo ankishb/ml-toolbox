@@ -40,6 +40,16 @@ def load_data(file_name = 'contraction_mapping.txt'):
     return contraction_mapping
 
 
+def factorize_cat(table, cat_cols=None):
+	"""
+	exp: df = factorize_cat(df, cat_cols)
+	"""
+    print("=== Factorize Done ====")
+    for col in cat_cols:
+        table[col], _ = pd.factorize(table[col])
+    return table
+
+
 
 
 import random, math
@@ -48,7 +58,7 @@ def grouping_cols(df, cat_percentage = 0.05, checking_itr = 10):
 	""" grouping unknown variable using
 		1. counting unique value
 		2. if variable is integer or object
-		
+
 	example: cat_cols, num_cols = grouping_cols(train)
 	"""
     cc, nc = [], []
