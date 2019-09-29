@@ -12,7 +12,7 @@ def reduce_mem_usage_without_print(data, return_flag=True):
     start_mem = df.memory_usage().sum() / 1024**2
     print('Memory {:.2f} MB'.format(start_mem), "==>", end=" ")
     
-    for col in df.columns:
+    for i, col in enumerate(df.columns):
         col_type = df[col].dtypes
         
         if col_type != object:
@@ -35,6 +35,7 @@ def reduce_mem_usage_without_print(data, return_flag=True):
                 else:
                     df[col] = df[col].astype(np.float64)
         #else: df[col] = df[col].astype('category')
+        print(i, end=", ")
 
     end_mem = df.memory_usage().sum() / 1024**2
     print(' {:.2f} MB'.format(end_mem))
