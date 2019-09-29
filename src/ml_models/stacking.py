@@ -130,7 +130,7 @@ def logreg_model(X_train, y_train, X_valid, y_valid, X_test,
     means = X_train.mean()
     clf.fit(X_train.fillna(means), y_train)
     oof  = clf.predict_proba(X_valid.fillna(means))[:,0]
-    test_pred = clf.predict(X_test.fillna(means))
+    test_pred = clf.predict_proba(X_test.fillna(means))[:,0]
 
     return oof, test_pred
 
@@ -184,7 +184,8 @@ def stacking(train_df, target, test_df, split=4, depth=4, print_=False):
             X_train, y_train, 
             X_valid, y_valid, 
             features,test_df, 
-            num_round=num_rounds
+            num_round=num_rounds,
+            depth=depth
         )
     
         oof_cat[valid_index] = oof
@@ -205,7 +206,8 @@ def stacking(train_df, target, test_df, split=4, depth=4, print_=False):
             X_train, y_train, 
             X_valid, y_valid, 
             features, test_df, 
-            num_round=num_rounds
+            num_round=num_rounds,
+            depth=depth
         )
         
         oof_xgb[valid_index] = oof
