@@ -49,8 +49,33 @@ def factorize_cat(table, cat_cols=None):
         table[col], _ = pd.factorize(table[col])
     return table
 
+def fillna_and_create_new_cols():
+	new_num_cols = []
+	for col in num_cols:
+	    try:
+	        col_name = 'NULL_'+col
+	        
+	        min_tr = train1[col].min()
+	        var_tr = train1[col].var()
+	        
+	        min_ts = test1[col].min()
+	        var_ts = test1[col].var()
+	        
+	        train1[col] = train1[col].fillna(min_tr - var_tr/10)
+	        train1[col_name] = np.where(train[col].isnull(), 1, 0)
+	        
+	        test1[col] = test1[col].fillna(min_ts - var_ts/10)
+	        test1[col_name] = np.where(test[col].isnull(), 1, 0)
+	        
+	        # if get passed through all steps
+	        new_num_cols.append(col_name)
+	        
+	    except:
+	        print(col)
+	return train1, test1, new_num_cols
 
 
+	
 
 import random, math
 
