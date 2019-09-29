@@ -155,7 +155,7 @@ def get_feature(cols):
             elif len(c) == 5:
                 col_value = train[c[0]]/100 * train[c[2]]/100 + train[c[4]]
                 feature1[col] = col_value
-                col_value = train[c[0]]/100 * train[c[2]]/100 + train[c[4]]
+                col_value = test[c[0]]/100 * test[c[2]]/100 + test[c[4]]
                 feature2[col] = col_value
         except:
             pass
