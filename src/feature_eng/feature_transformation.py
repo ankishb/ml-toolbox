@@ -148,6 +148,15 @@ def get_decomposition(train, test=None, n_component=2, col_name=None, which_meth
         method = NMF(n_components=n_component, random_state=1234, alpha=alpha, l1_ratio=l1_ratio)
     elif which_method is 'pca':
         method = PCA(n_components=n_component, random_state=1234, whiten=False)
+        try:
+            plt.figure()
+            plt.plot(np.cumsum(method.explained_variance_ratio_))
+            plt.xlabel('Number of Components')
+            plt.ylabel('Variance (%)') #for each component
+            plt.title('Pulsar Dataset Explained Variance')
+            plt.show()
+        except:
+            pass
     else:
         raise Exception("Please make sure which_method is one of [svd, nmf, [pca]]")
 
