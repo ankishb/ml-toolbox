@@ -1,0 +1,6 @@
+scikit-learn
+tensorflow
+keras
+seaborn
+nltk
+h2o
