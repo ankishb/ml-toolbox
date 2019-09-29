@@ -21,8 +21,9 @@ This repo contains some generic function, to deal with data and to build ML mode
     - removing them
     - fill with lower/upper bound 
     - compute quantile range
-- [x] memory optimization
-<span style="color:red">some **Add category feature dtype** text</span>
+- [x] memory optimization 
+    1. **Add parallel processing**
+    2. **Add category feature dtype**
 - [x] standardization-scaling
     - min-max
     - standardization
@@ -110,7 +111,7 @@ This repo contains some generic function, to deal with data and to build ML mode
     ([sklearn-metric](https://scikit-learn.org/stable/modules/metrics.html#metrics (kernel function)))
     ([blog](https://leon.bottou.org/projects/lasvm))
 - [ ] KNN(coursera)/tsne-multicore/clustering
-- [ ] H2o models 
+- [x] H2o models 
 - [ ] Non negative linear regression (scipy)/ lasso(positive=True)
 - [ ] Regularized Greedy forest
     ([rgf official](https://github.com/RGF-team/rgf/tree/master/python-package))
@@ -124,7 +125,7 @@ This repo contains some generic function, to deal with data and to build ML mode
 - [ ] FTRL Proximal Model
     ([link1](https://www.kaggle.com/ogrellier/multi-process-ftrl))
     ([link2](https://www.kaggle.com/supernova117/ftrl-with-validation-and-auc))
-- [ ] Naive Bayes Algorithm
+- [x] Naive Bayes Algorithm
 
 ---
 
