@@ -7,93 +7,129 @@ from h2o.estimators.random_forest import H2ORandomForestEstimator
 # from h2o.estimators.kmeans import H2OKMeansEstimator
 # from h2o.estimators.xgboost import H2OXGBoostEstimator
 
+""" example of using this
+gbm_model.train(x, y, training_frame=train)#, validation_frame=test)
+print(gbm_model.accuracy())
+
+model_path = h2o.save_model(model=gbm_model, path="stacking/", force=True)
+print(model_path)
+"""
+gbm_model = H2OGradientBoostingEstimator(
+    nfolds=4, seed=1234,
+    balance_classes = True,
+    col_sample_rate = 0.7,
+    learn_rate=0.1,
+    nbins = 128,
+    fold_column = 'Col1',
+    fold_assignment='stratified',
+    stopping_rounds=25,
+    keep_cross_validation_predictions=True
+)
 
 
-dl_model = H2ODeepLearningEstimator(epochs=10, nfolds=3, seed=1234, 
-                                    score_validation_sampling='stratified',
-                                    keep_cross_validation_predictions=True,
-                                    balance_classes = True,
-                                    l2 = 0.0001,
-                                    loss = 'cross_entropy',
-#                                     stopping_rounds=2,
-                                    mini_batch_size = 200,
-                                    rate_decay=0.1,
-                                    stopping_rounds=2
-                                   )
+gbm_model_deep = H2OGradientBoostingEstimator(  
+    nfolds=4, seed=1234,
+    fold_column = 'Col1',
+    fold_assignment = 'stratified',
+    # score_validation_sampling='stratified',
+    ntrees = 10000,
+    learn_rate = 0.05,
+    max_depth = 4,
+    stopping_rounds = 5, 
+    stopping_tolerance = 1e-3,
+    stopping_metric = "mean_per_class_error",
+    sample_rate = 0.7,
+    col_sample_rate = 0.6,
+    keep_cross_validation_predictions=True
+)
 
-dl_model_deep = H2ODeepLearningEstimator( nfolds=3, seed=1234,
-                                          score_validation_sampling='stratified',
-                                          keep_cross_validation_predictions=True,
-                                          hidden=[100,100],
-                                          epochs=50,
-                                          balance_classes = True,
-                                          l2 = 0.0001,
-                                          loss = 'cross_entropy',
-                                          mini_batch_size = 200,
-                                          rate_decay=0.1,
-                                          stopping_rounds=2,
-#                                           score_validation_samples=10000,
-                                          stopping_metric="auc",
-                                          stopping_tolerance=0.01
-                                        )
+dl_model = H2ODeepLearningEstimator(
+    epochs=1, nfolds=4, seed=1234, 
+    score_validation_sampling='stratified',
+    keep_cross_validation_predictions=True,
+    balance_classes = True,
+    l2 = 0.001,
+    loss = 'cross_entropy',
+    stopping_rounds=3,
+    fold_column = 'Col1',
+    mini_batch_size = 200,
+    rate_decay=0.1,
+#     stopping_rounds=2
+)
+
+dl_model_deep = H2ODeepLearningEstimator( 
+    nfolds=4, seed=1234,
+    fold_column = 'Col1',
+    score_validation_sampling='stratified',
+    keep_cross_validation_predictions=True,
+    hidden=[200,300,200],
+    epochs=100,
+    balance_classes = True,
+    l2 = 0.001,
+    loss = 'cross_entropy',
+    mini_batch_size = 200,
+    rate_decay=0.1,
+    stopping_rounds=3,
+    # score_validation_samples=10000,
+    stopping_metric="mean_per_class_error",
+    stopping_tolerance=0.01
+)
+
+gbm_model_deep = H2OGradientBoostingEstimator(  
+    nfolds=3, seed=1234,
+    fold_assignment = 'stratified',
+    # score_validation_sampling='stratified',
+    ntrees = 10000,
+    learn_rate = 0.05,
+    max_depth = 4,
+    stopping_rounds = 5, 
+    stopping_tolerance = 1e-3,
+    stopping_metric = "AUC",
+    sample_rate = 0.7,
+    col_sample_rate = 0.7,
+    keep_cross_validation_predictions=True
+)
 
 
-gbm_model = H2OGradientBoostingEstimator(nfolds=3, seed=1234,
-                                         balance_classes = True,
-                                         col_sample_rate = 0.7,
-                                         learn_rate=0.1,
-                                         nbins = 128,
-                                         fold_assignment='stratified',
-                                         stopping_rounds=25,
-                                         keep_cross_validation_predictions=True
-                                        )
+drf_model = H2ORandomForestEstimator(
+    nfolds=4, seed=1234,
+    ntrees=400,
+    # score_validation_sampling='stratified',
+    keep_cross_validation_predictions=True,
+    fold_assignment = 'stratified',
+    categorical_encoding='enum',
+    histogram_type='round_robin',
+    stopping_metric = "logloss",
+    max_depth = 4
+)
 
-gbm_model_deep = H2OGradientBoostingEstimator(  nfolds=3, seed=1234,
-                                                fold_assignment = 'stratified',
-#                                                 score_validation_sampling='stratified',
-                                                ntrees = 10000,
-                                                learn_rate = 0.05,
-                                                max_depth = 4,
-                                                stopping_rounds = 5, 
-                                                stopping_tolerance = 1e-3,
-                                                stopping_metric = "AUC",
-                                                sample_rate = 0.7,
-                                                col_sample_rate = 0.7,
-                                                keep_cross_validation_predictions=True
-                                             )
 
-drf_model = H2ORandomForestEstimator(nfolds=3, seed=1234,
-                                     ntrees=200,
-#                                      score_validation_sampling='stratified',
-                                     keep_cross_validation_predictions=True,
-                                     fold_assignment = 'stratified',
-                                     categorical_encoding='enum',
-                                     histogram_type='round_robin',
-                                     max_depth = 5
-                                    )
+glm_model = H2OGeneralizedLinearEstimator(
+    nfolds=3, seed=1234,
+    keep_cross_validation_predictions=True,
+    fold_assignment = 'stratified',
+    family="binomial"
+)
 
-glm_model = H2OGeneralizedLinearEstimator(nfolds=3, seed=1234,
-                                          keep_cross_validation_predictions=True,
-                                          fold_assignment = 'stratified',
-                                          family="binomial")
-
-glm_model_bal = H2OGeneralizedLinearEstimator(nfolds=3, seed=1234,
-                                              keep_cross_validation_predictions=True,
-                                              fold_assignment = 'stratified',
-                                              family="binomial", 
-                                              lambda_search=True,
-                                              balance_classes=True)
-
-glm_model_inter = H2OGeneralizedLinearEstimator(nfolds=3, seed=1234,
-                                                keep_cross_validation_predictions=True,
-                                                fold_assignment = 'stratified',
-                                                ignored_columns = drop_cols,
-#                                                 interactions = inter_cols,
-                                                family="binomial", 
-                                                lambda_search=True,
-                                                balance_classes=True,
-                                                remove_collinear_columns = True)
-
+glm_model_bal = H2OGeneralizedLinearEstimator(
+    nfolds=3, seed=1234,
+    keep_cross_validation_predictions=True,
+    fold_assignment = 'stratified',
+    family="binomial", 
+    lambda_search=True,
+    balance_classes=True
+)
+glm_model_inter = H2OGeneralizedLinearEstimator(
+    nfolds=3, seed=1234,
+    keep_cross_validation_predictions=True,
+    fold_assignment = 'stratified',
+    ignored_columns = drop_cols,
+    # interactions = inter_cols,
+    family="binomial", 
+    lambda_search=True,
+    balance_classes=True,
+    remove_collinear_columns = True
+)
 ########################################################################################
 ########################################################################################
 ########################################################################################
@@ -108,15 +144,13 @@ glm_model_inter = H2OGeneralizedLinearEstimator(nfolds=3, seed=1234,
 
 
 
-
 ########################################################################################
 ########################################################################################
 ########################################################################################
 
+
+"""
 # Advance gfeature engineering: h2o.predict_leaf_node_assignment( model, frame )
-
-
-
 
     offset_column
     weights_column
@@ -136,9 +170,6 @@ glm_model_inter = H2OGeneralizedLinearEstimator(nfolds=3, seed=1234,
     quantile_alpha
     tweedie_power
     huber_alpha
-
-
-
 
 
 
@@ -184,6 +215,7 @@ Deep Learning Hyperparameters
     input_dropout_ratio
     hidden
     hidden_dropout_ratios
+"""
 
 ########################################################################################
 ########################################################################################
@@ -312,63 +344,63 @@ stopping_tolerance=0.01
 
 
 deep_ml_params = {
-	'nfolds': 3,
-	'keep_cross_validation_predictions':True,
-	'score_each_iteration':True, # scoring at each iteration
-	'fold_assignment':'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
-	'fold_column':None, # col name for cv fold
-	'ignored_columns':drop_cols,
-	'weights_column':col_name, # which should be present in the dataframe as an indiaction to weights of each row.
-	'balance_classes':True, # only for classification (balance the classes by oversampling),
-	'class_sampling_factors':1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
-	'pretrained_autoencoder':'auto_enc_model', # a pretrained autoencoder model to initialize this model with.
-	'standardize':True, # mean=0, std=1
-	'activation':'Rectifier', # [Tanh, Tanh with dropout, Rectifier, Rectifier with dropout]
-	'hidden':(100,100), # hidden layers size
-	'epochs':100,
-	'distribution':'AUTO', # [clf: bernoulli, multinomial], [reg: gaussian, poisson, gamma, laplace, quantile, huber, or tweedie.]
-	'mini_batch_size':250,
-	'categorical_encoding':'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
-	'verbose':25,
-	'max_after_balance_size':1,# (0-inf) for oversampling choose > 1, else < 1.
-	'overwrite_with_best_model':True, # overwrite the final model with the best model found during training (enabled by default).
-	'seed':1234,
+  'nfolds': 3,
+  'keep_cross_validation_predictions':True,
+  'score_each_iteration':True, # scoring at each iteration
+  'fold_assignment':'Random', # (used only is fold_column is not specified) [Random, Modulo, Stratified]
+  'fold_column':None, # col name for cv fold
+  'ignored_columns':drop_cols,
+  'weights_column':col_name, # which should be present in the dataframe as an indiaction to weights of each row.
+  'balance_classes':True, # only for classification (balance the classes by oversampling),
+  'class_sampling_factors':1, # ration of over/under-sampling rate. By default, these ratios are automatically computed during training to obtain the class balance. Note that this requires balance_classes=true.
+  'pretrained_autoencoder':'auto_enc_model', # a pretrained autoencoder model to initialize this model with.
+  'standardize':True, # mean=0, std=1
+  'activation':'Rectifier', # [Tanh, Tanh with dropout, Rectifier, Rectifier with dropout]
+  'hidden':(100,100), # hidden layers size
+  'epochs':100,
+  'distribution':'AUTO', # [clf: bernoulli, multinomial], [reg: gaussian, poisson, gamma, laplace, quantile, huber, or tweedie.]
+  'mini_batch_size':250,
+  'categorical_encoding':'AUTO', #[AUTO, enum, enum_limited, one_hot_explicit, binary, eigen, label_encoder, sort_by_response (Reorders the levels by the mean response)]
+  'verbose':25,
+  'max_after_balance_size':1,# (0-inf) for oversampling choose > 1, else < 1.
+  'overwrite_with_best_model':True, # overwrite the final model with the best model found during training (enabled by default).
+  'seed':1234,
     'missing_values_handling':'MeanImputation', # [Skip, MeanImputation]
     'stopping_rounds':25, # wait for n(25) itrs for early stopping
-	'stopping_metric':'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
-	'stopping_tolerance':0.001, # tolerance factor for wait till stopping
-	'l1':0.001, # l1 regularization
-	'l2':0.01, #l2 regularization
-	'max_w2':0.001, #the constraint for the squared sum of the incoming weights per unit (e.g., for Rectifier)
-	'initial_weight_distribution':'Uniform', # [Uniform Adaptive, Uniform, or Normal]
-	'initial_weight_scale': 0.0001, # (only if initial_weight_distribution is Uniform or Normal) Specify the scale of the distribution function. 
-	'loss': 'AUTO', # [clf: CrossEntropy, Quadratic, Huber, or Absolute] [Reg: Quadratic, Huber, or Absolute]
-	'huber_alpha':0.5, # (the threshold between quadratic and linear loss) [range: 0-1]
-	'input_dropout_ratio':0.1, # [dropour on input layer]
-	'hidden_dropout_ratios':(0.1, 0.1), # (only work, if activation is TanhWithDropout, RectifierWithDropout) (one value for each layer)
+  'stopping_metric':'auc', # [deviance, logloss, mse, rmse, mae, rmsle, auc, misclassification, mean_per_class_error]
+  'stopping_tolerance':0.001, # tolerance factor for wait till stopping
+  'l1':0.001, # l1 regularization
+  'l2':0.01, #l2 regularization
+  'max_w2':0.001, #the constraint for the squared sum of the incoming weights per unit (e.g., for Rectifier)
+  'initial_weight_distribution':'Uniform', # [Uniform Adaptive, Uniform, or Normal]
+  'initial_weight_scale': 0.0001, # (only if initial_weight_distribution is Uniform or Normal) Specify the scale of the distribution function. 
+  'loss': 'AUTO', # [clf: CrossEntropy, Quadratic, Huber, or Absolute] [Reg: Quadratic, Huber, or Absolute]
+  'huber_alpha':0.5, # (the threshold between quadratic and linear loss) [range: 0-1]
+  'input_dropout_ratio':0.1, # [dropour on input layer]
+  'hidden_dropout_ratios':(0.1, 0.1), # (only work, if activation is TanhWithDropout, RectifierWithDropout) (one value for each layer)
     
-	# 'score_interval':0.1, # shortest time interval (in seconds) to wait between model scoring.
+  # 'score_interval':0.1, # shortest time interval (in seconds) to wait between model scoring.
     'score_validation_samples':'stratified', # method used to sample validation dataset for scoring [uniform, stratified]
 
     'offset_column':None, # columns which represnt the bias value 
 
 
 
-	'ntrees':200,
-	'max_depth':10,# (default=20)
-	'min_rows':None, # Specify the minimum number of observations for a leaf
-	'nbins': 63, # Specify the number of bins for the histogram to build, then split at the best point.
-	'nbins_top_level': # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
-	# 'nbins_cats': # (Extensively tuning needed)
-	
-	
-    'histogram_type':'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
-	'col_sample_rate_per_tree':0.7, # sample without replacement.
-    'min_split_improvement':1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
-    'sample_rate':0.7, # default 0.63 (samples without replacement)
-    'sample_rate_per_class':0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
-    'binomial_double_trees':True, # (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building.
-    'mtries':-1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
+  'ntrees':200,
+  'max_depth':10,# (default=20)
+  'min_rows':None, # Specify the minimum number of observations for a leaf
+  'nbins': 63, # Specify the number of bins for the histogram to build, then split at the best point.
+  'nbins_top_level': # Specify the minimum number of bins at the root level to use to build the histogram. This number will then be decreased by a factor of two per level.
+  # 'nbins_cats': # (Extensively tuning needed)
+
+
+  'histogram_type':'AUTO', # [AUTO, UniformAdaptive, Random ==> (Extremely Randomized Trees), QuantilesGlobal, RoundRobin]
+  'col_sample_rate_per_tree':0.7, # sample without replacement.
+  'min_split_improvement':1e-5, # need extensive tuning (the minimum relative improvement in squared error reduction in order for a split to happen. When properly tuned, this option can help reduce overfitting. Optimal values would be in the 1e-10…1e-3 range.)
+  'sample_rate':0.7, # default 0.63 (samples without replacement)
+  'sample_rate_per_class':0.7, # sample from the full dataset using a per-class-specific sampling rate rather than a global sample factor
+  'binomial_double_trees':True, # (Binary classification only) Build twice as many trees (one per class). Enabling this option can lead to higher accuracy, while disabling can result in faster model building.
+  'mtries':-1, # Specify the columns to randomly select at each level. If the default value of -1 is used, the number of variables is the square root of the number of columns for classification and p/3 for regression (where p is the number of predictors). The range is -1 to >=1.
     
 }
 
@@ -376,7 +408,7 @@ deep_ml_params = {
     
 
 
-
+"""
 
     use_all_factor_levels: Specify whether to use all factor levels in the possible set of predictors; if you enable this option, sufficient regularization is required. By default, the first factor level is skipped. For Deep Learning models, this option is useful for determining variable importances and is automatically enabled if the autoencoder is selected.
 
@@ -451,7 +483,7 @@ deep_ml_params = {
     elastic_averaging_moving_rate: Specify the moving rate for elastic averaging. This option is only available if elastic_averaging=True.
     elastic_averaging_regularization: Specify the elastic averaging regularization strength. This option is only available if elastic_averaging=True.
     export_checkpoints_dir: Optionally specify a path to a directory where every generated model will be stored when checkpointing models.
-
+"""
 
 ########################################################################################
 ########################################################################################
