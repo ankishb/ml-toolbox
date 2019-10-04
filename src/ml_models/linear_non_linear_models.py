@@ -70,14 +70,18 @@ def regression_model(reg_name):
     
     return reg
 
-def classifier_model(clf_name):
-    params = {'alpha':0.1}
+
+def classifier_model(clf_name, kernel='linear', degree=2, alpha=0.1):
+    """
+    clf_name = ['passive_agg', 'ridge', 'logistic', 'svm']
+    """
+    params = {'alpha':alpha}
 
     if clf_name == 'passive_agg':
 
         clf = PassiveAggressiveClassifier(
             C=params['alpha'], fit_intercept=True, max_iter=None, tol=None, 
-            early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, 
+#             early_stopping=False, validation_fraction=0.1, n_iter_no_change=5, 
             shuffle=True, verbose=0, n_jobs=-1, random_state=1234, loss='hinge',
             class_weight='balanced', average=False, n_iter=100)
 
@@ -90,9 +94,11 @@ def classifier_model(clf_name):
         clf = LogisticRegression(
             penalty='l2', dual=False, C=params['alpha'], fit_intercept=True, 
             intercept_scaling=1, class_weight=None, random_state=1234, 
-            max_iter=100, multi_class='warn', verbose=0, n_jobs=-1)
+            max_iter=100, verbose=0, n_jobs=-1)#,
+            # multi_class='warn')
 
     elif clf_name is 'svm':
+        kernel_func = kernel
         clf = SVC(
             C=params['alpha'], kernel=kernel_func, degree=degree, coef0=0.0, 
             shrinking=True, probability=False, tol=0.001, cache_size=200, 
@@ -102,9 +108,25 @@ def classifier_model(clf_name):
     else:
         raise Exception('only [passive_agg, ridge, logistic, svm] are supported')
     
-   return clf
+    return clf
 
 
+def run_classifiers(X_train, y_train, X_valid, y_valid):
+    for alpha in [0.01, 0.1, 1, 10, 20, 50, 100, 500, 1000]:
+        pas = classifier_model('passive_agg', alpha=alpha)
+        pas.fit(X_train, y_train)
+        log = classifier_model('logistic', alpha=alpha)
+        log.fit(X_train, y_train)
+        rid = classifier_model('ridge', alpha=alpha)
+        rid.fit(X_train, y_train)
+        svc = classifier_model('svm', kernel='linear', degree=2, alpha=alpha)
+        svc.fit(X_train, y_train)
+        print("passive: {:.3f} :: logistic: {:.3f} :: ridge: {:.3f}  :: svm: {:.3f}".format(
+            pas.score(X_valid, y_valid), log.score(X_valid, y_valid), 
+            rid.score(X_valid, y_valid), svc.score(X_valid, y_valid)))
+
+
+        
 
 def run_hyperopt_clf(train_df, target, max_evals, clf_name, kernel_func='linear', degree=3):
     """ Return best hyperparameter (mainly regularization parameters)
