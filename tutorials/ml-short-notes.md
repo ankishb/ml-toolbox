@@ -986,7 +986,7 @@ Our objective is to find the regions, which can uniquely predict the value of in
 
 
 - The `Information Gain` (IG) can be defined as follows:
-  `IG(Dp) = I(Dp) − Nleft/Np I(Dleft) − Nright/Np I(Dright)` where I could be `entropy`, `Gini index`, or `classification error`, Dp, Dleft, and Dright are the dataset of the parent, left and right child node.
+  `IG(Dp) = I(Dparent) − Nleft/Np I(Dleft) − Nright/Np I(Dright)` where I could be `entropy`, `Gini index`, or `classification error`, Dparent, Dleft, and Dright are the dataset of the parent, left and right child node.
 - consider an following example for understanding why classification error is not a good metrics to rule based method like decision tree.
          A                      B
       (40,40)                (40,40)
@@ -998,22 +998,23 @@ In A and B, we can clearly see that B is better, because of right child have hom
 - Gini criteria: `0.17`
 - Entropy      : `0.31`
 
-- Higher the information gain, lesser will be the entropy. It tell as that there is less uniformatity, which is what we desire. **A rule should involve more homogenity**
+- `Higher the information gain, lesser will be the entropy, better it will be`. It tell as that there is less uniformatity, which is what we desire. **A rule should involve more homogenity**
 
 ### Gini index:
-  - `G = sum_{k = 1:K} pmk * (1 - pmk)`
-  - `measure of total variance across K classes`
-  - also known for `purity measure`
-  - smaller if better. For exp: if pmk is 0 or 1, then G = 0
-  - alternative to cross entropy, `D = - (sum_{k = 1:K} pmk log(pmk))`
-  - You have a bag of marbles with 64 red marbles and 36 blue marbles. What is the value of the Gini Index for that bag?  Ans: `Gini Index = .64*(1-.64) + .36*(1-.36) = .4608`
+- `G = sum_{k = 1:K} pmk * (1 - pmk)`
+- `measure of total variance across K classes`
+- also known for `purity measure`
+- smaller is better. For exp: if pmk is 0 or 1, then G = 0
+- alternative to cross entropy, `D = - (sum_{k = 1:K} pmk log(pmk))`
+- You have a bag of marbles with 64 red marbles and 36 blue marbles. What is the value of the Gini Index for that bag?  Ans: `Gini Index = .64*(1-.64) + .36*(1-.36) = .4608`
 
 #### Gini: 
-  `1 - sum_{j: Classes} p_j^2`
+- `1 - sum_{j: Classes} p_j^2`
+- `Higher the value of Gini higher the homogeneity.`
 
 #### Entropy: 
   `- sum_{j: Classes} p_j log(p_j)`
-- why gini is preferred over entropy?
+- **why gini is preferred over entropy?**
   1. First of all both are pretty much same (You can draw both metric on graph, entripy is parabolic, where as gini's curve follow same nature, but curve is little below of entropy)
   2. Gini has computational advantage. `No need of expensive logrithm`
 
