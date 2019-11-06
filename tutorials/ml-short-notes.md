@@ -4,7 +4,7 @@
 - Online Algo (check one example at a time)
 - Error driven (update weights only if prediction is wrong)
 - **Linear Boundary Seprator**
-- Descision rule to update weights `y_hat*y <= 0` as `y C [-1,1]` and weight update rule is `w += y*x` and `b += y`.
+- Descision rule to update weights `y_hat*y <= 0` as `y C [-1,1]` and weight update rule is `w += y*x` and `b += y`
 - Hyperplane will be perpendicular to weight vector, because `W*X = 0`, when `bias` is zero.
 - Direction of weights is towards `+ve` samples.
 - `W*X` is nothing but the `projection` of sample `x` on the `W` vector. So it tells the distance of how far it is from origin of hyperplane, when bias is zero.
@@ -372,13 +372,13 @@ Best, if we are using sparse data such as tf-idf features for words.
 ## Inductive Bias: 
 - Inductive bias is the set of assumptions a learner uses to predict results given inputs it has not yet encountered.
 
-
+---
 
 ## SVM (Maximum margin hyperplane): 
 - `ywx > gamma`, it add a pre-specified margin.
 - For gamma=0, it becomes perceptron
 - Reason behind the name "Support Vector Machine"?
-    1. SVM optimization discovers the most important examples (called "support vectors") in training data
+    1. SVM optimization discovers the most important examples (called `support vectors`) in training data
     2. These examples act as `balancing` the margin boundaries (hence called `support`)
 - margin(gamma) is distance as `(wx+b) / ||w||`
 - to maximize the margin, we minimize the `||w||`
@@ -421,10 +421,10 @@ Best, if we are using sparse data such as tf-idf features for words.
 1. Support Vector Data Description:
     - Assume positives lie within a ball with smallest possible radius (and allow slacks)
 2. One-Class SVM:
-    - Find a max-marg hyperplane separating positives from origin (representing negatives)
+    - Find a max-margin hyperplane separating positives from origin (representing negatives)
 
 ## Support vector Regression:
-- epsilon insentive loss
+- `epsilon insentive loss`
 - nonlinear regression can be made my kernel trick.
 
 ---
@@ -450,7 +450,7 @@ Best, if we are using sparse data such as tf-idf features for words.
 > Note: We didn't need to define the phi operation explicitly.
 
 ### Imp Points:
-1. Any kernel function, which map X-->F, with mapping as **phi**, should satisfy **mercer condition**
+1. Any kernel function, which map `X-->F`, with mapping as **phi**, should satisfy **mercer condition**
 
 > F need to be a vector space, with dot product operaion defined on it, F space is also called hilbert space.
 
@@ -475,70 +475,116 @@ Kernels can also be constructed by composing these rules
 3. Polynomial kernel: `(1 + X*Y)^d`
 4. Radial Basis Function: (Gaussian kernel) : `exp(-gamma |X-Y|^2)`
     - infinite dim basis function (implicitly)
-    - Also called stationary kernel, as distance between X and Y is constant
+    - Also called `stationary kernel`, as distance between X and Y is constant
 
 ## Kernel Matrix:
-- nXn matrix, which is pairwise similarity between n samples
-- K is a symmetric and positive definite matrix
-- For a P.D. matrix: `z>Kz > 0`; (also, all eigenvalues positive)
-- Also known as the Gram Matrix
+- nXn matrix, which is `pairwise similarity between n samples`
+- K is a `symmetric and positive definite matrix`
+- For a P.D. matrix: `z'Kz > 0`; (also, all eigenvalues positive)
+- Also known as the `Gram Matrix`
 
 
 ## Kernel tricks
-1.  Any learning model in which, during training and test, inputs only appear as dot products (xi. xj) can be kernelized (i.e., non-linearlized), by replacing the xi.xj terms by `φ(xi).φ(xj) = k(xi, xj)`
+1.  Any learning model in which, during training and test, inputs only appear as dot products (xi. xj) can be kernelized (i.e., non-linearlized), by replacing the `xi.xj` terms by `φ(xi).φ(xj) = k(xi, xj)`
 2. Most learning algorithms can be easily kernelized
     - Distance based methods, Perceptron, SVM, linear regression, etc.
     - Many of the unsupervised learning algorithms too can be kernelized (e.g., K-means clustering, Principal Component Analysis, etc. - will see later)
 
 ## Speeding up kernel Method:
 - slow at training and testing samples
-- Like in ridge regression, we need to store the entire training sample to makae a prediction **or** the basis vector of original data, which can be huge to store. **But there are method, which can helps us in computing low dim features**
+- Like in ridge regression, we need to store the entire training sample to make a prediction **or** the basis vector of original data, which can be huge to store. **But there are method, which can helps us in computing low dim features**
 - Landmarks and Random feature
-- The idea here is that instead of computing high dim `phi(x)`, we can replaced it with low dims psi(x), with following property fulfilled i.e. `psi(x)psi(y) ~~ phi(x)phi(y)`
-- Dual form of Ridge helps a lot, even we deal with linear model, as the computation become cheaper with dual,if D>N
+- The idea here is that instead of computing high dim `phi(x)`, we can replaced it with low-dims `psi(x)`, with following property fulfilled i.e. `psi(x) psi(y) ~~ phi(x) phi(y)`
+- computation become cheaper with `dual form`, if `D > N`
 
 1. Landmarks:
     - Select L training data [z1, z2, ..., zL] as landmarks
     - `psi(xn) = [k(z1, xn), k(z2, xn), ..., k(zL, xn)]`
-    - `k(xn, xm) = psi(xn)psi(xm)`
+    - `k(xn, xm) = psi(xn) psi(xm)`
     - fast both on training and testing
 2. Random feature:
     - `k(xn, xm) = E_{w~p(w)} [t_w(xn) t_w(xm)]`
     - use monte carlo to compute the kernel matrix.
     1. Sample w from distirbition
-    2. For that w, compute `t_w`, which is a L dims vector
+    2. For that w, compute `t_w`, which is a `L` dims vector
     3. For Exp: RBF kernel: `k(xn, xm) = E_{w~p(w)} [cos(w*xn) cos(w*xm)]`
+3. Another method to speed up SVM kernel method
+    - cluster the support vector (alpha_n)
+    - Low rank approximation of kernel matrix
 
-- Another method to speed up SVM kernel method
-  - cluster the support vector (alpha_n)
-- Low rank approximation of kernel matrix
+---
+
+## Fisher information score
+- used in feature selection
+```matlab
+mu = mean(feature);
+
+n_1 = sum(label == 1);
+mu_1 = mean(feature(label == 1));
+var_1 = var(feature(label == 1));
+
+n_2 = sum(label == 2);
+mu_2 = mean(feature(label == 2));
+var_2 = var(feature(label == 2));
+
+inter_class = n_1*(mu_1-mu)^2 + n_2*(mu_2-mu)^2; 
+intra_class = (n_1-1)*var_1 + (n_2-1)*var_2;
+
+score = inter_class / intra_class;
+```
+
+---
+
+## TF-IDF:
+Computes the (query, document) similarity. It has two parts.
+1. `TF Score (Term Frequency)`
+    - Term Frequency, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization:
+    - `TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)`
+2. `Inverse Document Frequency`
+    - IDF which measures how important a term is. While computing TF, all terms are considered equally important. However it is known that certain terms, such as "is", "of", and "that", may appear a lot of times but have little importance. Thus we need to weigh down the frequent terms while scale up the rare ones, by computing the following:
+    - `IDF(t) = log_e(Total number of documents / Number of documents with term t in it)`
+- we usually consider log transformation of tf score
+- `tfidf = (1+log(1 + freq_of_word_in_doc/total_word_in_doc)) * log10(total_docs/no_of_docs_in_which_word_appear)`
 
 
+---
 ## STATISTICS:
 ## Ordinary Least square
-- When we assume that there is no error in observation
+- Assumption: `there is no error in observation`
 - So we minimize the residual error **vertical distance between data sample and slope(line)**
 - **It is scale invariant**
+
+### Assumptions(OLS):
+1. The regression model is linear in the coefficients and the error term
+2. The error term has a population mean of zero
+3. All independent variables are uncorrelated with the error term
+4. Observations of the error term are uncorrelated with each other
+5. The error term has a constant variance (`no heteroscedasticity`)
+    - The assumption of `homoscedasticity` (meaning “same variance”) is central to linear regression models. 
+    - `Heteroscedasticity` (the violation of homoscedasticity) is present when the size of the error term differs across values of an independent variable.
+6. No independent variable is a perfect linear function of other explanatory variables
+7. The error term is normally distributed (optional)
 
 
 
 ## Total Least square
-- When we assume that there is error in observation **More Practical**
-- So we minimize the residual error **diagnoal distance between data sample and slope(line)**, which consider the erro in both varaible along x as well as in y direction.
-- In essence error is residual error 
+- Assumption: `there is error in observation` **More Practical**
+- So we minimize the residual error **diagnoal distance between data sample and slope(line)**, which consider the error in both varaible along x as well as in y direction.
 - **It is not scale invariant**
 
 ## Imp points about regression (Scale Invariancy Property):
-- You can translate features any which way you want without changing the model. 
-- With scaling you need to be a little more careful when using a regularized model – these models are not scaling invariant. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, you should be rescaling the columns. 
+- We can translate features, any way we want, without changing the model. 
+- With scaling you need to be a little more careful when using a regularized model – these models are `not scale invariant`. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, you should be rescaling the columns. 
 - Typically this involves forcing the columns to have unit variance.
 
-1. OLS is scale invariant. If you have a model y^=w0+w1x1+w2x2 and you replace x1 with x′1=x1/2 and re-estimate the model, you’ll get a new model y^=w0+2w1x′1+w2x2 which gives exactly the same preditions. The new x′1 is half as big, so its coefficient is now twice as big.
-2. Ridge and L1-penalized regression (and hence elastic net) are not scale invariant. Ridge shrinks the big weights more than the small ones, so if you rescale the features, you change what the big weights are.
-3. L0 regression is scale invariant; the feature is in or out of the model, so the size doesn’t matter.
-4. PCA is not scale invariant. People therefore often rescale the data (standardize it) before they do PCA. 
+1. OLS is scale invariant. If you have a model `y = w0 + w1 x1 + w2 x2` and you replace `x1` with `x1'=x1/2` and re-estimate the model, you’ll get a new model `y = w0 + 2w1 x1' + w2 x2` which gives exactly the same preditions. The new `x1'` is half as big, so its coefficient is now twice as big.
+2. `Ridge and L1-penalized regression (and hence elastic net) are not scale invariant`. 
+    - Ridge shrinks the big weights more than the small ones
+3. `L0 regression is scale invarian`t; the feature is in or out of the model, so the size doesn’t matter.
+4. `PCA is not scale invariant`. People therefore often rescale the data (standardize it) before they do PCA. 
 
-### Assumptions:
+
+---
 
 ## Recurrent Neural Network:
 - weight sharing across the sequence
@@ -1021,16 +1067,17 @@ In A and B, we can clearly see that B is better, because of right child have hom
 ---
 
 ## Bagging:
-Bagging is very powerful method. It is generally the combination of many decorrelated models. 
+Bagging is very powerful method. It is generally the combination of many `decorrelated`(**very desirable**) models. 
 - reduce the variance as `(sig1 + sig2 +... sign) / n`
 - `out of bag` error, which is error computes on leave out observation. As in bootstrap sampling, it choose `68%` of observation to fit the model, the other `32%` will be used for validation, which is called as `out of bag error`.
 
 ## Random forest:
 - it use a simple but powerful idea to reduce variance, by choose `m` predictors out of `p` feature. for exp: `m = sqrt(p)`
 - use less number of predictors/features for each bag, it can reduce the variance, beacuse of no/less correlation between each bag.
-- **limitations of Random forest are** :
+
+### `limitations of Random forest are` :
   1. Correlated features will be given equal or similar importance, but overall reduced importance compared to the same tree built without correlated counterparts.
-  2. Random Forests and decision trees, in general, give preference to features with high cardinality ( Trees are biased to these type of variables ).
+  2. Random Forests and decision trees, in general, give preference to features with high cardinality ( `Trees are biased to these type of variables` ).
 
 > Note: In stat, we use predictor terms instead of features.
 
@@ -1044,7 +1091,9 @@ Bagging is very powerful method. It is generally the combination of many decorre
 1. start with equal weight `Dt(n) = 1/n` for each sample.
 2. find error `et = sum_n Dt(n) |yt == yhatt|`
 3. Compute importance `alphat = 1/2 log((1 - et)/et)`
-4. update weight `D{t+1}(n) = Dt(n) exp(beta)`, where `beta = -alpha for correct prediction` and `alpha for incorrect`
+4. update weight `D{t+1}(n) = Dt(n) exp(beta)`, where beta = 
+    `-alpha for correct prediction` and 
+    `alpha for incorrect`
 5. Normalize `D{t+1}(n)`
 6. Go to step 2. untill converge
 
@@ -1082,8 +1131,24 @@ stem.stem(word)
 >> "multipli"
 ```
 
+---
+
+## LDA
+- `supervised`
+- linear transformation techniques
+- LDA attempts to find a feature subspace that maximizes class separability
+- Remember that LDA makes `assumptions` about normally distributed classes and equal class covariances.
 
 
+#### What is the difference between LDA and PCA for dimensionality reduction?
+1. Both LDA and PCA are linear transformation techniques: LDA is a supervised whereas PCA is unsupervised – PCA ignores class labels.
+2. PCA helps to find the directions of maximal variance, while LDA attempts to find a feature subspace that maximizes class separability 
+
+---
+
+## Random Forest
+- Random Forest is an ensemble model of decision trees(`bagging` which helps in `reduce variance`).
+- time complexity: to building a complete unpruned decision tree is O( N * v * n log(n) ), where `n` is the number of observations, `v` is the number of variables/attributes and `N` is number of estimators.
 
 
 
