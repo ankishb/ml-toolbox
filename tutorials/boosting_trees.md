@@ -47,11 +47,11 @@ where gain: grad^2/(hessian + γ)
 ### Unique feature of xgboost
 1. regularization
 2. handling sparse data
-3. cache awareness, to save compuitation from recomputing gradient
+3. cache awareness, to save computation from recomputing gradient
 4. parallel learning
 5. scalable (used by CERN on petabytes of data)
 6. weighted quantile sketch (weight column to each sample row)
-7. out of core usuage(optimize the disk space for huge dataset)
+7. out of core usuage (optimize the disk space for huge dataset)
 
 ---
 
