@@ -70,7 +70,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 # optimization
 - Gradient decent:
     need to pick learning rate
-- conjugate gd:
+- conjugate gradient:
     very fast
     no hyperparameter
     more complex
@@ -535,60 +535,9 @@ score = inter_class / intra_class;
 
 ---
 
-## TF-IDF:
-Computes the (query, document) similarity. It has two parts.
-1. `TF Score (Term Frequency)`
-    - Term Frequency, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization:
-    - `TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)`
-2. `Inverse Document Frequency`
-    - IDF which measures how important a term is. While computing TF, all terms are considered equally important. However it is known that certain terms, such as "is", "of", and "that", may appear a lot of times but have little importance. Thus we need to weigh down the frequent terms while scale up the rare ones, by computing the following:
-    - `IDF(t) = log_e(Total number of documents / Number of documents with term t in it)`
-- we usually consider log transformation of tf score
-- `tfidf = (1+log(1 + freq_of_word_in_doc/total_word_in_doc)) * log10(total_docs/no_of_docs_in_which_word_appear)`
-
-
----
-## STATISTICS:
-## Ordinary Least square
-- Assumption: `there is no error in observation`
-- So we minimize the residual error **vertical distance between data sample and slope(line)**
-- **It is scale invariant**
-
-### Assumptions(OLS):
-1. The regression model is linear in the coefficients and the error term
-2. The error term has a population mean of zero
-3. All independent variables are uncorrelated with the error term
-4. Observations of the error term are uncorrelated with each other
-5. The error term has a constant variance (`no heteroscedasticity`)
-    - The assumption of `homoscedasticity` (meaning “same variance”) is central to linear regression models. 
-    - `Heteroscedasticity` (the violation of homoscedasticity) is present when the size of the error term differs across values of an independent variable.
-6. No independent variable is a perfect linear function of other explanatory variables
-7. The error term is normally distributed (optional)
-
-
-
-## Total Least square
-- Assumption: `there is error in observation` **More Practical**
-- So we minimize the residual error **diagnoal distance between data sample and slope(line)**, which consider the error in both varaible along x as well as in y direction.
-- **It is not scale invariant**
-
-## Imp points about regression (Scale Invariancy Property):
-- We can translate features, any way we want, without changing the model. 
-- With scaling you need to be a little more careful when using a regularized model – these models are `not scale invariant`. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, you should be rescaling the columns. 
-- Typically this involves forcing the columns to have unit variance.
-
-1. OLS is scale invariant. If you have a model `y = w0 + w1 x1 + w2 x2` and you replace `x1` with `x1'=x1/2` and re-estimate the model, you’ll get a new model `y = w0 + 2w1 x1' + w2 x2` which gives exactly the same preditions. The new `x1'` is half as big, so its coefficient is now twice as big.
-2. `Ridge and L1-penalized regression (and hence elastic net) are not scale invariant`. 
-    - Ridge shrinks the big weights more than the small ones
-3. `L0 regression is scale invarian`t; the feature is in or out of the model, so the size doesn’t matter.
-4. `PCA is not scale invariant`. People therefore often rescale the data (standardize it) before they do PCA. 
-
-
----
-
 ## Recurrent Neural Network:
 - weight sharing across the sequence
-    - It create dependency across the data in sequence, where as with different weights across sequence, will cause independet decision in final prediction.
+    - It create dependency across the data in sequence, but with different weights across sequence. This will cause in independent decision at the final prediction.
 - Two main problem: 
     1. vanishing Grad (Most Imp) (cured by LSTM, but expensive)
     2. Exploding Grad (can handled by grad clipping)
@@ -597,11 +546,11 @@ Computes the (query, document) similarity. It has two parts.
 1. forget Gate (using sigmoid)
 2. Input Gate (using sigmoid)
 3. **ct_hat** Current cell state (using tanh)
-4. Update Cell state (ft*c{t-1} + it*ct_hat)
+4. Update Cell state (`ft * c{t-1} + it * ct_hat`)
 5. Output gate (using sigmoid)
-6. ht hidden state = ot*tanh(ct)
+6. ht hidden state = `ot * tanh(ct)`
 
-## LSTM varuiant:
+## LSTM variant:
 1. LSTM with PeepHole:
 2. LSTM with cooupling between forget and input gate
 3. GRU
@@ -618,24 +567,26 @@ Computes the (query, document) similarity. It has two parts.
 ---
 
 ## Word Embedding: [Best Blog](https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html)
-- count based:
-    1. Unsupervised method
-    2. Use raw co-occurance count matrix
-    3. Run factor model/PCA/SVD etc to find the comprssed representation of word, with the assumption that word with similar context share same symatics meaning
-- context based
-    1. Skip Gram
-    - This is predictive model, find the probabiluity of neighbours words given the target word, which is middle word in sliding window
-    Each context-target pair is treated as a new observation in the data. For example, the target word “swing” in the above case produces four training samples: (“swing”, “sentence”), (“swing”, “should”), (“swing”, “the”), and (“swing”, “sword”).
-    2. Cont Bag of Words
-    The Continuous Bag-of-Words (CBOW) is another similar model for learning word vectors. It predicts the target word (i.e. “swing”) from source context words (i.e., “sentence should the sword”).
-    In The CBOW model. Word vectors of multiple context words are averaged to get a fixed-length vector as in the hidden layer. Other symbols have the same meanings as in Fig 1.
+### count based:
+1. Unsupervised method
+2. Use raw co-occurance count matrix
+3. Run factor model/PCA/SVD etc to find the comprssed representation of word, with the assumption that word with similar context share same symantics (meaning)
+
+### context based
+1. Skip Gram
+    - This is predictive model, which find the probability of neighbour words given the target word, which is middle word in sliding window
+    - Each context-target pair is treated as a new observation in the data. 
+    - For example, the target word “swing” in the `“sentence should the sword”` produces four training samples: (“swing”, “sentence”), (“swing”, “should”), (“swing”, “the”), and (“swing”, “sword”).
+2. Continuous Bag of Words
+    - The Continuous Bag-of-Words (CBOW) predicts the target word (i.e. “swing”) from source context words (i.e., `“sentence should the sword”`).
+    - In The CBOW model, Word vectors of multiple context words are averaged to get a fixed-length vector as in the hidden layer.
 
 ## Loss function to train word embedding:
 1. Full Softmax
 2. Hierarchichal Softmax (didn't understood properly). The idea here is to create a tree, where each node represent relative probability  of children nodes and leaf nodes are words. So to reach at one word, we follow a unique path, so on...
 3. Cross Entropy
 4. Noise Contrastive Analysis
-    - The idea here is to differentiate target word from noise sample usinf a logistic regression classifier.
+    - The idea here is to differentiate target word from noise sample using a logistic regression classifier.
 5. Negative Sampling
     - The idea is very simple, just replace the probabilty with sigmoid, now relation of noise contrastive analysis become very simple.
 
@@ -648,13 +599,22 @@ Computes the (query, document) similarity. It has two parts.
 3. Bayesian opt
 
 ## Bayesian Optimization (hyperparameter tuning):
-    
-    Bayesian optimization works by constructing a posterior distribution of functions (gaussian process) that best describes the function you want to optimize. As the number of observations grows, the posterior distribution improves, and the algorithm becomes more certain of which regions in parameter space are worth exploring and which are not
-
-    As you iterate over and over, the algorithm balances its needs of exploration and exploitation taking into account what it knows about the target function. At each step a Gaussian Process is fitted to the known samples (points previously explored), and the posterior distribution, combined with a exploration strategy (such as UCB (Upper Confidence Bound), or EI (Expected Improvement)), are used to determine the next point that should be explored.
+1. Bayesian optimization works by constructing a posterior distribution of functions (gaussian process) that best describes the function you want to optimize. As the number of observations grows, the posterior distribution improves, and the algorithm becomes more certain of which regions in parameter space are worth exploring and which are not
+2. As you iterate over and over, the algorithm balances its needs of exploration and exploitation taking into account what it knows about the target function. At each step a Gaussian Process is fitted to the known samples (points previously explored), and the posterior distribution, combined with a exploration strategy (such as UCB (Upper Confidence Bound), or EI (Expected Improvement)), are used to determine the next point that should be explored.
 
 
 ---
+## Evaluation Metric:
+
+### Confusion Metrics:
+  | Predicted +ve | Predicted -ve
+--- | --- | ---
+Actual +ve | TP | FN
+Actual -ve | FP | TN
+
+#### Precision: 
+- How good is model on predicting positive class, which is `TP/(TP + FP)`
+- More Important, when we False positive id  
 
 ## Null Hypothesis:
 - Accepted Fact
@@ -662,24 +622,14 @@ Computes the (query, document) similarity. It has two parts.
 - For example: Earth is oval shaped, this is **null Nypothesis**, and earth is flat, is **alternative hypothesis**.
 
 ## Type-I and type-II error:
-    Truth about the population
-Decision based on sample    H0 is true  H0 is false
-Fail to reject H0   Correct Decision (probability = 1 - α)  Type II Error - fail to reject H0 when it is false (probability = β)
-Reject H0   Type I Error - rejecting H0 when it is true (probability = α)   Correct Decision (probability = 1 - β)
-Example of type I and type II error
-
-To understand the interrelationship between type I and type II error, and to determine which error has more severe consequences for your situation, consider the following example.
 A medical researcher wants to compare the effectiveness of two medications. The null and alternative hypotheses are:
-
-    Null hypothesis (H0): μ1= μ2
-
+1. Null hypothesis (H0): μ1= μ2
     The two medications are equally effective.
-
-    Alternative hypothesis (H1): μ1≠ μ2
-
+2. Alternative hypothesis (H1): μ1≠ μ2
     The two medications are not equally effective.
 
-A type I error occurs if the researcher rejects the null hypothesis and concludes that the two medications are different when, in fact, they are not. If the medications have the same effectiveness, the researcher may not consider this error too severe because the patients still benefit from the same level of effectiveness regardless of which medicine they take. However, if a type II error occurs, the researcher fails to reject the null hypothesis when it should be rejected. That is, the researcher concludes that the medications are the same when, in fact, they are different. This error is potentially life-threatening if the less-effective medication is sold to the public instead of the more effective one.
+- A `type-I error` occurs if the researcher rejects the null hypothesis and concludes that the two medications are different when, in fact, they are not. If the medications have the same effectiveness, the researcher may not consider this error too severe because the patients still benefit from the same level of effectiveness regardless of which medicine they take. 
+- However, if a `type-II error` occurs, the researcher fails to reject the null hypothesis when it should be rejected. That is, the researcher concludes that the medications are the same when, in fact, they are different. This error is potentially life-threatening if the less-effective medication is sold to the public instead of the more effective one.
 
 #### Table of error types:
 - `H0` is Null Hypothesis
@@ -698,15 +648,20 @@ Fail to Reject H0 |  Correct inference (true negative) (prob = 1 - α) | Type II
 ## Precision & recall:
 - Precision: Of the positive predicted output, what percentage is actually positive.
 - Recall: Of the positive actual output, what percentage our model predict it positive 
+- Another definition:
+    `Precision`: What proportion of positive identifications was actually correct?
+    `Recall`: What proportion of actual positives was identified correctly?
+
+In statistical hypothesis testing a `type-I error` is the rejection of a true null hypothesis (also known as a "false positive" finding or conclusion), while a `type-II error` is the non-rejection of a false null hypothesis (also known as a "false negative" finding or conclusion)
 
                 | Predicted +ve | predicted -ve
 --------------------------------------------------
 Actual Postive  |     TP        |  FN (Type-II)
 Actual Negative |  FP(Type-I)   |      TN
 
-precision | TP/(TP+FP) 
-Recall    | TP/(TP+FN)
-F1        | 2PR/(P+R)
+precision | TP / (TP + FP) 
+Recall    | TP / (TP + FN)
+F1        | 2 P*R / (P + R)
 
 - False Negative has more severe effect than False Positive
 - True positive rate: Fraction of actual positive predicted as positives: TP/(TP+FN) **Ist Row**
@@ -714,19 +669,43 @@ F1        | 2PR/(P+R)
 - ROC: Plot of TPR vs FPR for all possible value of threshold, also called area under operaring point
 - AUC of 0.5, means close to random.
 
+## imp stuff
+- `Sensitivity`: In simple terms, the proportion of patients that were identified correctly to have the disease (i.e. True Positive) upon the total number of patients who actually have the disease is called as Sensitivity or Recall.
+- `Specificity`: Similarly, the proportion of patients that were identified correctly to not have the disease (i.e. True Negative) upon the total number of patients who do not have the disease is called as Specificity.
+Trade-off between Sensitivity and Specificity
+- **When we decrease the threshold, we get more positive values thus increasing the sensitivity. Meanwhile, this will decrease the specificity.**
+- **Similarly, when we increase the threshold, we get more negative values thus increasing the specificity and decreasing sensitivity.**
+- `As Sensitivity ⬇️ Specificity ⬆️`
+- `As Specificity ⬇️ Sensitivity ⬆️`
+
+### Trade off between Sensitivity & Specificity
+- To plot ROC curve, instead of Specificity we use (1 — Specificity). So now, when the sensitivity increases, (1 — specificity) will also increase. This curve is known as the ROC curve.
+
 ## regression Metrics: Page 15 lec23 CS771
 ### R2 (R-squared): [Best](https://statisticsbyjim.com/regression/interpret-r-squared-regression/)
 - It is an accuracy statistics in order to access a regression model
-- It is the percentage of variance in Y explained by model
-- Higher is R2, better the model is.
-- **R2 = 1 - (RSS / TSS)**, where **RSS = sum (y - yhat)^2** and **TSS = sum (y - mean(y))^2**
+- It is the `percentage of variance in Y` explained by model
+- `Higher is R2, better the model is`.
 - R squared is also known as:
     1. the fraction of variance explained.
     2. the sum of squares explained.
     3. Coefficient of determination
 - R2 can be negative
 - R2 = 0, means that model is just predicting the average of output
+- **R2 = 1 - (RSS / TSS)**, where **RSS = sum_i (yi - yhati)^2** and **TSS = sum_i (yi - mean(y))^2**
+- ss_tot, `total sum of squares`: `ss_total = sum_i (yi - mean(y))^2` (proportion to variance of data)
+- ss_reg, `regression sum of squares`: `ss_total = sum_i (yhati - mean(y))^2` 
+- ss_res, `residual sum of squares`: `ss_total = sum_i (yi - yhati)^2`
+- R^2 of `0.49`, tells us that `49%` of variablity of depenedent variable has been accounted for and the remaining `51%` of variability is still unaccounted for.
+- `ss_tot = ss_reg + ss_res`
+- `R^2 = ss_reg / ss_tot`
 
+## F1 score:
+- it is harmonic mean of `precision` and `recall`
+- `F1 = (2 * precision * recall) / (precision + recall)`
+- Generally, we consider weighted `F1` score, where we can prioritize recall or precision
+- `F_beta = (1 + beta^2) . (precision * recall) / (beta^2 . precision + recall)`
+- `F_beta = (1 + beta^2) . TP / ((1 + beta^2) TP + beta^2 . FN + FP)`
 
 > Note: R2 cann't tells us about bias in the model, it is possible that higher R2 score is due to biased model. **So Never conclude that lower R2 model are not good, they can be good, Always look at residual plot to determine that**.
 
@@ -735,67 +714,90 @@ F1        | 2PR/(P+R)
 ## Types of Regression model:
 - Linear Regresion
 - Logistic Regression
-- Polynomial Regression
 - Ridge
 - Lasso
 - Elastic-Net
 - Robust Regression
-- QuasiBionomail regression (Where target varaible's distribution assumed as skewed)
 - least square model (ordinal Least square)
+- Polynomial Regression
+- QuasiBionomail regression (Where target varaible's distribution assumed as skewed)
 - Total Least square
 
-## Difference between least square estimation and maximum likelihood estimation:
-- LSE is to minimize the least square error
-- MLE is to maximize the log likelihood as the loss function and minimze it with respect to the parameter.
-- They are not equivalent untill, we assume gaussian distribution as probability density function in MLE.
 
-## assumption in Oordinary Least Square:
+## Total Least square
+- Assumption: `there is error in observation` **More Practical**
+- So we minimize the residual error **diagnoal distance between data sample and slope(line)**, which consider the error in both varaible along x as well as in y direction.
+- **It is not scale invariant**
+
+
+## Ordinary Least square
+- Assumption: `there is no error in observation`
+- minimize the residual error **vertical distance between data sample and slope(line)**
+- **It is scale invariant**
+
+
+## Assumption in Oordinary Least Square:
 1. The regression model is linear in the coefficients, as well in the error term
 2. The error term has a population mean of zero
 3. All independent variables are uncorrelated with the error term
 4. Observations of the error term are uncorrelated with each other
     - One observation of the error term should not predict the next observation. For instance, if the error for one observation is positive and that systematically increases the probability that the following error is positive, that is a positive correlation. If the subsequent error is more likely to have the opposite sign, that is a negative correlation. This problem is known both as serial correlation and autocorrelation
-5. The error term has a constant variance (no heteroscedasticity)
-  - `Homoscedasticity` describes a situation in which the error term (that is, the “noise” or random disturbance in the relationship between the independent variables and the dependent variable) is the same across all values of the independent variables
-7. The error term is normally distributed (optional)
+5. The error term has a constant variance (`no heteroscedasticity`)
+    - `Homoscedasticity`(meaning “same variance”) describes a situation in which the error term (that is, the “noise” or random disturbance in the relationship between the independent variables and the dependent variable) is the same across all values of the independent variables
+    - `Heteroscedasticity` (the violation of homoscedasticity) is present when the size of the error term differs across values of an independent variable.
+6. The error term is normally distributed (optional)
     - OLS does not require that the error term follows a normal distribution to produce unbiased estimates with the minimum variance. However, satisfying this assumption allows you to perform statistical hypothesis testing and generate reliable confidence intervals and prediction intervals.
+
+## Imp points about regression (Scale Invariancy Property):
+- We can translate features, any way we want, without changing the model. 
+- With scaling you need to be a little more careful when using a regularized model – these models are `not scale invariant`. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, you should be rescaling the columns. 
+- Typically this involves forcing the columns to have unit variance.
+
+1. OLS is scale invariant. If you have a model `y = w0 + w1 x1 + w2 x2` and you replace `x1` with `x1'=x1/2` and re-estimate the model, you’ll get a new model `y = w0 + 2w1 x1' + w2 x2` which gives exactly the same preditions. The new `x1'` is half as big, so its coefficient is now twice as big.
+2. `Ridge and L1-penalized regression (and hence elastic net) are not scale invariant`. 
+    - Ridge shrinks the big weights more than the small ones
+3. `L0 regression is scale invariant`; the feature is in or out of the model, so the size doesn’t matter.
+4. `PCA is not scale invariant`. People therefore often rescale the data (standardize it) before they do PCA. 
+
+
+## Q. Difference between least square estimation and maximum likelihood estimation:
+- LSE is to minimize the least square error
+- MLE is to maximize the log likelihood as the loss function and minimze it with respect to the parameter.
+- They are not equivalent untill, we assume gaussian distribution as probability density function in MLE.
 
 
 ## Q. Do least square and linear regression same thing?
-- Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell you how the model is fitted. Least square fitting is simply one of the possibilities. Other methods for training a linear model is in the comment.
+1. **They are not the same thing.**
+2. Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell you how the model is fitted. Least square fitting is simply one of the possibilities.
+3. In summary: linear regression is optimization problem, with the intent to find best possible parameter for the linear line, where as least square method is potential loss function for an optimization problem. Which means, loss is (y - f(x, w))^2, where f(x,w) can be any function, linear/non-linear, parameterized by `w`.
+4. In least square: `w =  argmin_w [y − f(x, w)]^2`
 
-- Non-linear least squares is common (https://en.wikipedia.org/wiki/Non-linear_least_squares). For example, the popular **Levenberg–Marquardt algorithm** solves something like:
-
-`β^=argminβS(β)≡argminβ∑i=1m[yi−f(xi,β)]2`
-
-It is a least squares optimization but the model is not linear.
-**They are not the same thing.**
-- In summary: linear regression is optimization problem, with the intent to find best possible parameter for the linear line, where as least square method is potential loss function for an optimization problem. Which means, loss is (y - f(x))^2, where f(x) can be any function, linear/non-linear.
-
-> f linear regression is  "low bias/high variance", there must be some alternative method that is biased but that has lower variance. Various forms of regularized regression exist, including lasso regression and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. I believe that regularizing a regression using lasso or ridge will always decrease the variance in the estimator, and it will always introduce bias if the true value of the coefficient is not zero.
+> f linear regression is  "low bias/high variance", there must be some alternative method that is biased but that has lower variance. Various forms of regularized regression exist, including lasso regression and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. Also note that regularizing a regression using lasso or ridge will always decrease the variance in the estimator, and it will always introduce bias if the true value of the coefficient is not zero.
 
 ---
 
 ## Bias And Varaince:
 Generally to measure the model, we draw a `chart of performance error vs model complexity`, this will leads us to the better decision.
-  - with more complexity in model(higher order polynomial features), we will have `low-bias and higher-variance`
-  - with less model complexity, we will have `high-bias and low-variance`.
+  1. with more complexity in model(higher order polynomial features), we will have `low-bias and higher-variance`
+  2. with less model complexity, we will have `high-bias and low-variance`.
 
 The prediction error for any machine learning algorithm can be broken down into three parts:
 1. Bias Error
 2. Variance Error
 3. Irreducible Error
+    - The `irreducible error` cannot be reduced regardless of what algorithm is used. 
+    - This error is introduced by the problem formulation and may be caused by factors like unknown variables that influence the mapping of the input variables to the output variable
 
 ### Mathematical expression: [Do derivation by urself, its confusing]
 ```python
 y = f(x) + epsilon
 err(x) = E[(y - yhat)^2]
-err(x) = [(f(x) + epsilon - yhat)^2]
-err(x) = [(f(x) + epsilon - yhat + E[yhat] - E[yhat])^2]
-err(x) = (f(x) - E[yhat])^2 + E[f(x)^2] - E[yhat]^2 + epsilon^2
+err(x) = E[(f(x) + epsilon - yhat)^2]
+err(x) = E[(f(x) + epsilon - yhat + E[yhat] - E[yhat])^2]
+err(x) = (f(x) - E[yhat])^2 + (E[f(x)^2] - E[yhat]^2) + epsilon^2
 err(x) = Bias^2 + variance + Irreducible-error
 ```
-The irreducible error cannot be reduced regardless of what algorithm is used. It is the error introduced from the chosen framing of the problem and may be caused by factors like unknown variables that influence the mapping of the input variables to the output variable
+
 
 ### Bias:
 1. `Low Bias`: Suggests less assumptions about the form of the target function.
@@ -805,34 +807,31 @@ The irreducible error cannot be reduced regardless of what algorithm is used. It
 
 ### Variance:
 Machine learning algorithms that have a high variance are strongly influenced by the specifics of the training data. This means that the specifics of the training have influences the number and types of parameters used to characterize the mapping function.
-1. `Low Variance`: Suggests small changes to the estimate of the target function with changes to the training dataset.
-  - `Linear Regression, Linear Discriminant Analysis and Logistic Regression`
-2. `High Variance`: Suggests large changes to the estimate of the target function with changes to the training dataset.
+1. `Low Variance`: Suggests `small changes` to the estimate of the target function with changes to the training dataset.
+  - `Linear Regression, Logistic Regression and Linear Discriminant Analysis`
+2. `High Variance`: Suggests `large changes` to the estimate of the target function with changes to the training dataset.
   - `Decision Trees, k-Nearest Neighbors and Support Vector Machines`
 
 > Generally, nonparametric machine learning algorithms that have a lot of flexibility have a high variance. For example, decision trees have a high variance, that is even higher if the trees are not pruned before use.
 
-#### To reduce the variance further:
+### To reduce the variance further:
 1. Ensemble of different models
-2. (Not much imp)Ensemble of different parameters of same model (As, while solving an optimization, there can be many optima points)
+2. (Not much imp) Ensemble of different parameters of same model (As, while solving an optimization, there can be many optima points)
 3. Increase the dataset size
-4. Increase diversity in features
+4. Increase diversity in features(imp)
 5. Another
-    - set random field
+    - set different random seed
     - Early stopping
-    - pruning of trees
+    - pruning of trees(imp)
 
 
-## Cross-validation:
-We took `5000` predictor to build a model for our 100 samples, we want to select best `100` predictors
-
-### The right way:
-- We build all such model, and select `top 100` based on cv error
-
-### In wrong way:
-- we use `correlation` for `each predictor with the target/label` and choose the `best 100 correlated predictor`.
-- now `cv error` will be very low, as it has already seen the label. 
-- test error will be very high in this case, because cv gets wrong due to step 1.
+## Q. Given `5000` predictor to build a model, how to select best `100` predictors (`Cross-validation`):
+1. The right way:
+    - We build all such model, and select `top 100` based on cv error
+2. In wrong way:
+    - we use `correlation` for `each predictor w.r.t target` and choose the `best 100 correlated predictor`.
+    - now `cv error` will be very low, as it has already seen the target variable. 
+    - test error will be very high in this case, because cv gets wrong due to step 1.
 
 
 ---
@@ -842,18 +841,17 @@ We took `5000` predictor to build a model for our 100 samples, we want to select
 - it is used to measure the direction of linearity(relationship) in x and y
 
 ## Correlation: [best](https://www.analyticsvidhya.com/blog/2015/06/correlation-common-questions/)
+### pearson correlation:
+- **Correlation** is normalized **Covariance**
 - `coerr = cov(x,y)/(var(x) var(y))`
 - `cov(x,y) = sum_i (xi - E[x]) ( yi - E[y]) / sqrt(sum_i (xi - E[x])) sqrt(sum_i ( yi - E[y]))`
 - it measure the strength as well as direction of colinearity.
-- **Correlation** is normalized **Covariance**
 - range is [-1, 1]
 - `helps in feature selection(filter method)`
 - pearson correlation has range of [-1, 1], **with string assumption of Linearity**
 - Pearson correlation is **very sensitive to outliers**
 
 > It is not of tranitive nature, which means if A and B are correlated && B and C are correlated, it doesn't tell about correlation of A and C.
-
-
 
 ### Spearmann coefficient
 - `sigma(x, y) = 1 - (6* sum_i (d_i)^2) / (n*(n-1))`, where d is distance between corresponding rank between two variable
@@ -864,15 +862,15 @@ We took `5000` predictor to build a model for our 100 samples, we want to select
 ## Why colinearity is bad in linear model?
 - If the model is consider all variable, to learn the characteristics, then those correlated feature will confuses it in making good decsion
 - For linear regression, our `assumption of independent variable` get violated. 
-  - Let's understand this problem specifically: Our objective is to model the dependent/response variable based on independent variable. This means that each independent variable has its own coeeficient, independent of other feature. But with multicolinearity, a minute change in one feature, changes other, but coefficent can't have this behaviour, because of our assumption
+    - Let's understand this problem in depth: Our objective is to model the dependent/response variable based on independent variable. This means that each independent variable has its own coeeficient, independent of other feature. But with multicolinearity, a minute change in one feature, changes other feature, but coefficent can't have this behaviour, because of our assumption
 - example of multicolinearity: two feature are `x` and other is `x+10`
 - Multicollinearity can increase the variance of the coefficient estimates and make the estimates very sensitive to minor changes in the model. The result is that the coefficient estimates are unstable.
-- Tree Based Model(specifically `boosting tree`) are free from this problem, because it split a node based on only one feature at a time.
+- Tree Based Model(specifically `boosting tree`) are free from this problem, because it split a node based only on one feature at a time.
 - `bagging methods` can have very small effect, but usually `unobserved`.
 
 > corrleation: we talk between two variable, `multicolinearity` is used, when correlation occurs in multiple feature. For exp: `x`, `x*2 + 3` and `x/10`
 
-
+---
 
 ##  dimensionality reduction algorithms:
 - PCA (linear)
@@ -883,9 +881,31 @@ We took `5000` predictor to build a model for our 100 samples, we want to select
 - Laplacian Eigenmaps (nonlinear)
 
 ### t-sne:
-t-SNE is based on probability distributions with random walk on neighborhood graphs to find the structure within the data. 
-- Local approaches seek to map nearby points on the manifold to nearby points in the low-dimensional representation. Global approaches on the other hand attempt to preserve geometry at all scales, i.e mapping nearby points to nearby points and far away points to far away points
+- t-SNE is based on probability distributions with random walk on neighborhood graphs to find the structure within the data. 
+- Local approaches seek to map nearby points on the manifold to nearby points in the low-dims representation. Global approaches on the other hand attempt to preserve geometry at all scales, i.e mapping nearby points to nearby points and far away points to far away point.
 
+
+---
+
+
+## Types of Clustering
+1. Centroid-based Clustering
+- distance based metrics
+- efficient but sensitive to initial conditions and outliers.
+
+2. Density-based Clustering
+- Density-based clustering connects areas of high example density into clusters. 
+- This allows for arbitrary-shaped distributions as long as dense areas can be connected. 
+- These algorithms have difficulty with data of varying densities and high dimensions. 
+- Further, by design, these algorithms do not assign outliers to clusters.
+
+3. Distribution-based Clustering
+- work good only, when we aware the distribution of dataset, such as Gaussian distributions.
+
+4. Hierarchical Clustering
+- Hierarchical clustering creates a tree of clusters. 
+- Hierarchical clustering, not surprisingly, is well suited to hierarchical data, such as taxonomies. 
+- In addition, another advantage is that any number of clusters can be chosen by cutting the tree at the right level.
 
 
 
@@ -900,13 +920,13 @@ t-SNE is based on probability distributions with random walk on neighborhood gra
 ### K-Mean Clustering Algorithm:
 - Objective: reduce the `within-cluster variance`
 - loss function: `sum_n sum_k z_{nk} ||x_n - z_k||^2`
-- `(X - Z U)`, where `Z: n X k`, `U: k X d`, `X: n X d`
+- `X = Z U`, where `Z: n X k`, `U: k X d`, `X: n X d`
 - assume cluster to be `equiprobable` or `convex-shaped`
 - Also called `hard-clustering`
 - Guaranteed to converge to local optimal (with proof)
-- It can be `kernelized` :)
+- It can be `kernelized` (wow)
 - If euclidean distance is replaced by absolute distance, it will be `k-Median` Algorithm
-  - robust to outliers
+    - robust to outliers
 - It just learn the mean of cluster, but it can be modified to `GMM` to capture variance
 - Our `z` is one-hot vector, if we use `probability` vector, then it will be called probabilistic clustering or `soft-clustering`
 
@@ -930,7 +950,7 @@ t-SNE is based on probability distributions with random walk on neighborhood gra
 - `L(x, mean, c) = ||x - c||^2`, which become with kernelized trick as `||phi(x) - phi(c)||^2 = phi(x,x) + phi(c,c) + 2*phi(x, c)`
 
 #### probalistic setting
-- Objective: Cluster id that is `P(z/x,theta)`
+- Objective: Cluster id is defined as `P(z/x,theta)`
 - `P(z/x,theta) = constant p(z/theta) p(x/z,theta)`
 - If we know z, then `p(x/z,theta)` is `generative classification` problem setting.
 - `P(z/theta)` is multinomial distribution
@@ -945,13 +965,14 @@ t-SNE is based on probability distributions with random walk on neighborhood gra
 4. go back to 2., untill it converges
 ```
 
+---
 
 ## probabilty Distribution:
-- Discrete Distribution:
+### Discrete Distribution:
   1. Bernoulli
     - distribution over {0,1} e.g coin toss problem
     - `p^x (1-p)^(1-x)`
-  2. Binomail
+  2. Binomial
     - distribution over number of suceess m over n trial
     - `NCm p^m (1-p)^(N-m)`
   3. Multinoulli:
@@ -964,7 +985,8 @@ t-SNE is based on probability distributions with random walk on neighborhood gra
     - model a non-negative integer (count)
     - example : `number of words in a doc` or `number of events in fixed inteval of time`
     - `lambda^k exp(-lambda)/ k!`
-- Continuous distribution
+
+### Continuous distribution
   1. Uniform
     - `1/(b-a)`
   2. Beta Distribution
@@ -988,34 +1010,53 @@ t-SNE is based on probability distributions with random walk on neighborhood gra
 
 
 ---
-## Evaluation Metric:
 
-### Confusion Metrics:
-  | Predicted +ve | Predicted -ve
---- | --- | ---
-Actual +ve | TP | FN
-Actual -ve | FP | TN
-
-#### Precision: 
-- How good is model on predicting positive class, which is `TP/(TP + FP)`
-- More Important, when we False positive id  
-
-
-```
-ax = articles['publication'].value_counts().sort_index().plot(kind='bar', fontsize=14, figsize=(12,10))
-ax.set_title('Article Count\n', fontsize=20)
-ax.set_xlabel('Publication', fontsize=18)
-ax.set_ylabel('Count', fontsize=18);
-```
-
-
----
 ## Decision Tree:
 Our objective is to find the regions, which can uniquely predict the value of input feature. 
 - In case of `regression`, objective function becomes: `sum_j{1:J} sum_{i belong to R_j} (y_i - yhat_{R_j}^2`
-- This is most important to undertand. To compute error, we proceed as follows: For each region `j`, we collect true labels of each such sample which lie in that region and then take average of their prediction(value from that region j), and then compute `(y - yhat)^2`.
-- The tree are built in Greedy fashion. At each node, we split on the basis of higher information gain of feature.
-- Although each split of the tree makes two partitions, it can fit interactions, while the additive model cannot. So tree model are capable of fitting a richer class of functions:
+- This is most important to undertand. To compute error, we proceed as follows: 
+    1. For each region `j`, we collect true labels of each such sample which lie in that region.
+    2. take average of their prediction(value from that region j)
+    3. compute `(y - yhat)^2`.
+- The tree are built in `Greedy fashion`. At each node, we split on the basis of higher information gain of feature.
+- Although each split of the tree makes two partitions, it can fit interactions, while the additive model cannot. So tree model are capable of fitting a richer class of functions.
+
+
+### Information Gain:
+- The `Information Gain` (IG) can be defined as follows:
+    `IG(Dp) = I(Dparent) − Nleft/Np I(Dleft) − Nright/Np I(Dright)` where I could be `entropy`, `Gini index`, or `classification error`, Dparent, Dleft, and Dright are the dataset of the parent, left and right child node.
+- consider an following example for understanding why classification error is not a good metrics to rule based method like decision tree.
+```
+         A                      B
+      (40,40)                (40,40)
+      /     \                /     \
+  (30,10)  (10,30)       (20,40)  (20,0)
+```
+In A and B, we can clearly see that B is better, because of right child have homogenity, whereas in A, there is no such case.
+- But as per the classification error method, both A and B have same error-rate of `0.25`. 
+- Gini criteria: `0.17`
+- Entropy      : `0.31`
+
+- `Higher the information gain, lesser will be the entropy, better it will be`. It tell as that there is less uniformatity, which is what we desire. **A rule should involve more homogenity**
+
+### Gini index:
+- `G = sum_{k = 1:K} pmk * (1 - pmk)`
+- `measure of total variance across K classes`
+- also known for `purity measure`
+- `smaller is better`. For exp: if pmk is 0 or 1, then G = 0
+- alternative to cross entropy, `D = - (sum_{k = 1:K} pmk log(pmk))`
+- For exp: Let's say, we have a bag of marbles with 64 red marbles and 36 blue marbles. What is the value of the Gini Index of marbels in that bag?  Ans: `Gini Index = .64*(1-.64) + .36*(1-.36) = .4608`
+
+#### Gini: 
+- `1 - sum_{j: Classes} p_j^2`
+- `Higher the value of Gini higher the homogeneity.`
+
+#### Entropy: 
+  `- sum_{j: Classes} p_j log(p_j)`
+- **why gini is preferred over entropy?**
+  1. First of all both are pretty much same (We can draw both metric on graph, we see that entropy is parabolic, where as gini's curve almost follows the same nature, but curve is little below of entropy in magnitude)
+  2. Gini has computational advantage. `No need of expensive logrithm`
+
 
 ### Pruning (weakest link pruning):
 - use greedy approach, to prune tree from bottom to up approach
@@ -1029,57 +1070,37 @@ Our objective is to find the regions, which can uniquely predict the value of in
 4. return best subtree from step 2 that corresponds to the chosen value of alpha
 ```
 
+### Advantages of Decision Tree.
+1. easy to explain
+2. follows same strategy as human takes decision
+3. easy to interpret 
 
+### Drawbacks of Decision Tree.
+1. prone to overfitting(need extra care)
+2. greedy approach(each split is locally optimal, so this is NP-complete problem)
+3. Information gain in a decision tree with categorical variables gives a `biased response` for attributes with greater no. of categories.
+4. computationally expensive with many classes.
 
-- The `Information Gain` (IG) can be defined as follows:
-  `IG(Dp) = I(Dparent) − Nleft/Np I(Dleft) − Nright/Np I(Dright)` where I could be `entropy`, `Gini index`, or `classification error`, Dparent, Dleft, and Dright are the dataset of the parent, left and right child node.
-- consider an following example for understanding why classification error is not a good metrics to rule based method like decision tree.
-         A                      B
-      (40,40)                (40,40)
-      /     \                /     \
-  (30,10)  (10,30)       (20,40)  (20,0)
-
-In A and B, we can clearly see that B is better, because of right child have homogenity, whereas in A, there is no such case.
-- But as per the classification error method, both A and B have same error-rate of `0.25`. 
-- Gini criteria: `0.17`
-- Entropy      : `0.31`
-
-- `Higher the information gain, lesser will be the entropy, better it will be`. It tell as that there is less uniformatity, which is what we desire. **A rule should involve more homogenity**
-
-### Gini index:
-- `G = sum_{k = 1:K} pmk * (1 - pmk)`
-- `measure of total variance across K classes`
-- also known for `purity measure`
-- smaller is better. For exp: if pmk is 0 or 1, then G = 0
-- alternative to cross entropy, `D = - (sum_{k = 1:K} pmk log(pmk))`
-- You have a bag of marbles with 64 red marbles and 36 blue marbles. What is the value of the Gini Index for that bag?  Ans: `Gini Index = .64*(1-.64) + .36*(1-.36) = .4608`
-
-#### Gini: 
-- `1 - sum_{j: Classes} p_j^2`
-- `Higher the value of Gini higher the homogeneity.`
-
-#### Entropy: 
-  `- sum_{j: Classes} p_j log(p_j)`
-- **why gini is preferred over entropy?**
-  1. First of all both are pretty much same (You can draw both metric on graph, entripy is parabolic, where as gini's curve follow same nature, but curve is little below of entropy)
-  2. Gini has computational advantage. `No need of expensive logrithm`
 
 ---
 
 ## Bagging:
-Bagging is very powerful method. It is generally the combination of many `decorrelated`(**very desirable**) models. 
+bagging is very powerful method. It is generally the combination of many `decorrelated`(**very desirable**) models.
 - reduce the variance as `(sig1 + sig2 +... sign) / n`
 - `out of bag` error, which is error computes on leave out observation. As in bootstrap sampling, it choose `68%` of observation to fit the model, the other `32%` will be used for validation, which is called as `out of bag error`.
 
 ## Random forest:
-- it use a simple but powerful idea to reduce variance, by choose `m` predictors out of `p` feature. for exp: `m = sqrt(p)`
+- Random Forest is an ensemble model of decision trees(`bagging` which helps in `reduce variance`).
+- it is based upon a simple but powerful idea to reduce variance, by choose `m` predictors out of `p` feature. for exp: `m can be chosen as sqrt(p)`
 - use less number of predictors/features for each bag, it can reduce the variance, beacuse of no/less correlation between each bag.
+- `time complexity`: to building a complete unpruned decision tree is `O( N * v * n log(n))`, where `n` is the number of observations, `v` is the number of variables/attributes and `N` is number of estimators.
+
 
 ### `limitations of Random forest are` :
-  1. Correlated features will be given equal or similar importance, but overall reduced importance compared to the same tree built without correlated counterparts.
-  2. Random Forests and decision trees, in general, give preference to features with high cardinality ( `Trees are biased to these type of variables` ).
+1. Correlated features will be given equal or similar importance, but overall reduced importance compared to the same tree built without correlated counterparts.
+2. Random Forests and decision trees, in general, give preference to features with high cardinality ( `Trees are biased to these type of variables` ).
 
-> Note: In stat, we use predictor terms instead of features.
+> Note: In statistics, the terms predictor is used instead of features.
 
 ---
 
@@ -1092,27 +1113,45 @@ Bagging is very powerful method. It is generally the combination of many `decorr
 2. find error `et = sum_n Dt(n) |yt == yhatt|`
 3. Compute importance `alphat = 1/2 log((1 - et)/et)`
 4. update weight `D{t+1}(n) = Dt(n) exp(beta)`, where beta = 
-    `-alpha for correct prediction` and 
+    `-alpha for correct prediction` 
     `alpha for incorrect`
 5. Normalize `D{t+1}(n)`
 6. Go to step 2. untill converge
 
 
 ## important stuff on bagging and boosting
-- To perform Random Forests we need to select 2 parameters: number of samples B and m= number of variables sampled at each split.
-- In order to perform Boosting, we need to select 3 parameters: number of samples B, tree depth d, and step size 
+- In order to run Random Forests we need to select 2 parameters: 
+    1. number of samples `B`
+    2. `m` = number of variables sampled at each split.
+- In order to run Boosting Algorithm, we need to select 3 parameters: 
+    1. number of samples `B`
+    2. tree depth `d`
+    3. step size (learning rate)
+
+
 ---
 
+## TF-IDF:
+Computes the (query, document) similarity. It has two parts.
+1. `TF Score (Term Frequency)`
+    - Term Frequency, which measures how frequently a term occurs in a document. Since every document is different in length, it is possible that a term would appear much more times in long documents than shorter ones. Thus, the term frequency is often divided by the document length (aka. the total number of terms in the document) as a way of normalization:
+    - `TF(t) = (Number of times term t appears in a document) / (Total number of terms in the document)`
+2. `Inverse Document Frequency`
+    - IDF which measures how important a term is. While computing TF, all terms are considered equally important. However it is known that certain terms, such as "is", "of", and "that", may appear a lot of times but have little importance. Thus we need to weigh down the frequent terms while scale up the rare ones, by computing the following:
+    - `IDF(t) = log_e(Total number of documents / Number of documents with term t in it)`
+- we usually consider log transformation of tf score
+- `tfidf = (1+log(1 + freq_of_word_in_doc/total_word_in_doc)) * log10(total_docs/no_of_docs_in_which_word_appear)`
+
+
 ## Text Normalization:
+### Stemming:
+- "Stemming is the process of `reducing inflection in words to their root forms` such as mapping a group of words to the same stem even if the stem itself is not a valid word in the Language."
+- stemming is just `stemming of prefix and suffix` such as `(-ed, -ize, -s, -de, -mis)`
+  1. `Porter-stem`: fast, set of 5 rule
+  2. `Lanchester-stemming`: slow, set of 120 rule, iterative approach, check character by chracter
+  3. `SnowballStemmer`: Non-english work stemmer
 
-#### Stemming:
-- "Stemming is the process of reducing inflection in words to their root forms such as mapping a group of words to the same stem even if the stem itself is not a valid word in the Language."
-- stemming is just stemming of prefix and suffix such as `(-ed,-ize, -s,-de,mis)`, even the rest of the word doesn't have meaning
-  1. Porter-stem: fast, set of 5 rule
-  2. Lanchester-stemming: slow, set of 120 rule, iterative approach, check character by chracter
-  3. SnowballStemmer: Non-english work stemmer
-
-#### Lemmantization:
+### Lemmantization:
 - Lemmatization, unlike Stemming, reduces the inflected words properly ensuring that the root word belongs to the language. In Lemmatization root word is called Lemma. A lemma (plural lemmas or lemmata) is the canonical form, dictionary form, or citation form of a set of words.
   1. WordNet-lemmantization
 
@@ -1143,19 +1182,6 @@ stem.stem(word)
 #### What is the difference between LDA and PCA for dimensionality reduction?
 1. Both LDA and PCA are linear transformation techniques: LDA is a supervised whereas PCA is unsupervised – PCA ignores class labels.
 2. PCA helps to find the directions of maximal variance, while LDA attempts to find a feature subspace that maximizes class separability 
-
----
-
-## Random Forest
-- Random Forest is an ensemble model of decision trees(`bagging` which helps in `reduce variance`).
-- time complexity: to building a complete unpruned decision tree is O( N * v * n log(n) ), where `n` is the number of observations, `v` is the number of variables/attributes and `N` is number of estimators.
-
-
-
-
-
-
-
 
 
 ---
@@ -1226,95 +1252,7 @@ Note: If you use this approach on an exam, you may also want to mention why this
 
 ---
 
-## Pandas Aggregation:
-```python
-# Group the data frame by month and item and extract a number of stats from each group
-data.groupby(['month', 'item']).agg(aggregation)
-aggregation = {
-        # find the min, max, and sum of the duration column
-        'duration': [min, max, sum],
-         # find the number of network type entries
-        'network_type': "count",
-        # min, first, and number of unique dates per group
-        'date': [min, 'first', 'nunique']
-    }
-```
-
-- Another way to aggregate with new columns names:
-```python
-# Group the data frame by month and item and extract a number of stats from each group
-data.groupby(['month', 'item']).agg(aggregation)
-aggregation = {
-        # find the min, max, and sum of the duration column
-        'duration': {
-            'total_duration'  : 'sum',
-            'average_duration': 'mean',
-            'num_calls'       : 'count',
-        },
-         # find the number of network type entries
-        'network_type': {
-            'count_networks' : 'count',
-            'num_days'       : lambda x: max(x)-min(x),
-        },
-        # min, first, and number of unique dates per group
-        'date': [min, 'first', 'nunique']
-    }
-```
-
-```python
-# Load the required packages
-import time
-import psutil
-import numpy as np
-import pandas as pd
-import multiprocessing as mp
-
-# Check the number of cores and memory usage
-num_cores = mp.cpu_count()
-print("This kernel has ",num_cores,"cores and you can find the information regarding the memory usage:",psutil.virtual_memory())
-
-
-# Writing as a function
-def process_user_log(chunk):
-    grouped_object = chunk.groupby(chunk.index,sort = False) # not sorting results in a minor speedup
-    func = {
-      'date'   : ['min','max','count'],
-      'num_25' : ['sum'],
-      'num_50' : ['sum'], 
-      'num_75' : ['sum'],
-      'num_unq': ['sum'],
-      'totSec' : ['sum']
-    }
-    answer = grouped_object.agg(func)
-    return answer
-
-# Number of rows for each chunk
-size = 4e7 # 40 Millions
-reader = pd.read_csv('user_logs.csv', chunksize = size, index_col = ['msno'])
-start_time = time.time()
-
-for i in range(10):
-    user_log_chunk = next(reader)
-    if(i==0):
-        result = process_user_log(user_log_chunk)
-        print("Number of rows ",result.shape[0])
-        print("Loop ",i,"took %s seconds" % (time.time() - start_time))
-    else:
-        result = result.append(process_user_log(user_log_chunk))
-        print("Number of rows ",result.shape[0])
-        print("Loop ",i,"took %s seconds" % (time.time() - start_time))
-    del(user_log_chunk)    
-
-# Unique users vs Number of rows after the first computation    
-print("size of result:", len(result))
-check = result.index.unique()
-print("unique user in result:", len(check))
-
-result.columns = ['_'.join(col).strip() for col in result.columns.values]
-```
----
-
-## Imp:
+## References:
 1. Hadamard : element wise multiplication
 2. Image Processing Algo: https://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-3-greyscale-conversion/
 3. [Data science prep by amazon](https://www.quora.com/What-is-the-best-site-for-preparing-data-science-interview)
