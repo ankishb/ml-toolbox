@@ -24,3 +24,31 @@ This disadvantage of lasso can be observed in the example we discussed above. Si
 
 
 Precision means the percentage of your results which are relevant. On the other hand, recall refers to the percentage of total relevant results correctly classified by your algorithm.
+
+
+
+
+
+
+
+
+Questions:
+
+Ask yourself the following questions to get clear understanding about both these models.
+
+    ‌ What are the problems these models can solve?
+    ‌Which model learns joint probability?
+    ‌Which model learns conditional probability?
+    ‌What happens when we give correlated features in discriminative models?
+    ‌What happens when we give correlated features in generative models?
+    ‌Which models works very well even on less training data?
+    Is it possible to generate data from with the help of these models?
+    ‌Which model will take less time to get trained?
+    ‌Which model will take less time to predict output?
+    ‌Which model fails to work well if we give a lot of features?
+    ‌Which model prone to overfitting very easily?
+    ‌Which model prone to underfitting easily?
+    ‌What happens when training data is biased over one class in Generative Model?
+    ‌What happens when training data is biased over one class in Discriminative Models?
+    ‌Which model is more sensitive to outliers?
+    ‌Can you able to fill out the missing values in a dataset with the help of these models?
