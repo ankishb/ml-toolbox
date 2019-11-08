@@ -85,6 +85,25 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 
 ---
 
+## Generative model vs discriminative model
+Generative classifiers
+
+    ‌Naïve Bayes
+    Bayesian networks
+    Markov random fields
+    ‌Hidden Markov Models (HMM)
+
+Discriminative Classifiers
+
+    ‌Logistic regression
+    Scalar Vector Machine
+    ‌Traditional neural networks
+    ‌Nearest neighbour
+    Conditional Random Fields (CRF)s
+    
+
+---
+
 
 
 ## Unbalanced Dataset:
@@ -301,21 +320,21 @@ Best, if we are using sparse data such as tf-idf features for words.
 - Example: let's suppose our z(t+1), lie outside the unit circle, but just consider it to be 1, if our constrained of **w belong to unit circle**.
 
 
-## Loss function (**Convex Surrogate Losses Function**):
+## Loss function (`Convex Surrogate Losses Function`):
 - Surrogate losses, because it define the upper bound on the real losses and minimize that. So minimze the surrogate losses function make sure pushing down real losses too.
 - **0/1 loss**: 1[ywx <= 0], this is NP hard, no efficient solution. For example for wx = -0.0000001, with increase of 00000009 it will still be -1, but 000000011 increase will take it to right side that is +1.
-- `Perceptron`: `max(0, -ywx)`
-- `Hinge Loss`: `max(0, 1-ywx)`
-- `logistic`: `log(1+exp(-ywx))/log2`
-- `Exponential Loss`: `exp(-ywx)`
-- `Absolute loss`: `|y - wx|` **Robust to outliers**
-- `epsilon-insensitive loss`: `|y-wx| + epsilon`
+- `Perceptron`: `max(0, -y w x)`
+- `Hinge Loss`: `max(0, 1 - y w x)`
+- `logistic`: `y log(p) + (1 - y) log(1 - p)`, where `p = 1 / (1 + exp(-y w x))` is prob of being `y = +1`
+- `Exponential Loss`: `exp(-y w x)`
+- `Absolute loss`: `|y - w x|` **Robust to outliers**
+- `epsilon-insensitive loss`: `|y - w x| + epsilon`
 
 ## Hyperplane:
 - `W x + b = 0`, a hyperplane
-    1. `b==0`, then plane is passing through origin
-    2. `b>0`, hyperplane moves parallel in direction of w
-    3. `b<0`, hyperplane moves opposite direction
+    1. `b = 0`, then plane is passing through origin
+    2. `b > 0`, hyperplane moves parallel in direction of w
+    3. `b < 0`, hyperplane moves opposite direction
 
 
 ## regularization:
