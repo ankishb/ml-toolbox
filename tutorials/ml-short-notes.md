@@ -3,26 +3,22 @@
 # perceptron
 - Online Algo (check one example at a time)
 - Error driven (update weights only if prediction is wrong)
-- **Linear Boundary Seprator**
-- Descision rule to update weights `y_hat*y <= 0` as `y C [-1,1]` and weight update rule is `w += y*x` and `b += y`
-- Hyperplane will be perpendicular to weight vector, because `W*X = 0`, when `bias` is zero.
+- **Linear Boundary Seprator** (`can be kernelized to obtain non-linear boundary`)
+- Descision rule to update weights `y_hat * y <= 0` as `y belongs to [-1,1]`
+    - weight update rule is `w = w + y * x`
+    - `b = b + y`
+- **Hyperplane will be perpendicular to weight vector**, because `W * X = 0`, when `bias = 0`.
 - Direction of weights is towards `+ve` samples.
-- `W*X` is nothing but the `projection` of sample `x` on the `W` vector. So it tells the distance of how far it is from origin of hyperplane, when bias is zero.
+- `W * X` is nothing but the `projection` of sample `x` on the `W` vector. So it tells the distance of how far it is from origin of hyperplane, when bias is zero.
 - For `X` to be `D` dims space, hyperplane will always be `D-1` dims. For example for `2D` data points, `decision boundary` is `linear`.
-- **Interpretation**: Scale the data in `[0-1]` range, now weights will represent the `sensitivity` of classification prediction on the features. `More weights of feature, more sensitive to output`.
+- **Interpretation**: Scale the data in range of `[0-1]`, now weights will represent the `sensitivity of classification prediction on the features`. `More weights of feature, more sensitive to output`.
 - For `+ve` class, features with higher +ve weights are more responsible and for `-ve` class, feature with higher -ve weights are more sensitive. If features have some noise, then it will be more appropriate to remove such feature, if it is more sentive for boundary or prediction.
 - Issue with perceptron that it consider `later points more than former points`.
 - **Average Perceptron** And **Voting Perceptron**, **What????**
 - Researcher worked on XOR problem for decades using perceptron, which leads to AI-Winter.
 
-Note: `kernel` is here to saved for non-linear boundary.
 
-
-Cat var: Qualitive variable
-Num var: Quantitative Var
-
-t-statistics:
-Final the coeeficient of feature in model and also find the std dev error and t-stat = (coeff/std-dev error)
+> In statistics, categorical varaible are known as `qualitative variable` and for numerical feature, `quantitative variable` term is used.
 
 
 ## Regression Analysis:
@@ -31,7 +27,7 @@ regression analysis estimates the relationship between two or more variables.
 - It indicates the strength of impact of multiple independent variables on a dependent variable.
 
 
-## types of Regressions?
+## types of Regressions
 1. Linear Regression
 2. Logistic Regression
 3. Polynomial Regression
@@ -43,6 +39,9 @@ regression analysis estimates the relationship between two or more variables.
 
 # logistic regeression
 - Linear regression try to put a linear line on samples, **Just imagine**, Can a linear line give a solution which seprate **[0,1]**. **Well, it can, Look at following exp**, because we need a threshold to decide which side the samples lie. But for biased/imbalanced dataset, the linear line will be biased along one side and solution may not be good, whereas logistic regression helps to put a sigmoid like curve on the samples, which seems good.
+- In log-reg, output is always between `[0-1]`, where in linear reg, output can be anything `> 1 or < 0`.
+- it computes probability of being 1.
+- log-reg is an optimization problem.
 
 Fit a line though the following sample and analyze the threshold of 0.5 to detect the test samples.
 
@@ -56,10 +55,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 ||      GOOD               ||          BAD            ||
 ||=========================||=========================||
 ```
-# Log-reg Conti.
-- log-reg, output is always between **0-1**, where in linear reg, output can be anything **>1 & <0**.
-- log-reg computes probability of being 1.
-- optimization problem.
+
 
 # Ridge Regression:
 - L2 regularization
@@ -113,19 +109,21 @@ Out: {0: 1.0, 1: 403.74}
 ## Percentile calculation:
 - find the percentile score in exam or test.
 1. Sort the data values from low to high
-2. Multiply the percentile with total number of value. For 25 student and 99percentile, it will be 25*0.99.
+2. Multiply the percentile with total number of value. For 25 student and 99 percentile, it will be 25*0.99.
 3. Round to nearest whole number. 1.5-->2, 2.7-->3, 1.2-->1, 5-->5
 4. If the value obtained at step `2` is not whole number:
       Pick the value at that index, given by step `3`
     Else
       Ans will be the average of value at (index, index+1)
 ```
-or example, suppose you have 25 test scores, and in order from lowest to highest they look like this: 43, 54, 56, 61, 62, 66, 68, 69, 69, 70, 71, 72, 77, 78, 79, 85, 87, 88, 89, 93, 95, 96, 98, 99, 99. To find the 90th percentile for these (ordered) scores, start by multiplying 90% times the total number of scores, which gives 90% ∗ 25 = 0.90 ∗ 25 = 22.5 (the index). Rounding up to the nearest whole number, you get 23
+For example, suppose you have 25 test scores, and in order from lowest to highest they look like this: 43, 54, 56, 61, 62, 66, 68, 69, 69, 70, 71, 72, 77, 78, 79, 85, 87, 88, 89, 93, 95, 96, 98, 99, 99. To find the 90th percentile for these (ordered) scores, start by multiplying 90% times the total number of scores, which gives 90% ∗ 25 = 0.90 ∗ 25 = 22.5 (the index). Rounding up to the nearest whole number, you get 23th term. Ans is 98
 ```
+
+
 
 ## Find Inverse of matrix:
 - use GAUSS ELIMINATION METHOD
-- Procede like following: **a11, a21, a31, -- a22, a32, a33, -- a23, a13, a12**
+- Procede like following: `a11, a21, a31, -- a22, a32, a33, -- a23, a13, a12`
 - In brief, proceed through each columns, but lower left triangle, and then move upward and take left turn, it reach to a12.
 ```c++
 1. Init A X = B as [A | B]
@@ -136,7 +134,7 @@ or example, suppose you have 25 test scores, and in order from lowest to highest
   [49, 2, 2]    [1,  2, 4]
 3. start with first pivot (49) and compute factor f as (2/49) and subtract the entire row from f*pivot that will be (2/49)*(49) as A[i][j] = A[i][j] - f*pivot
 4. repeat for each pivot and iterate downward for each row
-5. In the end, we will get matrix in row echlon form, which give as coeffiencient of X.
+5. In the end, we will get matrix in row echlon form, which give as coefficient of X.
   [1, x12, x13, x14]
   [0,  1 , x23, x24]
   [0,  0 ,  1 , x34]
@@ -147,6 +145,7 @@ Note: there is a catch, if matrix A is [m X n] dimension:
   3. m < n , many solution (choose any value for x34, and then x33 = B3 - x34)
 ```
 
+
 #### Solving linear equation using gaussian elimination method
 ```c++
 //Gauss Elimination
@@ -156,24 +155,25 @@ using namespace std;
 int main()
 {
     int n,i,j,k;
-    cout.precision(4);        //set precision
+    cout.precision(4);     //set precision
     cout.setf(ios::fixed);
     cout<<"\nEnter the no. of equations\n";        
     cin>>n;                //input the no. of equations
-    float a[n][n+1],x[n];        //declare an array to store the elements of augmented-matrix    
+    float a[n][n+1],x[n];  //declare an array to store the elements of augmented-matrix    
     cout<<"\nEnter the elements of the augmented-matrix row-wise:\n";
     for (i=0;i<n;i++)
         for (j=0;j<=n;j++)    
             cin>>a[i][j];    //input the elements of array
-    for (i=0;i<n;i++)                    //Pivotisation
-        for (k=i+1;k<n;k++)
+    for (i=0;i<n;i++){       //Pivotisation
+        for (k=i+1;k<n;k++){
             if (abs(a[i][i])<abs(a[k][i]))
-                for (j=0;j<=n;j++)
-                {
-                    double temp=a[i][j];
-                    a[i][j]=a[k][j];
-                    a[k][j]=temp;
+                for (j=0;j<=n;j++){
+                    double temp = a[i][j];
+                    a[i][j] = a[k][j];
+                    a[k][j] = temp;
                 }
+            }
+        }
     cout<<"\nThe matrix after Pivotisation is:\n";
     for (i=0;i<n;i++)            //print the new matrix
     {
@@ -210,28 +210,29 @@ int main()
     return 0;
 }
 ```
+
+
 ## Optimization (Part-1):
-- A function is convex, when `f(y) >= f(x)+dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
+- A function is convex, when `f(y) >= f(x) + dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
 - Convex function has its second derivative(hessian) as semi-definite.
 ```
 At critical point, f'(x) = 0;
-using taylor series: f(x+h) = f(x) + h*f'(x) + 1/2 h*f''(x)*h
-f(x+h) = f(x) + 1/2 h*f''(x)*h, as f'(x) = 0
-f(x+h) - f(x) = 1/2 h*f''(x)*h = hessian
-For local minima to exist, h should be >=0,
-So hessian >=0, which is positive semidefinte
+using taylor series: f(x+h) = f(x) + h * f'(x) + 1/2 h* f"(x) * h
+f(x+h) = f(x) + 1/2 h * f"(x) * h, as f'(x) = 0
+f(x+h) - f(x) = 1/2 h * f"(x) * h
+For local minima to exist, hessian(h) should be >=0, which is positive semidefinte
 ```
 
 ## gradient Desent:
 - can optimize any function, `convex/non-convex`
-- the idea is to take gradient and move in the opposite direction of it. **As grad tells us the direction in which slope is increasing**.
-- we also use `learning rate` to give less signifies to update using current gradient.
+- the idea is to take gradient and move in the opposite direction of it. `As grad tells us the direction in which slope is increasing`.
+- we use `learning rate` to control the significance of update using current gradient.
 
 ## learning rate:
 - constant
-- momentum based `1/t`, `1/sqrt(t)`, `1/(1-t)`, RMSProp< Nestrov Momentum**
+- momentum based `1/t`, `1/sqrt(t)`, `1/(1-t)`, RMSProp < Nestrov Momentum
 - `adaptive lr` **Adam, AdaGrad,...**
-- `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many many extrema and build the ensemble using all those optima pts.
+- `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many-many extrema and build the ensemble using all those optima pts.
 
 ## Gradient Based Optimization:
 - `GD`: update as per the gradient of all data
@@ -247,9 +248,9 @@ So hessian >=0, which is positive semidefinte
     2. Each step is finding the minima of **quadratic function** in local space.
     3. No need of learning rate
     4. As `f(y) = f(x) + (y-x) df/dx + (y-x)^2 d^2f/dx^2`
-    `f(wt+1) =f(wt)+df/dwt (w-wt) + 1/2 (w-wt)^2 d^2f/dw^2`
-    `w = argmax_w f(wt+1)`
-    `wt+1 = wt + (hessian)^-1 grad`
+        `f(wt+1) = f(wt) + df/dwt (w-wt) + 1/2 (w-wt)^2 d^2f/dw^2`
+        `w = argmax_w f(wt+1)`
+        `wt+1 = wt + (hessian)^-1 * grad`
     5. Expensive Because of hessian
     6. Very Fast, if f(w) is convex
 
@@ -258,43 +259,44 @@ So hessian >=0, which is positive semidefinte
 ## Deep Learning Famously Optimizer: [Best](http://ruder.io/optimizing-gradient-descent/)
 - SGD, RMSProp, AdaGrad, AdaDelta, Adam, Nadam
 - For time series ==> prefereably RMSPRop
-- Best to use ==> SGD+Nestrov or Adam
+- Best to use ==> SGD + Nestrov or Adam
 - Nestrov ==> First jump and then correct its step(or jump)
 - sgd = optimizers.SGD(lr=0.01, decay=1e-6, momentum=0.9, nesterov=True)
 - Batch normalization additionally acts as a regularizer, reducing the need for Dropout.
-- For sparse data (tf-idf) ==> AdaGrad, AdaDelta(improved over AdaGrad)
+- For sparse data (e.g. tf-idf) ==> AdaGrad, AdaDelta(improved over AdaGrad)
     Best, if we are using sparse data such as tf-idf features for words.
 
 1. Momentum:
-**Another way to think about momentum, suppose our update as oscilating while moving to its local minima, so when we taking average of many points value, its oscillation in verticle direction suppress, but in horizontal direction as all grad effect sums up, so it will have nice big grad value.**
-    V_w = beta V_w + (1-beta) dw
-    V_b = beta V_b + (1-beta) db
-
-    w = w - alpha V_w
-    b = b - alpha V_b
-
+**Another way to think about momentum, suppose our update as oscilating while moving towards its local minima, so when we taking average of many points value, its oscillation in verticle direction suppress, but in horizontal direction as all grad effect sums up, so it will have nice big grad value.**
+    - `V_w = beta V_w + (1-beta) dw`
+    - `V_b = beta V_b + (1-beta) db`
+    - `w = w - alpha V_w`
+    - `b = b - alpha V_b`
 The momentum term increases for dimensions whose gradients point in the same directions and reduces updates for dimensions whose gradients change directions. As a result, we gain faster convergence and reduced oscillation.
+
 2. `AdaGrad`: weakness: lr_rate decaying
 Notice that the weights that receive high gradients will have their effective learning rate reduced, while weights that receive small or infrequent updates will have their effective learning rate increased. This agressive behaviour, stops Deep-NN to learn very early.
-3. RMSProp:
+
+3. `RMSProp`:
 The RMSProp update adjusts the Adagrad method in a very simple way in an attempt to reduce its aggressive, monotonically decreasing learning rate. In particular, it uses a moving average of squared gradients instead. Hence, RMSProp still modulates the learning rate of each weight based on the magnitudes of its gradients, which has a beneficial equalizing effect, but unlike Adagrad the updates do not get monotonically smaller
-4. AdaDelta: Removed weakness of adadelta
+
+4. `AdaDelta`: Removed weakness of adadelta
 Best, if we are using sparse data such as tf-idf features for words.
 
 > If our data is sparse and our features have very different frequencies, we might not want to update all of them to the same extent, but perform a larger update for rarely occurring features.
 
 
 ## lagrangian Method:
-- Primal & Dual method: Both gives same answer if the constrained function is convex, i.e. **g(w) <= 0**
-- **`w = argmin_w{f(w) + argmax_a{a . g(w)}}`**
-- For dual solution, α*g(w) = 0 (complimentary slackness/Karush-Kuhn-Tucker (KKT) condition)
+- Primal & Dual method: Both gives same answer if the constrained function is convex, i.e. `g(w) <= 0`
+- `w = argmin_w {f(w) + argmax_a {a.g(w)}}`
+- `For dual solution, a.g(w) = 0` (complimentary slackness/Karush-Kuhn-Tucker `(KKT) condition`)
 
 ## Projected Grad Method:
 1. Each step of projected GD works as follows
-2. Do the usual GD update: z(t+1) = w(t) − ηtg(t)
+2. Do the usual GD update: `z(t+1) = w(t) − ηt g(t)`
 3. Check z(t+1) for the constraints
-    If z(t+1) 2 C, w(t+1) = z(t+1)
-    If z(t+1) 2 C = , project on the constraint set: w(t+1) = ΠC[z(t+1)]
+    If z(t+1) <= C, `w(t+1) = z(t+1)`
+    If z(t+1) > C , project on the constraint set: `w(t+1) = ΠC[z(t+1)]`
 
 - Example: let's suppose our z(t+1), lie outside the unit circle, but just consider it to be 1, if our constrained of **w belong to unit circle**.
 
