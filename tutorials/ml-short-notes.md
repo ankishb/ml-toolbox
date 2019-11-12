@@ -233,6 +233,7 @@ int main()
 
 ## Optimization (Part-1):
 - A function is convex, when `f(y) >= f(x) + dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
+- In other words, pick any two points on curve, the line passing through two points, will always be above the curve, if curve follows convexity.
 - Convex function has its second derivative(hessian) as semi-definite.
 ```
 At critical point, f'(x) = 0;
@@ -241,6 +242,16 @@ f(x+h) = f(x) + 1/2 h * f"(x) * h, as f'(x) = 0
 f(x+h) - f(x) = 1/2 h * f"(x) * h
 For local minima to exist, hessian(h) should be >=0, which is positive semidefinte
 ```
+
+### Concave, Convex and Non-Convex function:
+1.  A function is non-convex if the function is not a convex function.
+2. A function `g` is concave if `−g`is a convex function.
+3. A function is non-concave if the function is not a concave function.
+4. A non-convex function need not be a concave function. For example, the function f(x)=x(x−1)(x+1)
+defined on [−1,1].
+
+> Notice that a function can be both convex and concave at the same time, a straight line is both convex and concave.
+
 
 ## gradient Desent:
 - can optimize any function, `convex/non-convex`
@@ -642,6 +653,15 @@ Actual -ve | FP | TN
 - which can be nullify/Invalidate
 - For example: Earth is oval shaped, this is **null Nypothesis**, and earth is flat, is **alternative hypothesis**.
 
+## Z-test:
+`Std-dev = sigma/sqrt(N)`
+`Z = (X - mu) / std-dev`
+`Z critical value for α = 0.05 (one tailed) would be 1.65 as seen from the z table.`
+- Therefore, if we get Z greater than the Z critical value, we can reject the null hypothesis.
+- We know that confidence interval depends on the standard deviation of the data. If we introduce outliers into the data, the standard deviation increases, and hence the confidence interval also increases.
+- The standard error of the mean is the standard deviation by the square root of the number of values.
+- To check, if we have sufficient evidence to reject the null, we use `two tailed test`. It states that, the `z critical value for a 2 tailed test would be ±2.58`. If calculated z value is less than z_critical, we cann't reject null hypothesis.
+
 ## Type-I and type-II error:
 A medical researcher wants to compare the effectiveness of two medications. The null and alternative hypotheses are:
 1. Null hypothesis (H0): μ1= μ2
@@ -951,6 +971,10 @@ Machine learning algorithms that have a high variance are strongly influenced by
 - It just learn the mean of cluster, but it can be modified to `GMM` to capture variance
 - Our `z` is one-hot vector, if we use `probability` vector, then it will be called probabilistic clustering or `soft-clustering`
 
+> 1. Minimize the intra-cluster distances  2. Maximize the inter-cluster distances  3. However, K-Means is implicitly based on pairwise Euclidean distances b/w data points. 4. SStotal = SSwithin + SSbetween. So, if SSwithin is minimized then SSbetween is maximized.
+
+
+
 ```python
 @kmean algo (hard-clustering)
 1. Find optimal clustering id (labels)
@@ -990,19 +1014,24 @@ Machine learning algorithms that have a high variance are strongly influenced by
 
 ## probabilty Distribution:
 ### Discrete Distribution:
-  1. Bernoulli
+1. Bernoulli
     - distribution over {0,1} e.g coin toss problem
     - `p^x (1-p)^(1-x)`
-  2. Binomial
-    - distribution over number of suceess m over n trial
+    - `mean: p`
+    - `var: p (1 - p)`
+2. Binomial
+    - This distribution describes the behavior of outputs of n random experiments, each having a Bernoulli distribution with probability p.
+    - distribution over `number of suceess m over n trial`
     - `NCm p^m (1-p)^(N-m)`
-  3. Multinoulli:
+    - `mean : m * p`
+    - `var: m * p * (1- p)`
+3. Multinoulli:
     - categorical distribution (multiclass classification)
     - `prod p_k^x_k`
-  4. Multinomial:
+4. Multinomial:
     - repeat mutinolli N times
     - models the bin allocation via discrete vector x of size k
-  5. poisson distribution
+5. poisson distribution
     - model a non-negative integer (count)
     - example : `number of words in a doc` or `number of events in fixed inteval of time`
     - `lambda^k exp(-lambda)/ k!`
@@ -1267,11 +1296,133 @@ Note: If you use this approach on an exam, you may also want to mention why this
 
 
 #### Interpret Results
-- Reject the hypothesis, if `p-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
+- Reject the null hypothesis, if `p-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
 - `A P-value measures the strength of evidence in support of a null hypothesis.`
 - P-value is the probability for the null hypothesis to be True.
 
+
+1. A small p-value (typically ≤ 0.05) indicates `strong evidence against the null hypothesis`, so you `reject the null hypothesis`.
+2. A large p-value (> 0.05) indicates `weak evidence against the null hypothesis`, so you `fail to reject the null hypothesis`.
+
 ---
+
+## Activation function in deep learning
+1. sigmoid function: ``1 / (1 + exp(-x))
+2. Tanh : `2 / (1 + exp(-2x))  -1`
+3. Relu: `x if x > 0, 0 otherwise`
+4. Leaky Relu: 
+    - `x if x > 0, `
+    - `a*x if x < 0, a is constant`
+5. Parameterized Relu:
+    - `x if x > 0, `
+    - `-w*x if x < 0, w is learnable parameter`
+6. Exponential linear unit:
+    - `x if x > 0, `
+    - `a*(exp(x) - 1) if x < 0`
+7. Softplus: `log(1 + exp(x))`
+
+### Why Relu is better:
+1. computationaly cheaper
+2. `No vanishing Gradient` problem, even with very deep network
+3. `sparsity` (add more non-linearity and better generalization, also follows the human mind)
+4. It converge faster
+6. `Relu6` : clipping gradient to avoid exploding gradient problem.
+
+---
+
+## Gradient Checking:
+### Why do we need Gradient Checking?
+
+Back prop as an algorithm has a lot of details and can be a little bit tricky to implement. And one unfortunate property is that there are many ways to have subtle bugs in back prop. So that if you run it with gradient descent or some other optimizational algorithm, it could actually look like it's working. And your cost function, J of theta may end up decreasing on every iteration of gradient descent. But this could prove true even though there might be some bug in your implementation of back prop. So that it looks J of theta is decreasing, but you might just wind up with a neural network that has a higher level of error than you would with a bug free implementation. And you might just not know that there was this subtle bug that was giving you worse performance. So, what can we do about this? There's an idea called gradient checking that eliminates almost all of these problems.
+### What is Gradient Checking?
+
+We describe a method for numerically checking the derivatives computed by your code to make sure that your implementation is correct. Carrying out the derivative checking procedure significantly increase your confidence in the correctness of your code.
+
+If I have to say in short than Gradient Checking is kind of debugging your back prop algorithm. Gradient Checking basically carry out the derivative checking procedure. 
+
+---
+
+## Weight Init in deep learning:
+- A too-large initialization leads to exploding gradients
+- A too-small initialization leads to vanishing gradients
+III   How to find appropriate initialization values
+- To prevent the gradients of the network’s activations from vanishing or exploding, we will stick to the following rules of thumb:
+    1. The mean of the activations should be zero.
+    2. The variance of the activations should stay the same across every layer.
+    Under these two assumptions, the backpropagated gradient signal should not be multiplied by values too small or too large in any layer. It should travel to the input layer without exploding or vanishing.
+- More concretely, consider a layer l. Its forward propagation is:
+    - `z[l] = W[l]a[l−1] + b[l]`
+    - `a[l] = g[l](z[l])`
+- We would like the following to hold:
+    1. `E[a[l−1]] = E[a[l]]`
+    2. `Var(a[l−1]) = Var(a[l])`
+- Final result:
+    1. `w ~ N(0, 1/n_prev` where `n_prev` is the number of neuron in previous layer
+    2. `b = 0`
+
+### Xavier Init:
+- widely used, with the activation function like `tanh`
+- Using `forward pass` relation, we come up at
+    1. `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
+    2.  So `Var(W[l]) = 1 / n[l-1]`, to ensure the above property to avoid exploding and vanishing graient problem
+- Using `backward pass` relation, we come up at, `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
+    1. `Var(a[l-1]) = n[l] * Var(W[l]) * Var(a[l])`
+- In practice, we consider `harmonic mean of both variance`, which is `2 / (n[l] + n[l-1])`
+
+- In general, `Var(a[L]) = [prod{l=1:L} ​n[l−1] Var(W[l])] Var(x)​`
+    Depending on how we initialize our weights, the
+        [prod{l=1:L} ​n[l−1] Var(W[l])] < 1 ⟹ Vanishing Signal
+        [prod{l=1:L} ​n[l−1] Var(W[l])] = 1 ⟹ Var(a[L]) = Var(x)
+        [prod{l=1:L} ​n[l−1] Var(W[l])] > 1 ⟹ Exploding Signal
+
+### He Init:
+- work great with `relu`
+- `Var(a[l]) = sqrt(2 / n_prev)`, `n_prev = fan_in`
+
+
+---
+
+## Cross Validation:
+- K-fold
+- startified k-fold
+- leave one out
+- leave-p out
+- group-k fold
+- leave-1 group out
+- leave-p group out
+- time-series split
+- all above with shuffling
+
+---
+
+## Batch Normalization:
+- batch-norm solve the problem of **local-covariate-shift**
+- compute mean and variance of current batch
+- normalize the dataset with that
+- scale and shift the output, to add more non-linearity
+    1. When we normalize, it will be `0-1`, while using `sigmoid` at each layer, output will be linear, beacuse, most of the time it lies around `0.5`, where curve is almost linear.
+    2. To avoid that, we learn a scaling and shifting factor too, which is applied at output of batch-norm layer.
+
+### Advantage of batch-norm
+1. Faster training
+    1. We can use higher learning rates because batch normalization makes sure that there’s no activation that’s gone really high or really low. And by that, things that previously couldn’t get to train, it will start to train.
+
+2. It reduces overfitting
+    1. As it normalize the dataset as per mean and variance of current batch observation, which may not be equal to global mean and vaiance
+    2. Due to above, it add some noise in dataset, which act as regularization similar to `dropout`
+
+---
+
+## Statistics:
+1. Descriptive Statistics
+
+Descriptive Statistics is the study of understanding patterns that might emerge from data. It is a way to summarize our data and interpret it in a meaningful way. It includes important attributes of the dataset like mean, mode, median and also the deviation or measuring the spread. These attributes help guide us to know the quality of convergence during model evaluation.
+2. Inferential Statistics
+
+Sometimes it is not feasible to consume the entire model. This is where sampling comes in. Sampling is of great importance in inferential statistics and is the basis of breaking down data into samples for training, validation and test for your AI models. Sampling estimation and testing for hypothesis are two main aspects of inferential statistics.
+
+---
+
 
 ## References:
 1. Hadamard : element wise multiplication
