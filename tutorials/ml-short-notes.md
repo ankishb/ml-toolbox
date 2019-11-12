@@ -1012,7 +1012,8 @@ Machine learning algorithms that have a high variance are strongly influenced by
 
 ---
 
-## probabilty Distribution:
+## Probabilty Distribution:
+
 ### Discrete Distribution:
 1. Bernoulli
     - distribution over {0,1} e.g coin toss problem
@@ -1035,6 +1036,16 @@ Machine learning algorithms that have a high variance are strongly influenced by
     - model a non-negative integer (count)
     - example : `number of words in a doc` or `number of events in fixed inteval of time`
     - `lambda^k exp(-lambda)/ k!`
+6. Geometrical distribution
+    - It represents the number of failures before you get a success in a series of Bernoulli trials.
+    - If X = n, it means you succeeded on the nth try and failed for n-1 tries.
+    - `f(x) = (1 − p)^(x-1) p`
+    - There are three assumptions of Geometric Distribution:
+        1. There are two possible outcomes for each trial (success or failure).
+        2. The trials are independent.
+        3. The probability of success is the same for each trial.
+
+
 
 ### Continuous distribution
   1. Uniform
@@ -1048,15 +1059,14 @@ Machine learning algorithms that have a high variance are strongly influenced by
   4. Dirichlet Distribution
     - Dirichlet is conjugate to Multinoulli/Multinomial
     - Note: Dirichlet can be seen as a generalization of the Beta distribution. Normalizing a bunch of Gamma r.v.’s gives an r.v. that is Dirichlet distributed.
-- Gaussian `N(x|m1,s1)`
-  - transformation of space `y = Ax+b` . It becomes `N(y|A*m1+b, A*s1*A')`
-  - product of two gaussian will be `1/z N(x|m,s)`, where `m = (m1*s2 + m2*s1)/(s1+s2)` and `s = (s1*s2)/(s1+s2)`
-    - It is unnormalized, where `z = N(m1|m2,s1+s2) = N(m2|m1,s1+s2)`
-  - diag covariance : 
-    - with equal variance across each dim is circular
-    - with unequal will be elipse in horizinal or vertical direction
-    - full cov: ellipical shape in any order(axis)
-
+5. Gaussian `N(x|m1,s1)`
+    - transformation of space `y = Ax+b` . It becomes `N(y|A*m1+b, A*s1*A')`
+    - product of two gaussian will be `1/z N(x|m,s)`, where `m = (m1*s2 + m2*s1)/(s1+s2)` and `s = (s1*s2)/(s1+s2)`
+        - It is unnormalized, where `z = N(m1|m2,s1+s2) = N(m2|m1,s1+s2)`
+    - diag covariance : 
+        - with equal variance across each dim is circular
+        - with unequal will be elipse in horizinal or vertical direction
+        - full cov: ellipical shape in any order(axis)
 
 
 ---
@@ -1422,6 +1432,51 @@ Descriptive Statistics is the study of understanding patterns that might emerge 
 Sometimes it is not feasible to consume the entire model. This is where sampling comes in. Sampling is of great importance in inferential statistics and is the basis of breaking down data into samples for training, validation and test for your AI models. Sampling estimation and testing for hypothesis are two main aspects of inferential statistics.
 
 ---
+
+## Credit Risk:
+The idea of consumer credit is that the bank will gain from giving credit only if the client will not default (that means, will not repay the debt). Indeed, once accepted as creditworthy and received the credit, the client will plan, together with the bank, an amortization schedule according to which he will have to repay not only the debt, but also the interests.
+
+So, if from one side giving credit is one of the incomes of a bank (because of the interests), from the other it involves a noticeable amount of risk. That’s why a great amount of time and money is invested in analyzing clients’ history, habits and likelihood of repaying the debt.
+
+To do so, banks have always been relying on statistical models (especially scoring models), however today, with the aid of Machine Learning algorithms, their predictions about future repayments are far more reliable.
+
+---
+
+## Eigenvalues and Eigenvector
+Now, each transformation might affect the direction and extension of a vector (for a clearer explanation about the shape of vectors in multidimensional spaces you can read my former article here). However, given a transformation T, there exists a very interesting class of vectors which are affected by that transformation only in terms of extension, since the direction remains unchanged. The generic vector v with this property is such that:
+
+Where lambda is the extension factor. Those vectors are called Eigenvectors and the value lambda associated with them is called Eigenvalue.
+Eigenvalues and Eigenvectors
+
+As anticipated, eigenvectors are those vector whose direction remains unchanged once transformed via a fixed T, while eigenvalues are those values of the extension factor associated with them.
+
+To be more precise, eigenvectors are vectors which are not trivial, hence different from 0. That’s because the equality above has always at least one solution, which is the trivial one where v=0.
+
+How can we find our eigenvectors and eigenvalues, under the condition that those former are different from the trivial vector? For this purpose, let’s reframe our linear system with the representation theorem:
+
+As anticipated, this system has at least one solution, which is the trivial one. Hence, we want to find those values of lambda for which the determinant of the matrix (A-lamda*I) is equal to zero (otherwise it would have meant that, because of the Cramer Theorem, the system has 1 unique solution).
+
+- Some of them (more specifically, as many as the number of features), though, have a very interesting property: indeed, once applied the transformation T, they change length but not direction. Those vectors are called eigenvectors, and the scalar which represents the multiple of the eigenvector is called eigenvalue
+
+---
+
+## MLE:
+- relies only on `likelihood`
+- `theta = argmax_theta log(p(y/theta))`
+
+## MAP:
+- include `prior probabily as well`
+- regularized loss function
+- to solve for posterior probability, use prior as `conjugate prob` with the `likelihood`
+- `p(theta/y) = P(y/theta) P(theta) / p(y)`
+- `theta = argmax_theta log(p(y/theta)) + log(p(theta))`
+
+### Conjugate-pair:
+- gaussian - gaussian
+- beta - bernoulli
+
+---
+
 
 
 ## References:
