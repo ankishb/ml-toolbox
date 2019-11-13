@@ -198,3 +198,35 @@ The answer is cosine similarity.
 ### Jaccard distance: Lastly, we will change our focus of attention. Instead of calculating distances between vectors, we will work with sets.
 
 A set is an unordered collection of objects. So for example, {1, 2, 3, 4} is equal to {2, 4, 3, 1}. We can calculate its cardinality (represented as |set|) which is no other thing than the number of elements contained in the set.
+
+
+
+
+
+
+
+
+
+## Time series is strong stationary given that unconditional joint probability distribution does not change when shifted in time, this means that the distribution is the same through time. In weak stationary, a time series is when the mean and the variance are constant through time.
+
+Stationary process is the one which generates time-series values such that distribution mean and variance is kept constant. Strictly speaking, this is known as weak form of stationarity or covariance/mean stationarity.
+
+Weak form of stationarity is when the time-series has constant mean and variance throughout the time.
+
+Let's put it simple, practitioners say that the stationary time-series is the one with no trend - fluctuates around the constant mean and has constant variance.
+
+Covariance between different lags is constant, it doesn't depend on absolute location in time-series. For example, the covariance between t and t-1 (first order lag) should always be the same
+A strong form of stationarity is when the distribution of a time-series is exactly the same trough time. In other words, the distribution of original time-series is exactly same as lagged time-series (by any number of lags) or even sub-segments of the time-series. For example, strong form also suggests that the distribution should be the same even for a sub-segments 1950-1960, 1960-1970 or even overlapping periods such as 1950-1960 and 1950-1980. This form of stationarity is called strong because it doesn't assume any distribution. It only says the probability distribution should be the same. In the case of weak stationarity, we defined distribution by its mean and variance. We could do this simplification because implicitly we assumed normal distribution, and normal distribution is fully defined by its mean and variance or standard deviation. This is nothing but saying that probability measure of the sequence (within time-series) is the same as that for lagged/shifted sequence of values within same time-series.
+
+
+
+
+## Technique which works for varying size input
+
+Three possibilities come to mind.
+
+The easiest is the zero-padding. Basically, you take a rather big input size and just add zeroes if your concrete input is too small. Of course, this is pretty limited and certainly not useful if your input ranges from a few words to full texts.
+
+Recurrent NNs (RNN) are a very natural NN to choose if you have texts of varying size as input. You input words as word vectors (or embeddings) just one after another and the internal state of the RNN is supposed to encode the meaning of the full string of words. This is one of the earlier papers.
+
+Another possibility is using recursive NNs. This is basically a form of preprocessing in which a text is recursively reduced to a smaller number of word vectors until only one is left - your input, which is supposed to encode the whole text. This makes a lot of sense from a linguistic point of view if your input consists of sentences (which can vary a lot in size), because sentences are structured recursively. For example, the word vector for "the man", should be similar to the word vector for "the man who mistook his wife for a hat", because noun phrases act like nouns, etc. Often, you can use linguistic information to guide your recursion on the sentence. If you want to go way beyond the Wikipedia article, this is probably a good start.
