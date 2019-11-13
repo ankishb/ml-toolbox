@@ -85,21 +85,20 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 
 ---
 
-## Generative model vs discriminative model
-Generative classifiers
+## Generative model vs discriminative model:
 
-    ‌Naïve Bayes
-    Bayesian networks
-    Markov random fields
-    ‌Hidden Markov Models (HMM)
+### Generative classifiers
+‌1. Naive Bayes
+2. Bayesian networks
+3. Markov random fields
+‌4. Hidden Markov Models (HMM)
 
-Discriminative Classifiers
-
-    ‌Logistic regression
-    Scalar Vector Machine
-    ‌Traditional neural networks
-    ‌Nearest neighbour
-    Conditional Random Fields (CRF)s
+### Discriminative Classifiers
+‌1. Logistic regression
+2. Support Vector Machine
+‌3. Traditional neural networks
+‌4. Nearest neighbour
+5. Conditional Random Fields (CRF)s
     
 
 ---
@@ -489,17 +488,18 @@ Best, if we are using sparse data such as tf-idf features for words.
 #### Mercer’s Condition (Kernel Functions)
 For k to be a kernel function
 1. k must define a dot product for some Hilbert Space F
-2. Above is true if k is symmetric and positive semi-definite (p.s.d.) function (though there are
-exceptions; there are also "indefinite" kernels).
+2. (1.) is true if k is symmetric and positive semi-definite (p.s.d.) function (though there are exceptions; there are also "indefinite" kernels).
     - The function k is p.s.d. if the following holds
-    `integ integ f (x)k(x; z)f (z)dxdz ≥ 0`
+    `integ integ f(x) k(x; z) f(z) dx dz ≥ 0`
 
 ## properties of kernel function:
 Let k1, k2 be two kernel functions then the following are as well:
-1. `k(x; z) = k1(x; z) + k2(x; z)`: direct sum
+1. `k(x; z) = k1(x; z) + k2(x; z)`: direct sum, if `k1` is valid kernel and `k2` is valid
 2. `k(x; z) = αk1(x; z)`: scalar product
 3. `k(x; z) = k1(x; z)k2(x; z)`: direct product
 Kernels can also be constructed by composing these rules
+
+> `For kernel to be valid, it should be positive semi definite.` for exp: In `1.2 k1(x,y) - 0.2 k2(x,y)` , `- 0.2 k2(x,y)` doesn't follows the property
 
 ## Types of kernel:
 1. Linear kernel: `X*Y` (identity mapping)
@@ -900,6 +900,8 @@ Machine learning algorithms that have a high variance are strongly influenced by
     2. Take manhattan distance between 2 variable, square them and add them all.
     3. Put in formaula above.
 
+> If the nonlinear relationship had been monotonic rank correlation (Spearman's rho) would be appropriate.
+
 ## Why colinearity is bad in linear model?
 - If the model is consider all variable, to learn the characteristics, then those correlated feature will confuses it in making good decsion
 - For linear regression, our `assumption of independent variable` get violated. 
@@ -1012,24 +1014,27 @@ Machine learning algorithms that have a high variance are strongly influenced by
 
 ---
 
-## Probabilty Distribution:
+## Probability Distribution:
 
 ### Discrete Distribution:
 1. Bernoulli
     - distribution over {0,1} e.g coin toss problem
+    - can applied only for binary event, `yes or no`, `success or failure`
     - `p^x (1-p)^(1-x)`
     - `mean: p`
     - `var: p (1 - p)`
 2. Binomial
-    - This distribution describes the behavior of outputs of n random experiments, each having a Bernoulli distribution with probability p.
+    - This distribution describes the `behavior of outputs of n random experiments`, each having a Bernoulli distribution with probability p.
     - distribution over `number of suceess m over n trial`
     - `NCm p^m (1-p)^(N-m)`
     - `mean : m * p`
     - `var: m * p * (1- p)`
 3. Multinoulli:
+    - similar to bernoulli except `multi-dimensional`
     - categorical distribution (multiclass classification)
-    - `prod p_k^x_k`
+    - `p1^x1 p2^x2 p3^x3 .... pk^xk`
 4. Multinomial:
+    - similar to binomial except `multi-dimensional`
     - repeat mutinolli N times
     - models the bin allocation via discrete vector x of size k
 5. poisson distribution
@@ -1044,7 +1049,6 @@ Machine learning algorithms that have a high variance are strongly influenced by
         1. There are two possible outcomes for each trial (success or failure).
         2. The trials are independent.
         3. The probability of success is the same for each trial.
-
 
 
 ### Continuous distribution
@@ -1092,6 +1096,7 @@ Our objective is to find the regions, which can uniquely predict the value of in
       /     \                /     \
   (30,10)  (10,30)       (20,40)  (20,0)
 ```
+
 In A and B, we can clearly see that B is better, because of right child have homogenity, whereas in A, there is no such case.
 - But as per the classification error method, both A and B have same error-rate of `0.25`. 
 - Gini criteria: `0.17`
@@ -1112,11 +1117,22 @@ In A and B, we can clearly see that B is better, because of right child have hom
 - `Higher the value of Gini higher the homogeneity.`
 
 #### Entropy: 
-  `- sum_{j: Classes} p_j log(p_j)`
+- `- sum_{j: Classes} p_j log(p_j)`
 - **why gini is preferred over entropy?**
   1. First of all both are pretty much same (We can draw both metric on graph, we see that entropy is parabolic, where as gini's curve almost follows the same nature, but curve is little below of entropy in magnitude)
   2. Gini has computational advantage. `No need of expensive logrithm`
 
+> Given a histogram of freq of occurance of X, 1. if it is uniform, then entropy is higher(highly uncertain and boring) 2. It hist has nice peak(one or two), it is more certain, so entropy is low(good)
+> reference: http://www.cs.cmu.edu/~cga/ai-course/dtree.pdf
+
+### Most important point of decision tree:
+- With high cardinality, `information gain` perform much worse, they caused bias in solution
+- to handle that, `gain-ration` is preferable, which include their `occurance` as well in the final split
+- `intrinsic information = - (Nleft/Np) log(Nleft/Np) - (Nright/Np) log(Nright/Np)`
+- `gain-ratio = Information-gain / intrinsic-information`
+- For certain types of attributes with a large number of distinct values, splitting on that attribute would cause overfitting. Think about a decision tree choosing to split on the SSNs of your training set. Information gain will be huge, as IG is biased towards splitting on a large set of attributes. Splitting on SSNs will not be useful however as it leads to learning something specific about training set. It will not generalize.
+- Gain ratio overcomes the problem with information gain by taking into account the number of branches that would result before making the split.
+- `info-gain = H(class) - H(class/feature)`, and `intrinsic-info = H(feature)`, so `gain-ratio = info-gain / intrinsic-info` which will be in the range of `[0-1]`
 
 ### Pruning (weakest link pruning):
 - use greedy approach, to prune tree from bottom to up approach
@@ -1202,6 +1218,10 @@ Computes the (query, document) similarity. It has two parts.
 - we usually consider log transformation of tf score
 - `tfidf = (1+log(1 + freq_of_word_in_doc/total_word_in_doc)) * log10(total_docs/no_of_docs_in_which_word_appear)`
 
+### Effect of idf on ranking
+- idf has no effect on ranking one term queries like iPhone
+– idf affects the ranking of documents for queries **with atleast two terms** 
+– For the query `capricious person`, idf weighting makes occurrences of `capricious` count for much more in the final document ranking than occurrences of `person`. 
 
 ## Text Normalization:
 ### Stemming:
@@ -1463,6 +1483,14 @@ As anticipated, this system has at least one solution, which is the trivial one.
 ## MLE:
 - relies only on `likelihood`
 - `theta = argmax_theta log(p(y/theta))`
+- while doing MLE on `gaussian dist`, we assume `beta = 1 / sigma^2`, it will ease some of calculation
+    1. `p(y/theta) = N(y; w x, beta^(-1))`
+    2. `log(p(y/theta)) = sqrt(beta / (2 pi)^D) exp(- beta/2 (yn - w x)^2)`, where `w x is mean`
+    3. solving above with MLE, we get 
+        - `mean = 1 / N sum_n yn`
+        - `beta^(-1) = sum_n (yn - w xn)^2 `
+        - `sigma^2 = sum_n (yn - w xn)^2 / N`
+
 
 ## MAP:
 - include `prior probabily as well`
@@ -1471,12 +1499,79 @@ As anticipated, this system has at least one solution, which is the trivial one.
 - `p(theta/y) = P(y/theta) P(theta) / p(y)`
 - `theta = argmax_theta log(p(y/theta)) + log(p(theta))`
 
+
 ### Conjugate-pair:
-- gaussian - gaussian
-- beta - bernoulli
+- Poisson : Gamma
+- Beta : Bernoulli
+- Beta : Binomial
+- Dirichlet : Multnoulli
+- Dirichlet : Multinomial
+- Gaussian : Gaussian
+- Gaussian : Gamma
+- Gaussian : Inverse Gamma
 
 ---
 
+## Parametric vs. Non-Parametric Models:
+1. A parametric algorithm has a fixed number of parameters.  A parametric algorithm is computationally faster, but makes stronger assumptions about the data; the algorithm may work well if the assumptions turn out to be correct, but it may perform badly if the assumptions are wrong.  A common example of a parametric algorithm is linear regression.
+
+2. In contrast, a non-parametric algorithm uses a flexible number of parameters, and the number of parameters often grows as it learns from more data.  A non-parametric algorithm is computationally slower, but makes fewer assumptions about the data.  A common example of a non-parametric algorithm is K-nearest neighbour.
+
+To summarize, the trade-offs between parametric and non-parametric algorithms are in computational cost and accuracy
+
+
+ in a parametric model, we have a finite number of parameters, and in nonparametric models, the number of parameters is (potentially) infinite. Or in other words, in nonparametric models, the complexity of the model grows with the number of training data; in parametric models, we have a fixed number of parameters (or a fixed structure if you will).
+
+Linear models such as linear regression, logistic regression, and linear Support Vector Machines are typical examples of a parametric “learners;” here, we have a fixed size of parameters (the weight coefficient.) In contrast, K-nearest neighbor, decision trees, or RBF kernel SVMs are considered as non-parametric learning algorithms since the number of parameters grows with the size of the training set. – K-nearest neighbor and decision trees, that makes sense, but why is an RBF kernel SVM non-parametric whereas a linear SVM is parametric? In the RBF kernel SVM, we construct the kernel matrix by computing the pair-wise distances between the training points, which makes it non-parametric.
+
+In the field of statistics, the term parametric is also associated with a specified probability distribution that you “assume” your data follows, and this distribution comes with the finite number of parameters (for example, the mean and standard deviation of a normal distribution); you don’t make/have these assumptions in non-parametric models. So, in intuitive terms, we can think of a non-parametric model as a “distribution” or (quasi) assumption-free model.
+
+---
+
+## Expectation Minimization:
+- It is approximation of `alternative optimization` method
+- one of favorite algorithm of statistician
+- `log(p(x/theta)) = E_q(z) p(x,z/theta) + KL(q(z) || p(z/x, theta))`, where `z` is latent variable
+- it works for any `q(z)`
+- `lower bound definition`: `log(p(x/theta)) >= E_q(z) p(x,z/theta)`
+- when target is unknown, then `MLE` doesn't work straight forward, For exp, look at `GMM` problem formulation.
+- `Application`
+    1.semi-supervised generative classification
+    2. Probabilistic clustering
+    3. mixture density estimation
+
+---
+
+## Gaussian Mixture Model
+- while solving generative classification, we solve for `p(X,y/theta)`
+- for `k-class gaussian class conditional` is defined as 
+    - `p(X,y/theta) = p(X/y,theta) p(y/theta)`
+    - `p(y/theta)` is `muliutnoulli dist` as `pi_k`
+    - `p(X/y,theta) = N(mu_k, sigma_k^2)`
+    - p(X,y/theta) = `(pi_k * N(mu_k, sigma_k^2))^ynk`, which mean each observation is relate to only one of class of gaussian distribution, which is defined  as ynk.
+    - If we know `ynk` in advance, then `log` of whole term goes inside and otherwise we cann't do that
+- `log(p(X,y/theta)) = log(sum_n sum_k (pi_k * N(mu_k, sigma_k^2))^ynk )`
+- If `ynk` is known,
+    - `log(p(X,y/theta)) = log(sum_n sum_k ynk [log(pi_k) + log(N(mu_k, sigma_k^2))]`
+- otherwise,
+    - `log(p(X,y/theta)) = sum_n log(sum_k [pi_k * N(mu_k, sigma_k^2)] )`
+
+> Note ynk is nothing what znk, that is hidden latent variable
+
+### Solution of GMM:
+- `with ALT-OPT`:
+    1. first find `znk` that is `argmax_k p(Z/X,theta)`
+    2. with known label, we have nice MLE, where we optimize for `mean_k` and `var_k`
+- `with EM`
+    1. change `znk` to `expectation` as `E[znk]`
+    2. `E[znk] = 0 * p(zn = 0) + 1 * p(zn = 1/xn)`
+        - `E[znk] = p(zn = 1/xn) = p(zn = 1) p(xn / zn = 1)`
+        - `E[znk] = pi_k N(xn; mu_k, sigma_k^2)`
+    3. using `2`, we have nice `MLE`, where we optimize for `mean_k` and `var_k`
+
+
+
+---
 
 
 ## References:
