@@ -141,8 +141,10 @@ For example, suppose you have 25 test scores, and in order from lowest to highes
 
 ## Find Inverse of matrix:
 - use GAUSS ELIMINATION METHOD
-- Procede like following: `a11, a21, a31, -- a22, a32, a33, -- a23, a13, a12`
-- In brief, proceed through each columns, but lower left triangle, and then move upward and take left turn, it reach to a12.
+- Procede like following: 
+1. `a11, a21, a31`
+2. `a22, a32, a33`
+3. `a23, a13, a12`
 ```c++
 1. Init A X = B as [A | B]
 2. Find pivot and rearrange row such that, diagnol represent the big number from the following rows
@@ -150,7 +152,7 @@ For example, suppose you have 25 test scores, and in order from lowest to highes
   [1,  2, 4]    [49, 2, 2]
   [2, 10, 1] => [2, 10, 1]
   [49, 2, 2]    [1,  2, 4]
-3. start with first pivot (49) and compute factor f as (2/49) and subtract the entire row from f*pivot that will be (2/49)*(49) as A[i][j] = A[i][j] - f*pivot
+3. start with first pivot (49) and compute factor f as (2/49) and subtract the entire row from f * pivot that will be (2/49)*(49) as A[i][j] = A[i][j] - f*pivot
 4. repeat for each pivot and iterate downward for each row
 5. In the end, we will get matrix in row echlon form, which give as coefficient of X.
   [1, x12, x13, x14]
@@ -165,6 +167,30 @@ Note: there is a catch, if matrix A is [m X n] dimension:
 
 
 #### Solving linear equation using gaussian elimination method
+```c
+h := 1 /* Initialization of the pivot row */
+k := 1 /* Initialization of the pivot column */
+while h ≤ m and k ≤ n
+/* Find the k-th pivot: */
+i_max := argmax (i = h ... m, abs(A[i, k]))
+if A[i_max, k] = 0
+ /* No pivot in this column, pass to next column */
+ k := k+1
+else
+  swap rows(h, i_max)
+  /* Do for all rows below pivot: */
+  for i = h + 1 ... m:
+     f := A[i, k] / A[h, k]
+     /* Fill with zeros the lower part of pivot column: */
+     A[i, k]  := 0
+     /* Do for all remaining elements in current row: */
+     for j = k + 1 ... n:
+        A[i, j] := A[i, j] - A[h, j] * f
+  /* Increase pivot row and column */
+  h := h+1 
+  k := k+1
+```
+
 ```c++
 //Gauss Elimination
 #include<iostream>
@@ -182,34 +208,33 @@ int main()
     for (i=0;i<n;i++)
         for (j=0;j<=n;j++)    
             cin>>a[i][j];    //input the elements of array
-    for (i=0;i<n;i++){       //Pivotisation
-        for (k=i+1;k<n;k++){
-            if (abs(a[i][i])<abs(a[k][i]))
-                for (j=0;j<=n;j++){
-                    double temp = a[i][j];
-                    a[i][j] = a[k][j];
-                    a[k][j] = temp;
-                }
+    //Pivotisation
+    for (i=0; i<n; i++){
+        for (k=i+1; k<n; k++){
+            if(abs(a[i][i]) >= abs(a[k][i])) continue;
+            for(j=0; j<=n; j++){
+                swap(a[i][j], a[k][j]);
             }
         }
+    }
     cout<<"\nThe matrix after Pivotisation is:\n";
-    for (i=0;i<n;i++)            //print the new matrix
-    {
+    for (i=0;i<n;i++){
         for (j=0;j<=n;j++)
             cout<<a[i][j]<<setw(16);
         cout<<"\n";
-    }    
-    for (i=0;i<n-1;i++)            //loop to perform the gauss elimination
-        for (k=i+1;k<n;k++)
-            {
-                double t=a[k][i]/a[i][i];
-                for (j=0;j<=n;j++)
-                    a[k][j]=a[k][j]-t*a[i][j];    //make the elements below the pivot elements equal to zero or elimnate the variables
+    }
+    // loop to perform the gauss elimination
+    for(i=0; i<n-1; i++){
+        for(k=i+1; k<n; k++){
+            double factor = a[k][i] / a[i][i];
+            for(j=0; j<=n; j++){
+                //make the elements below the pivot elements equal to zero or elimnate the variables
+                a[k][j] = a[k][j] - factor * a[i][j];
             }
-    
+        }
+    }
     cout<<"\n\nThe matrix after gauss-elimination is as follows:\n";
-    for (i=0;i<n;i++)            //print the new matrix
-    {
+    for (i=0;i<n;i++){
         for (j=0;j<=n;j++)
             cout<<a[i][j]<<setw(16);
         cout<<"\n";
@@ -713,7 +738,8 @@ F1        | 2 P*R / (P + R)
 ## imp stuff
 - `Sensitivity`: In simple terms, the proportion of patients that were identified correctly to have the disease (i.e. True Positive) upon the total number of patients who actually have the disease is called as Sensitivity or Recall.
 - `Specificity`: Similarly, the proportion of patients that were identified correctly to not have the disease (i.e. True Negative) upon the total number of patients who do not have the disease is called as Specificity.
-Trade-off between Sensitivity and Specificity
+
+### Trade-off between Sensitivity and Specificity
 - **When we decrease the threshold, we get more positive values thus increasing the sensitivity. Meanwhile, this will decrease the specificity.**
 - **Similarly, when we increase the threshold, we get more negative values thus increasing the specificity and decreasing sensitivity.**
 - `As Sensitivity ⬇️ Specificity ⬆️`
@@ -1134,6 +1160,9 @@ In A and B, we can clearly see that B is better, because of right child have hom
 - Gain ratio overcomes the problem with information gain by taking into account the number of branches that would result before making the split.
 - `info-gain = H(class) - H(class/feature)`, and `intrinsic-info = H(feature)`, so `gain-ratio = info-gain / intrinsic-info` which will be in the range of `[0-1]`
 
+> To put it more precisely, the information gain (mutual information) is always biased upward. It is severely biased when two conditions meet: you have small sample, and you have many variable levels. This stems from the fact that in general practice one calculates naive information gain, or in other words, a sample estimate (point estimate). This estimate will almost surely be affected by deviations of observed probability estimates from theoretical. More variable levels multiplied by lower number of observations will exaggerate the observed probability deviations. It is called the limited sampling bias.
+
+
 ### Pruning (weakest link pruning):
 - use greedy approach, to prune tree from bottom to up approach
 - In case of `regression`, objective function becomes: `sum_m{1:|T|} sum_{xi belong to Rm} (y_i - yhat_{Rm}^2 + alpha |T|`, where `|T|` is the number of `terminal nodes/leaf nodes`.
@@ -1161,7 +1190,7 @@ In A and B, we can clearly see that B is better, because of right child have hom
 ---
 
 ## Bagging:
-bagging is very powerful method. It is generally the combination of many `decorrelated`(**very desirable**) models.
+- bagging is very powerful method. It is generally the combination of many `decorrelated`(**very desirable**) models.
 - reduce the variance as `(sig1 + sig2 +... sign) / n`
 - `out of bag` error, which is error computes on leave out observation. As in bootstrap sampling, it choose `68%` of observation to fit the model, the other `32%` will be used for validation, which is called as `out of bag error`.
 
@@ -1174,7 +1203,7 @@ bagging is very powerful method. It is generally the combination of many `decorr
 
 ### `limitations of Random forest are` :
 1. Correlated features will be given equal or similar importance, but overall reduced importance compared to the same tree built without correlated counterparts.
-2. Random Forests and decision trees, in general, give preference to features with high cardinality ( `Trees are biased to these type of variables` ).
+2. Random Forests and decision trees, in general, give preference to features with high cardinality ( `Trees are biased to these type of variables` ). **For reference look at gain-ratio** to handle this
 
 > Note: In statistics, the terms predictor is used instead of features.
 
