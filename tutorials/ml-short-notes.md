@@ -56,6 +56,26 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 ||=========================||=========================||
 ```
 
+### Advantage of ols (in term of assumptions)
+1. It does not require a linear relationship between the dependent and independent variables. 
+2. The error terms (residuals) do not need to be normally distributed.
+3. homoscedasticity is not required.
+4. the dependent variable in logistic regression is not measured on an interval or ratio scale.
+
+### Assumption in log-reg
+1. First, binary logistic regression requires the dependent variable to be binary and ordinal logistic regression requires the dependent variable to be ordinal.
+
+2. Second, logistic regression requires the observations to be independent of each other.  In other words, the observations should not come from repeated measurements or matched data.
+
+3. Third, logistic regression requires there to be little or no multicollinearity among the independent variables.  This means that the independent variables should not be too highly correlated with each other.
+
+4. Fourth, logistic regression assumes linearity of independent variables and log odds.  although this analysis does not require the dependent and independent variables to be related linearly, it requires that the independent variables are linearly related to the log odds.
+
+5. Finally, logistic regression typically requires a large sample size.  A general guideline is that you need at minimum of 10 cases with the least frequent outcome for each independent variable in your model. For example, if you have 5 independent variables and the expected probability of your least frequent outcome is .10, then you would need a minimum sample size of 500 (10*5 / .10).
+
+
+
+
 
 # Ridge Regression:
 - L2 regularization
@@ -129,10 +149,10 @@ Out: {0: 1.0, 1: 403.74}
 1. Sort the data values from low to high
 2. Multiply the percentile with total number of value. For 25 student and 99 percentile, it will be 25*0.99.
 3. Round to nearest whole number. 1.5-->2, 2.7-->3, 1.2-->1, 5-->5
-4. If the value obtained at step `2` is not whole number:
-      Pick the value at that index, given by step `3`
+4.  If the value obtained at step `2` is not whole number:
+        Pick the value at that index, given by step `3`
     Else
-      Ans will be the average of value at (index, index+1)
+        Ans will be the average of value at (index, index+1)
 ```
 For example, suppose you have 25 test scores, and in order from lowest to highest they look like this: 43, 54, 56, 61, 62, 66, 68, 69, 69, 70, 71, 72, 77, 78, 79, 85, 87, 88, 89, 93, 95, 96, 98, 99, 99. To find the 90th percentile for these (ordered) scores, start by multiplying 90% times the total number of scores, which gives 90% ∗ 25 = 0.90 ∗ 25 = 22.5 (the index). Rounding up to the nearest whole number, you get 23th term. Ans is 98
 ```
@@ -167,6 +187,31 @@ Note: there is a catch, if matrix A is [m X n] dimension:
 
 
 #### Solving linear equation using gaussian elimination method
+Steps
+• Eliminate x1 from second equaধon
+Row2 Row2 - a21 / a11 * Row1
+• Eliminate x1 from third equaধon
+Row3 Row3 - a31 / a11 * Row1
+• Repeat above procedure to eliminate x1 from n-th row
+
+Back Subsধtuধon
+• Solve for xn
+xn =
+b( nn-1)
+a
+(n-1)
+nn
+• Back subsধtute in the upper triangular system
+1. Subsধtute xn in (n - 1)-th equaধon to solve for xn-1
+2. Subsধtute xn-1 in (n - 2)-th equaধon to solve for xn-2
+3. Repeat
+• Floaধng point operaধons (flops)
+Number of flops = 2n3
+3 + O(n2)
+| {z }
+Forward Eliminaধon
+
+
 ```c
 h := 1 /* Initialization of the pivot row */
 k := 1 /* Initialization of the pivot column */
@@ -234,8 +279,8 @@ int main()
         }
     }
     cout<<"\n\nThe matrix after gauss-elimination is as follows:\n";
-    for (i=0;i<n;i++){
-        for (j=0;j<=n;j++)
+    for (i=0; i<n; i++){
+        for (j=0; j<=n; j++)
             cout<<a[i][j]<<setw(16);
         cout<<"\n";
     }
@@ -248,12 +293,28 @@ int main()
         x[i]=x[i]/a[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
     }
     cout<<"\nThe values of the variables are as follows:\n";
-    for (i=0;i<n;i++)
-        cout<<x[i]<<endl;            // Print the values of x, y,z,....    
+    for(i=0; i<n; i++)
+        cout << x[i] << endl;
     return 0;
 }
 ```
 
+## Difference between gauss-jordan and gauss-elimination method:
+Both methods are used to find solutions for linear systems by pivoting and elimination like as Ax⃗ =b⃗ 
+
+. Gauss method end the matrix as a superior-triangular matrix and you find the solutions of a linear system by applying a regressive substitution.
+
+Gauss-Jordan do the same as an additional: turn the desired current matrix A
+
+a identity matrix. Thus, Gauss-Jordan means Gauss method plus doing the operation sufficient to make the matrix triangular inferior as well, which ends in a identity matrix.
+
+With Gauss-Jordan method you have the exactly solution that you want without the need of regressive/progressive substitution. The desired solution is directly encoded on the vectorb⃗ .
+
+## Fastest method to solve for inverse of matrix (or find the solution for set of linear equation in general)
+1. Fast method would be the Gauss-Jordan method. 
+2. Next would be LU Decomposition method. 
+3. And last would be using Gaussian elimination. 
+4. (cramer rule)Using the co-factor method would be the least efficient method - just see how much time it takes to find determinant of a matrix.
 
 ## Optimization (Part-1):
 - A function is convex, when `f(y) >= f(x) + dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
@@ -734,6 +795,19 @@ F1        | 2 P*R / (P + R)
 - False positive Rate: Fraction of actual negatives wrongly predicted as positive FP/(TN+FP)**2nd Row**
 - ROC: Plot of TPR vs FPR for all possible value of threshold, also called area under operaring point
 - AUC of 0.5, means close to random.
+
+## which is more important among type-1 and type-2
+A Type I error, on the other hand, is an error in every sense of the word. A conclusion is drawn that the null hypothesis is false when, in fact, it is true. Therefore, Type I errors are generally considered more serious than Type II errors. The probability of a Type I error (α) is called the significance level and is set by the experimenter. There is a tradeoff between Type I and Type II errors. The more an experimenter protects himself or herself against Type I errors by choosing a low level, the greater the chance of a Type II error. Requiring very strong evidence to reject the null hypothesis makes it very unlikely that a true null hypothesis will be rejected. However, it increases the chance that a false null hypothesis will not be rejected, thus lowering power. The Type I error rate is almost always set at .05 or at .01, the latter being more conservative since it requires stronger evidence to reject the null hypothesis at the .01 level then at the .05 level. 
+
+### Look at the Potential Consequences
+
+Since there's not a clear rule of thumb about whether Type 1 or Type 2 errors are worse, our best option when using data to test a hypothesis is to look very carefully at the fallout that might follow both kinds of errors. Several experts suggest using a table like the one below to detail the consequences for a Type 1 and a Type 2 error in your particular analysis. 
+Null    Type 1 Error: H0 true, but rejected     Type 2 Error: H0 false, but not rejected
+Medicine A does not relieve Condition B.    Medicine A does not relieve Condition B, but is not eliminated as a treatment option.   Medicine A relieves Condition B, but is eliminated as a treatment option.
+Consequences    Patients with Condition B who receive Medicine A get no relief. They may experience worsening condition and/or side effects, up to and including death. Litigation possible.    A viable treatment remains unavailable to patients with Condition B. Development costs are lost. Profit potential is eliminated.
+
+Whatever your analysis involves, understanding the difference between Type 1 and Type 2 errors, and considering and mitigating their respective risks as appropriate, is always wise. For each type of error, make sure you've answered this question: "What's the worst that could happen?"
+
 
 ## imp stuff
 - `Sensitivity`: In simple terms, the proportion of patients that were identified correctly to have the disease (i.e. True Positive) upon the total number of patients who actually have the disease is called as Sensitivity or Recall.
@@ -1363,6 +1437,35 @@ Note: If you use this approach on an exam, you may also want to mention why this
 1. A small p-value (typically ≤ 0.05) indicates `strong evidence against the null hypothesis`, so you `reject the null hypothesis`.
 2. A large p-value (> 0.05) indicates `weak evidence against the null hypothesis`, so you `fail to reject the null hypothesis`.
 
+```python
+lm = LinearRegression()
+lm.fit(X,y)
+params = np.append(lm.intercept_,lm.coef_)
+predictions = lm.predict(X)
+
+newX = pd.DataFrame({"Constant":np.ones(len(X))}).join(pd.DataFrame(X))
+MSE = (sum((y-predictions)**2))/(len(newX)-len(newX.columns))
+
+# Note if you don't want to use a DataFrame replace the two lines above with
+# newX = np.append(np.ones((len(X),1)), X, axis=1)
+# MSE = (sum((y-predictions)**2))/(len(newX)-len(newX[0]))
+
+var_b = MSE*(np.linalg.inv(np.dot(newX.T,newX)).diagonal())
+sd_b = np.sqrt(var_b)
+ts_b = params/ sd_b
+
+p_values =[2*(1-stats.t.cdf(np.abs(i),(len(newX)-1))) for i in ts_b]
+
+sd_b = np.round(sd_b,3)
+ts_b = np.round(ts_b,3)
+p_values = np.round(p_values,3)
+params = np.round(params,4)
+
+myDF3 = pd.DataFrame()
+myDF3["Coefficients"],myDF3["Standard Errors"],myDF3["t values"],myDF3["Probabilites"] = [params,sd_b,ts_b,p_values]
+print(myDF3)
+```
+
 ---
 
 ## Activation function in deep learning
@@ -1437,7 +1540,6 @@ III   How to find appropriate initialization values
 ### He Init:
 - work great with `relu`
 - `Var(a[l]) = sqrt(2 / n_prev)`, `n_prev = fan_in`
-
 
 ---
 
@@ -1598,10 +1700,76 @@ In the field of statistics, the term parametric is also associated with a specif
         - `E[znk] = pi_k N(xn; mu_k, sigma_k^2)`
     3. using `2`, we have nice `MLE`, where we optimize for `mean_k` and `var_k`
 
+---
 
+## Domain Adaptation:
+- when train and test data are of different disribution, we can adapt that test distribution using following method: (similar to weighted important sampling)
+- `w(x) = sum_i alpha_i phi_i(x)`
+- `p_adapt(x) = w(x) p_test(x)`
+- `kl[p_train(x) || p_adapt] = integ p_train(x) log( p_train(x) / p_adapt(x))`
+- `maximize_alpha {sum_{n=1:N} log(sum_i alpha_i phi_i(x))}, subject to sum_n sum_i alpha_i phi_i(x) = 1, where alpha_i > 0`
 
 ---
 
+
+## Naive Bayes Algorithm:
+Assumption:
+
+The fundamental Naive Bayes assumption is that each feature makes an:
+
+    independent
+    equal
+
+contribution to the outcome.
+
+
+    Step 1: Calculate the prior probability for given class labels
+    Step 2: Find Likelihood probability with each attribute for each class
+    Step 3: Put these value in Bayes Formula and calculate posterior probability.
+    Step 4: See which class has a higher probability, given the input belongs to the higher probability class.
+
+For simplifying prior and posterior probability calculation you can use the two tables frequency and likelihood tables. Both of these tables will help you to calculate the prior and posterior probability. The Frequency table contains the occurrence of labels for all features. There are two likelihood tables.
+
+
+
+#### Zero Probability Problem
+
+Suppose there is no tuple for a risky loan in the dataset, in this scenario, the posterior probability will be zero, and the model is unable to make a prediction. This problem is known as Zero Probability because the occurrence of the particular class is zero.
+
+The solution for such an issue is the Laplacian correction or Laplace Transformation. Laplacian correction is one of the smoothing techniques. Here, you can assume that the dataset is large enough that adding one row of each class will not make a difference in the estimated probability. This will overcome the issue of probability values to zero.
+
+For Example: Suppose that for the class loan risky, there are 1000 training tuples in the database. In this database, income column has 0 tuples for low income, 990 tuples for medium income, and 10 tuples for high income. The probabilities of these events, without the Laplacian correction, are 0, 0.990 (from 990/1000), and 0.010 (from 10/1000)
+
+Now, apply Laplacian correction on the given dataset. Let's add 1 more tuple for each income-value pair. The probabilities of these events:
+
+### Advantages
+
+    It is not only a simple approach but also a fast and accurate method for prediction.
+    Naive Bayes has very low computation cost.
+    It can efficiently work on a large dataset.
+    It performs well in case of discrete response variable compared to the continuous variable.
+    It can be used with multiple class prediction problems.
+    It also performs well in the case of text analytics problems.
+    When the assumption of independence holds, a Naive Bayes classifier performs better compared to other models like logistic regression.
+
+### Disadvantages
+
+    The assumption of independent features. In practice, it is almost impossible that model will get a set of predictors which are entirely independent.
+    If there is no training tuple of a particular class, this causes zero posterior probability. In this case, the model is unable to make predictions. This problem is known as Zero Probability/Frequency Problem.
+
+### Application:
+Real time Prediction
+Multi class Prediction
+Recommendation System
+
+### Types:
+There are three types of Naive Bayes model under the scikit-learn library:
+1. Gaussian: It is used in classification and it assumes that features follow a normal distribution.
+2. Multinomial: It is used for discrete counts. For example, let’s say,  we have a text classification problem. Here we can consider Bernoulli trials which is one step further and instead of “word occurring in the document”, we have “count how often word occurs in the document”, you can think of it as “number of times outcome number x_i is observed over the n trials”.
+3. Bernoulli: The binomial model is useful if your feature vectors are binary (i.e. zeros and ones). One application would be text classification with ‘bag of words’ model where the 1s & 0s are “word occurs in the document” and “word does not occur in the document” respectively.
+
+
+---
 
 ## References:
 1. Hadamard : element wise multiplication
