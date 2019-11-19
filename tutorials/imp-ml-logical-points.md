@@ -230,3 +230,99 @@ The easiest is the zero-padding. Basically, you take a rather big input size and
 Recurrent NNs (RNN) are a very natural NN to choose if you have texts of varying size as input. You input words as word vectors (or embeddings) just one after another and the internal state of the RNN is supposed to encode the meaning of the full string of words. This is one of the earlier papers.
 
 Another possibility is using recursive NNs. This is basically a form of preprocessing in which a text is recursively reduced to a smaller number of word vectors until only one is left - your input, which is supposed to encode the whole text. This makes a lot of sense from a linguistic point of view if your input consists of sentences (which can vary a lot in size), because sentences are structured recursively. For example, the word vector for "the man", should be similar to the word vector for "the man who mistook his wife for a hat", because noun phrases act like nouns, etc. Often, you can use linguistic information to guide your recursion on the sentence. If you want to go way beyond the Wikipedia article, this is probably a good start.
+
+
+
+
+
+## 
+ How to perform a series of calculations without a calculator and your logic behind the steps.
+  Three friends in Seattle told you it's rainy. Each has a probability of 1/3 of lying. What's the probability of Seattle is rainy.   
+    The answer is 8/9.
+    The only thing we know is that the reality is identical as well as their answers, so if one is telling the truth all of them tell the truth.
+    P(truth|identical_answers) = P(Truth and identical_answers) / P(identical_answers) =
+    = (8/27) / (8/27 + 1/27) = 8/9.
+
+
+  1.Can you explain the Naive Bayes fundamentals? How did you set the threshold?
+2.Can you explain what MapReduce is and how it works?   
+Explain Adam
+
+I) Generate a fair coin from a biased one. II) Generate 7 integers with equal probability from a function which returns 1/0 with probability p and (1-p). These were not worded this way, but essentially this was question.   …  href="/Interview/Of-all-the-questions-he-could-ask-he-picked-the-following-ones-although-to-be-fair-to-the-interviewer-he-can-ask-any-thi-QTN_2637163.htm" class="questionResponse">Answer Question
+
+
+ What are the ROC curve and the meaning of sensitivity, specificity, confusion matrix   
+
+
+
+## External merge sort
+
+One example of external sorting is the external merge sort algorithm, which is a K-way merge algorithm. It sorts chunks that each fit in RAM, then merges the sorted chunks together.[1][2]
+
+The algorithm first sorts M items at a time and puts the sorted lists back into external memory. It then recursively does a M B {\displaystyle {\tfrac {M}{B}}} {\displaystyle {\tfrac {M}{B}}}-way merge on those sorted lists. To do this merge, B elements from each sorted list are loaded into internal memory, and the minimum is repeatedly outputted.
+
+For example, for sorting 900 megabytes of data using only 100 megabytes of RAM:
+
+    Read 100 MB of the data in main memory and sort by some conventional method, like quicksort.
+    Write the sorted data to disk.
+    Repeat steps 1 and 2 until all of the data is in sorted 100 MB chunks (there are 900MB / 100MB = 9 chunks), which now need to be merged into one single output file.
+    Read the first 10 MB (= 100MB / (9 chunks + 1)) of each sorted chunk into input buffers in main memory and allocate the remaining 10 MB for an output buffer. (In practice, it might provide better performance to make the output buffer larger and the input buffers slightly smaller.)
+    Perform a 9-way merge and store the result in the output buffer. Whenever the output buffer fills, write it to the final sorted file and empty it. Whenever any of the 9 input buffers empties, fill it with the next 10 MB of its associated 100 MB sorted chunk until no more data from the chunk is available. This is the key step that makes external merge sort work externally -- because the merge algorithm only makes one pass sequentially through each of the chunks, each chunk does not have to be loaded completely; rather, sequential parts of the chunk can be loaded as needed.
+
+Historically, instead of a sort, sometimes a replacement-selection algorithm[3] was used to perform the initial distribution, to produce on average half as many output chunks of double the length.
+
+-  There will be ceil(log_B-1(ceil(N/B))) passes. Each pass will have 2N I/Os. So O(nlogn). 
+
+### Additional passes
+
+The previous example is a two-pass sort: first sort, then merge. The sort ends with a single k-way merge, rather than a series of two-way merge passes as in a typical in-memory merge sort. This is because each merge pass reads and writes every value from and to disk.
+
+The limitation to single-pass merging is that as the number of chunks increases, memory will be divided into more buffers, so each buffer is smaller. This causes many smaller reads rather than fewer larger ones. Thus, for sorting, say, 50 GB in 100 MB of RAM, using a single merge pass isn't efficient: the disk seeks to fill the input buffers with data from each of the 500 chunks (we read 100MB / 501 ~ 200KB from each chunk at a time) take up most of the sort time. Using two merge passes solves the problem. Then the sorting process might look like this:
+
+    Run the initial chunk-sorting pass as before.
+    Run a first merge pass combining 25 chunks at a time, resulting in 20 larger sorted chunks.
+    Run a second merge pass to merge the 20 larger sorted chunks.
+
+Like in-memory sorts, efficient external sorts require O(n log n) time: linear increases in data size require logarithmic increases in the number of passes, and each pass takes a linear number of reads and writes. Using the large memory sizes provided by modern computers the logarithmic factor grows very slowly. Under reasonable assumptions at least 500 GB of data can be sorted using 1 GB of main memory before a third pass becomes advantageous, and many times that much data can be sorted before a fourth pass becomes useful.[4] Low-seek-time media like solid-state drives (SSDs) also increase the amount that can be sorted before additional passes improve performance.
+
+Main memory size is important. Doubling memory dedicated to sorting halves the number of chunks and the number of reads per chunk, reducing the number of seeks required by about three-quarters. The ratio of RAM to disk storage on servers often makes it convenient to do huge sorts on a cluster of machines[5] rather than on one machine with multiple passes.
+
+
+##
+There are n number of people in a room. If any two people doesn’t know each other, they shake hand. At the end, ever body announces their number of hand shake.
+What is the possibility that ever body’s answer is unique/repetitive. Give proof for your answer.
+
+
+https://www.springboard.com/blog/data-science-interview-questions/
+
+https://www.edureka.co/blog/interview-questions/data-science-interview-questions/
+
+
+## 18. What techniques can be used to evaluate a Machine Learning model?
+
+Machine Learning algorithms can be evaluated using various metrics depending on the nature of the problem and the type of model used. Following are some of the techniques to evaluate for regression and classification models respectively:
+
+Regression:
+
+    Mean Absolute Error
+    Mean Squared Error
+    R square
+    Adjusted R square
+    Root Mean Squared Logarithmic Error
+
+Classification:
+
+    Classification Accuracy
+    Logarithmic Loss
+    Precision
+    Recall
+    F1 Score
+    Confusion Matrix
+    Receiver Operating Characteristics (ROC) curve
+    Area under Curve (AUC)
+    Gini coefficient
+
+
+17. While working at Facebook, you're asked to implement some new features. What type of experiment would you run to implement these features?
+
+A/B testing can be used to check the response on new features by the general audience. A/B testing can be valuable because different audiences behave, well, differently. Something that works for one company may not necessarily work for another. A/B testing is a marketing experiment wherein you "split" your audience to test a number of variations of a campaign/new feature and determine which performs better. For example, in marketing or a web design, you might be comparing two different landing pages with or two different newsletters. Version A shows the layout of a page. Now, you decide to move the content body to the right versus the left. In order for A/B testing to work, you must call out your criteria for success before you begin. What do you think will happen if you change Version A to Version B? Maybe you're hoping to increase newsletter sign ups or decrease the bounce rate. This way you can determine the success rate of both the versions.
