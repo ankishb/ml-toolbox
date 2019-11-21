@@ -326,3 +326,26 @@ Classification:
 17. While working at Facebook, you're asked to implement some new features. What type of experiment would you run to implement these features?
 
 A/B testing can be used to check the response on new features by the general audience. A/B testing can be valuable because different audiences behave, well, differently. Something that works for one company may not necessarily work for another. A/B testing is a marketing experiment wherein you "split" your audience to test a number of variations of a campaign/new feature and determine which performs better. For example, in marketing or a web design, you might be comparing two different landing pages with or two different newsletters. Version A shows the layout of a page. Now, you decide to move the content body to the right versus the left. In order for A/B testing to work, you must call out your criteria for success before you begin. What do you think will happen if you change Version A to Version B? Maybe you're hoping to increase newsletter sign ups or decrease the bounce rate. This way you can determine the success rate of both the versions.
+
+
+## Types of biases:
+1. Sampling Bias:
+- As ML model highly depend on the data, so if the collected data doesn't reflect the population, it is sampling bias
+-  The decision makers have to remember that if humans are involved at any part of the process, there is a greater chance of bias in the model.
+
+ 
+2. Prejudice Bias
+- if someone is intentionally sharing wrong information such as gender, nationality, etc.
+- doing analysis of such data can create bias
+- very hard to deal with
+ 
+ 
+3. Confirmation Bias
+- Confirmation bias, the tendency to process information by looking for, or interpreting, information that is consistent with one’s existing beliefs.
+- If the people of intended use have a pre-existing hypothesis that they would like to confirm with machine learning (there are probably simple ways to do it depending on the context) the people involved in the modelling process might be inclined to intentionally manipulate the process towards finding that answer.
+ 
+4. Group attribution Bias
+- This type of bias results from when you train a model with data that contains an asymmetric view of a certain group. 
+- For example, in a certain sample dataset if the majority of a certain gender would be more successful than the other or if the majority of a certain race makes more than another, your model will be inclined to believe these falsehoods. There is label bias in these cases. 
+- The sample used to understand and analyse the current situation cannot just be used as training data without the appropriate pre-processing to account for any potential unjust bias.
+

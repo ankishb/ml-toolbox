@@ -1427,6 +1427,13 @@ The solution to this problem takes four steps: (1) state the hypotheses, (2) for
 
 Note: If you use this approach on an exam, you may also want to mention why this approach is appropriate. Specifically, the approach is appropriate because the sampling method was simple random sampling, the variables under study were categorical, and the expected frequency count was at least 5 in each cell of the contingency table.
 
+---
+
+## p-value:
+- In statistics, the p-value is the probability of obtaining the observed results of a test, assuming that the null hypothesis is correct. 
+- **The P-test statistic typically follows a standard normal distribution when large sample sizes are used.**
+- It is the level of marginal significance within a statistical hypothesis test representing the probability of the occurrence of a given event. 
+- The p-value is used as an alternative to rejection points to provide the smallest level of significance at which the null hypothesis would be rejected.
 
 #### Interpret Results
 - Reject the null hypothesis, if `p-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
@@ -1768,9 +1775,56 @@ There are three types of Naive Bayes model under the scikit-learn library:
 2. Multinomial: It is used for discrete counts. For example, let’s say,  we have a text classification problem. Here we can consider Bernoulli trials which is one step further and instead of “word occurring in the document”, we have “count how often word occurs in the document”, you can think of it as “number of times outcome number x_i is observed over the n trials”.
 3. Bernoulli: The binomial model is useful if your feature vectors are binary (i.e. zeros and ones). One application would be text classification with ‘bag of words’ model where the 1s & 0s are “word occurs in the document” and “word does not occur in the document” respectively.
 
+---
+## Probabilistic Models:
+Probabilistic models see features and target variables as random variables. The process of modelling represents and manipulates the level of uncertainty with respect to these variables. There are two types of probabilistic models: Predictive and Generative. Predictive probability models use the idea of a conditional probability distribution P (Y |X) from which Y can be predicted from X.  Generative models estimate the joint distribution P (Y, X).  Once we know the joint distribution for the generative models, we can derive any conditional or marginal distribution involving the same variables. Thus, the generative model is capable of creating new data points and their labels, knowing the joint probability distribution. The joint distribution looks for a relationship between two variables. Once this relationship is inferred, it is possible to infer new data points.
+
+- they are really good at capturing uncertainty
+- prob-model can be very useful when we have certain knowledge about the dataset and other proberties, which can help in defining prior probability
+- a closed form solution is also possible if function(objective funtion) is tractable like in bayesian model
+- MLE is very helpful for estimation for likelihood based models.
+- add stochasticity. For exp: while doing clustering such as kmean, it assume constant variance(circular) for all clusters. But a probabilstic version of it, can imrove the model.
+
+- Can get estimate of the theuncertaintyin the parameter estimates via theposterior distribution
+- Useful when we only have limited data for learning each parameter
+- Can get estimate of the theuncertainty in the model’s predictionsE.g., Instead of a single predictiony∗, we get a distribution over possiblepredictions (useful for applications such as diagnosis, decision making, etc.)
+    - p(y∗|x∗,θ) = ∫ p(y∗|x∗,θ) p(θ|X,y) dθ
+- Can handle missing and noisy data in a principled way
+- Easy/more natural to do semi-supervised learning, active learning, etc.
+- Can generate(synthesize) data by simulating from the data distribution
+- Hyperparameters can be learned from data (need not be tuned)
+
 
 ---
 
+## Skewness vs Kurtusis
+### Skewness
+
+It is the degree of distortion from the symmetrical bell curve or the normal distribution. It measures the lack of symmetry in data distribution.
+It differentiates extreme values in one versus the other tail. A symmetrical distribution will have a skewness of 0.
+
+There are two types of Skewness: Positive and Negative
+
+Positive Skewness means when the tail on the right side of the distribution is longer or fatter. The mean and median will be greater than the mode.
+
+Negative Skewness is when the tail of the left side of the distribution is longer or fatter than the tail on the right side. The mean and median will be less than the mode.
+So, when is the skewness too much?
+
+The rule of thumb seems to be:
+
+    If the skewness is between -0.5 and 0.5, the data are fairly symmetrical.
+    If the skewness is between -1 and -0.5(negatively skewed) or between 0.5 and 1(positively skewed), the data are moderately skewed.
+    If the skewness is less than -1(negatively skewed) or greater than 1(positively skewed), the data are highly skewed.
+
+### Kurtosis
+
+Kurtosis is all about the tails of the distribution — not the peakedness or flatness. It is used to describe the extreme values in one versus the other tail. It is actually the measure of outliers present in the distribution.
+
+High kurtosis in a data set is an indicator that data has heavy tails or outliers. If there is a high kurtosis, then, we need to investigate why do we have so many outliers. It indicates a lot of things, maybe wrong data entry or other things. Investigate!
+Low kurtosis in a data set is an indicator that data has light tails or lack of outliers. If we get low kurtosis(too good to be true), then also we need to investigate and trim the dataset of unwanted results.
+
+
+---
 ## References:
 1. Hadamard : element wise multiplication
 2. Image Processing Algo: https://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-3-greyscale-conversion/
