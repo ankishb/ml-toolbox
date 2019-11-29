@@ -16,6 +16,342 @@ This disadvantage of lasso can be observed in the example we discussed above. Si
 
 
 
+## Unbalanced Dataset:
+There seems to be some confusion about calculating class weights, as this dataset is very imbalanced. This dataset has ~0.247% 1s, and the rest are 0s (~99.753%). scale_pos_weight of LightGBM is "weight of positive class in binary classification task" according to LightGBM documentation. I think that translates into a multiplication factor that has to be applied to number of 1s in order to get the same sample number as in 0s. So: 99.753 / 0.247 = ~ 403.8
+
+```python
+import pandas as pd
+from collections import Counter
+
+def get_class_weights(y):
+    counter = Counter(y)
+    majority = max(counter.values())
+    return  {cls: round(float(majority)/float(count), 2) for cls, count in counter.items()}
+
+train = pd.read('train.csv')
+class_weights = get_class_weights(train.is_attributed.values)
+print(class_weights)
+
+Out: {0: 1.0, 1: 403.74}
+```
+
+## Percentile calculation:
+- find the percentile score in exam or test.
+1. Sort the data values from low to high
+2. Multiply the percentile with total number of value. For 25 student and 99 percentile, it will be 25*0.99.
+3. Round to nearest whole number. 1.5-->2, 2.7-->3, 1.2-->1, 5-->5
+4.  If the value obtained at step `2` is not whole number:
+        Pick the value at that index, given by step `3`
+    Else
+        Ans will be the average of value at (index, index+1)
+```
+For example, suppose you have 25 test scores, and in order from lowest to highest they look like this: 43, 54, 56, 61, 62, 66, 68, 69, 69, 70, 71, 72, 77, 78, 79, 85, 87, 88, 89, 93, 95, 96, 98, 99, 99. To find the 90th percentile for these (ordered) scores, start by multiplying 90% times the total number of scores, which gives 90% ∗ 25 = 0.90 ∗ 25 = 22.5 (the index). Rounding up to the nearest whole number, you get 23th term. Ans is 98
+```
+
+
+
+## Find Inverse of matrix:
+- use GAUSS ELIMINATION METHOD
+- Procede like following: 
+1. `a11, a21, a31`
+2. `a22, a32, a33`
+3. `a23, a13, a12`
+```c++
+1. Init A X = B as [A | B]
+2. Find pivot and rearrange row such that, diagnol represent the big number from the following rows
+  For exp: 
+  [1,  2, 4]    [49, 2, 2]
+  [2, 10, 1] => [2, 10, 1]
+  [49, 2, 2]    [1,  2, 4]
+3. start with first pivot (49) and compute factor f as (2/49) and subtract the entire row from f * pivot that will be (2/49)*(49) as A[i][j] = A[i][j] - f*pivot
+4. repeat for each pivot and iterate downward for each row
+5. In the end, we will get matrix in row echlon form, which give as coefficient of X.
+  [1, x12, x13, x14]
+  [0,  1 , x23, x24]
+  [0,  0 ,  1 , x34]
+
+Note: there is a catch, if matrix A is [m X n] dimension:
+  1. m == n , then we have unique solution (x33 = B3)
+  2. m > n , no solution
+  3. m < n , many solution (choose any value for x34, and then x33 = B3 - x34)
+```
+
+
+#### Solving linear equation using gaussian elimination method
+Steps
+• Eliminate x1 from second equaধon
+Row2 Row2 - a21 / a11 * Row1
+• Eliminate x1 from third equaধon
+Row3 Row3 - a31 / a11 * Row1
+• Repeat above procedure to eliminate x1 from n-th row
+
+Back Subsধtuধon
+• Solve for xn
+xn =
+b( nn-1)
+a
+(n-1)
+nn
+• Back subsধtute in the upper triangular system
+1. Subsধtute xn in (n - 1)-th equaধon to solve for xn-1
+2. Subsধtute xn-1 in (n - 2)-th equaধon to solve for xn-2
+3. Repeat
+• Floaধng point operaধons (flops)
+Number of flops = 2n3
+3 + O(n2)
+| {z }
+Forward Eliminaধon
+
+
+```c
+h := 1 /* Initialization of the pivot row */
+k := 1 /* Initialization of the pivot column */
+while h ≤ m and k ≤ n
+/* Find the k-th pivot: */
+i_max := argmax (i = h ... m, abs(A[i, k]))
+if A[i_max, k] = 0
+ /* No pivot in this column, pass to next column */
+ k := k+1
+else
+  swap rows(h, i_max)
+  /* Do for all rows below pivot: */
+  for i = h + 1 ... m:
+     f := A[i, k] / A[h, k]
+     /* Fill with zeros the lower part of pivot column: */
+     A[i, k]  := 0
+     /* Do for all remaining elements in current row: */
+     for j = k + 1 ... n:
+        A[i, j] := A[i, j] - A[h, j] * f
+  /* Increase pivot row and column */
+  h := h+1 
+  k := k+1
+```
+
+```c++
+//Gauss Elimination
+#include<iostream>
+#include<iomanip>
+using namespace std;
+int main()
+{
+    int n,i,j,k;
+    cout.precision(4);     //set precision
+    cout.setf(ios::fixed);
+    cout<<"\nEnter the no. of equations\n";        
+    cin>>n;                //input the no. of equations
+    float a[n][n+1],x[n];  //declare an array to store the elements of augmented-matrix    
+    cout<<"\nEnter the elements of the augmented-matrix row-wise:\n";
+    for (i=0;i<n;i++)
+        for (j=0;j<=n;j++)    
+            cin>>a[i][j];    //input the elements of array
+    //Pivotisation
+    for (i=0; i<n; i++){
+        for (k=i+1; k<n; k++){
+            if(abs(a[i][i]) >= abs(a[k][i])) continue;
+            for(j=0; j<=n; j++){
+                swap(a[i][j], a[k][j]);
+            }
+        }
+    }
+    cout<<"\nThe matrix after Pivotisation is:\n";
+    for (i=0;i<n;i++){
+        for (j=0;j<=n;j++)
+            cout<<a[i][j]<<setw(16);
+        cout<<"\n";
+    }
+    // loop to perform the gauss elimination
+    for(i=0; i<n-1; i++){
+        for(k=i+1; k<n; k++){
+            double factor = a[k][i] / a[i][i];
+            for(j=0; j<=n; j++){
+                //make the elements below the pivot elements equal to zero or elimnate the variables
+                a[k][j] = a[k][j] - factor * a[i][j];
+            }
+        }
+    }
+    cout<<"\n\nThe matrix after gauss-elimination is as follows:\n";
+    for (i=0; i<n; i++){
+        for (j=0; j<=n; j++)
+            cout<<a[i][j]<<setw(16);
+        cout<<"\n";
+    }
+    for (i=n-1;i>=0;i--)                //back-substitution
+    {                        //x is an array whose values correspond to the values of x,y,z..
+        x[i]=a[i][n];                //make the variable to be calculated equal to the rhs of the last equation
+        for (j=i+1;j<n;j++)
+            if (j!=i)            //then subtract all the lhs values except the coefficient of the variable whose value                                   is being calculated
+                x[i]=x[i]-a[i][j]*x[j];
+        x[i]=x[i]/a[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
+    }
+    cout<<"\nThe values of the variables are as follows:\n";
+    for(i=0; i<n; i++)
+        cout << x[i] << endl;
+    return 0;
+}
+```
+
+```c++
+// gauss jordan method
+
+// C++ Implementation for Gauss-Jordan 
+// Elimination Method 
+#include <bits/stdc++.h> 
+using namespace std; 
+  
+#define M 10 
+  
+// Function to print the matrix 
+void PrintMatrix(float a[][M], int n) 
+{ 
+    for (int i = 0; i < n; i++) { 
+        for (int j = 0; j <= n; j++)  
+          cout << a[i][j] << " "; 
+        cout << endl; 
+    } 
+} 
+  
+// function to reduce matrix to reduced 
+// row echelon form. 
+int PerformOperation(float a[][M], int n) 
+{ 
+    int i, j, k = 0, c, flag = 0, m = 0; 
+    float pro = 0; 
+      
+    // Performing elementary operations 
+    for (i = 0; i < n; i++) 
+    { 
+        if (a[i][i] == 0)  
+        { 
+            c = 1; 
+            while (a[i + c][i] == 0 && (i + c) < n)  
+                c++;             
+            if ((i + c) == n) { 
+                flag = 1; 
+                break; 
+            } 
+            for (j = i, k = 0; k <= n; k++)  
+                swap(a[j][k], a[j+c][k]); 
+        } 
+  
+        for (j = 0; j < n; j++) { 
+              
+            // Excluding all i == j 
+            if (i != j) { 
+                  
+                // Converting Matrix to reduced row 
+                // echelon form(diagonal matrix) 
+                float pro = a[j][i] / a[i][i]; 
+  
+                for (k = 0; k <= n; k++)                  
+                    a[j][k] = a[j][k] - (a[i][k]) * pro;                 
+            } 
+        } 
+    } 
+    return flag; 
+} 
+  
+// Function to print the desired result  
+// if unique solutions exists, otherwise  
+// prints no solution or infinite solutions  
+// depending upon the input given. 
+void PrintResult(float a[][M], int n, int flag) 
+{ 
+    cout << "Result is : "; 
+  
+    if (flag == 2)      
+      cout << "Infinite Solutions Exists" << endl;     
+    else if (flag == 3)      
+      cout << "No Solution Exists" << endl; 
+      
+      
+    // Printing the solution by dividing constants by 
+    // their respective diagonal elements 
+    else { 
+        for (int i = 0; i < n; i++)          
+            cout << a[i][n] / a[i][i] << " ";         
+    } 
+} 
+  
+// To check whether infinite solutions  
+// exists or no solution exists 
+int CheckConsistency(float a[][M], int n, int flag) 
+{ 
+    int i, j; 
+    float sum; 
+      
+    // flag == 2 for infinite solution 
+    // flag == 3 for No solution 
+    flag = 3; 
+    for (i = 0; i < n; i++)  
+    { 
+        sum = 0; 
+        for (j = 0; j < n; j++)         
+            sum = sum + a[i][j]; 
+        if (sum == a[i][j])  
+            flag = 2;         
+    } 
+    return flag; 
+} 
+  
+// Driver code 
+int main() 
+{ 
+    float a[M][M] = {{ 0, 2, 1, 4 },  
+                     { 1, 1, 2, 6 },  
+                     { 2, 1, 1, 7 }}; 
+                       
+    // Order of Matrix(n) 
+    int n = 3, flag = 0; 
+      
+    // Performing Matrix transformation 
+    flag = PerformOperation(a, n); 
+      
+    if (flag == 1)      
+        flag = CheckConsistency(a, n, flag);     
+  
+    // Printing Final Matrix 
+    cout << "Final Augumented Matrix is : " << endl; 
+    PrintMatrix(a, n); 
+    cout << endl; 
+      
+    // Printing Solutions(if exist) 
+    PrintResult(a, n, flag); 
+  
+    return 0; 
+} 
+```
+
+
+## Difference between gauss-jordan and gauss-elimination method:
+Both methods are used to find solutions for linear systems by pivoting and elimination like as Ax⃗ =b⃗ 
+
+Gauss method end the matrix as a superior-triangular matrix and you find the solutions of a linear system by applying a regressive substitution.
+
+Gauss-Jordan do the same as an additional: turn the desired current matrix A a identity matrix. Thus, Gauss-Jordan means Gauss method plus doing the operation sufficient to make the matrix triangular inferior as well, which ends in a identity matrix.
+
+With Gauss-Jordan method you have the exactly solution that you want without the need of regressive/progressive substitution. The desired solution is directly encoded on the vectorb⃗ .
+
+## Fastest method to solve for inverse of matrix (or find the solution for set of linear equation in general)
+1. Fast method would be the Gauss-Jordan method. 
+    - it reduce the matric to `reduced row echlon form`, which gives us inverse matrix directly
+    - This is what gauss jordan method do: `[A | I] ==> [I | A^(-1)]`
+
+2. Next would be LU Decomposition method.
+    - A X = B -> L U X = B -> L Y = B
+    - To find L and `U`, we can simply first run gauss elimination to get `U`, then to find `L` we use `forward elimination method`
+    - L =  [ 1 0]
+           [ * 1]
+    - we can easily find value of * in L
+    - Once we find `L` and `U`, we first solve `L Y = B`, and find values for `Y`
+    - Then we use `U X = Y` and solve for `X`
+
+3. And last would be using Gauss elimination. 
+    - it reduce the matrix to `row echlon form`, which is use to solve the linear equation, to find coefficients of linear equation
+    - A X = B -> `[A] => [A']` 
+4. (cramer rule)Using the co-factor method would be the least efficient method - just see how much time it takes to find determinant of a matrix.
+
+
+---
 
 
 
@@ -70,14 +406,13 @@ Data wrangling is the process of cleaning, structuring and enriching raw data in
 It allows analysts to tackle more complex data more quickly, produce more accurate results, and make better decisions.
 
 
-Data Wrangling in Practice: What to Expect
 
 There are typically 5 iterative steps that make up the data wrangling process.
-1. Discovering: Before you can dive deeply, you must better understand what is in your data, which will inform how you want to analyze it. How you wrangle customer data, for example, may be informed by where they are located, what they bought, or what promotions they received.
-2. Structuring: This means organizing the data, which is necessary because raw data comes in many different shapes and sizes. A single column may turn into several rows for easier analysis. One column may become two. Movement of data is made for easier computation and analysis.
-3. Cleaning: What happens when errors and outliers skew your data?  You clean the data. What happens when state data is entered as CA or California or Calif.? You clean the data. Null values are changed and standard formatting implemented, ultimately increasing data quality.
-4. Enriching: Here you take stock in your data and strategize about how other additional data might augment it. Questions asked during this data wrangling step might be: what new types of data can I derive from what I already have or what other information would better inform my decision making about this current data?
-5. Validating: Validation rules are repetitive programming sequences that verify data consistency, quality, and security. Examples of validation include ensuring uniform distribution of attributes that should be distributed normally (e.g. birth dates) or confirming accuracy of fields through a check across data.
+1. `Discovering`: Before you can dive deeply, you must better understand what is in your data, which will inform how you want to analyze it. How you wrangle customer data, for example, may be informed by where they are located, what they bought, or what promotions they received.
+2. `Structuring`: This means organizing the data, which is necessary because raw data comes in many different shapes and sizes. A single column may turn into several rows for easier analysis. One column may become two. Movement of data is made for easier computation and analysis.
+3. `Cleaning`: What happens when errors and outliers skew your data?  You clean the data. What happens when state data is entered as CA or California or Calif.? You clean the data. Null values are changed and standard formatting implemented, ultimately increasing data quality.
+4. `Enriching`: Here you take stock in your data and strategize about how other additional data might augment it. Questions asked during this data wrangling step might be: what new types of data can I derive from what I already have or what other information would better inform my decision making about this current data?
+5. `Validating`: Validation rules are repetitive programming sequences that verify data consistency, quality, and security. Examples of validation include ensuring uniform distribution of attributes that should be distributed normally (e.g. birth dates) or confirming accuracy of fields through a check across data.
 
 
 ## How to deal with any DS problem:
@@ -100,7 +435,7 @@ Feature Engineering selects the right attributes to analyze. You use domain know
 1. Feature engineering
 2. Feature selection
 3. Validation of how the features work with your model
-4. Improvement of features if needed
+4. Improvement of features, if needed
 5. Return to brainstorming / creation of more features until the work is done
 
 
@@ -191,9 +526,8 @@ If the two attributes are categorical (rather than numeric), then mutual informa
 Suppose two judges rank a collection of items and we are interested in how much their ranking orders agree.  We can use `Spearman's rank coefficient` to measure their degree of consensus in the ranking order.
 
  
-### Cosine similarity: Let’s imagine that you need to determine how similar two documents or corpus of text are. Which distance metrics will you use?
-
-The answer is cosine similarity.
+### Cosine similarity: 
+to determine how similar two documents or corpus of text are.
 
 ### Jaccard distance: Lastly, we will change our focus of attention. Instead of calculating distances between vectors, we will work with sets.
 
