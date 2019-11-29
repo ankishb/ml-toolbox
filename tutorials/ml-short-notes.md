@@ -1,4 +1,7 @@
+# ML-short notes
+This is machine learning notes, where most of defined in very compact form(including mathematics), as per my understanding. It has lot of important and deeper points about ML models.
 
+> I constantly improve stuff and add new one.
 
 # perceptron
 - Online Algo (check one example at a time)
@@ -20,14 +23,14 @@
 
 > In statistics, categorical varaible are known as `qualitative variable` and for numerical feature, `quantitative variable` term is used.
 
+---
 
 ## Regression Analysis:
 regression analysis estimates the relationship between two or more variables.
 - It indicates the significant relationships between dependent variable and independent variable.
 - It indicates the strength of impact of multiple independent variables on a dependent variable.
 
-
-## types of Regressions
+## types of Regressions model:
 1. Linear Regression
 2. Logistic Regression
 3. Polynomial Regression
@@ -35,9 +38,95 @@ regression analysis estimates the relationship between two or more variables.
 5. Ridge Regression
 6. Lasso Regression
 7. ElasticNet Regression
+8. least square model (ordinal Least square)
+9. QuasiBionomail regression (Where target varaible's distribution assumed as skewed)
+10. Total Least square
+
+> `Inductive bias` is the set of assumptions a learner uses to predict results given inputs it has not yet encountered.
 
 
-# logistic regeression
+## Total Least square
+- Assumption: `there is error in observation` **More Practical**
+- It is also known as `errors in variables`, `rigorous least squares`, and `orthogonal regression`.
+- So we minimize the residual error `diagonal residuals (shortest distant between observation point and fitted model)`, which consider the error in both varaible along x as well as in y direction.
+- **It is not scale invariant**
+
+
+## Ordinary Least square
+- Assumption: `there is no error in observation`
+- minimize the residual error `vertical distance` between data sample and slope(line)`(observed response value minus fitted response value)`
+- **It is scale invariant**
+
+### Why total least square is not used widely as compare to ordinary least square:
+- Because of `scale variant` property.
+- The reason why total least squares isn’t used as often as ordinary least squares, is because problems arise when the variables have different units of measurement.  If the variables have different units of measurement and diagonal residual are used, then essentially quantities with different measurement units are being added together (due to Pythagoras Theorem).  To overcome this problem, the variables could be normalised / standardised. 
+
+
+## Assumption in Oordinary Least Square:
+1. The regression model is linear in the coefficients, as well in the error term
+2. The error term has a population mean of zero
+3. All `independent variables` are `uncorrelated` with the error term
+4. Each `Observations` is `independent` of each other
+    - One observation of the error term should not predict the next observation.
+5. The error term has a constant variance (`no heteroscedasticity`)
+    - `Homoscedasticity`(meaning “same variance”) describes a situation in which the error term (that is, the “noise” or random disturbance in the relationship between the independent variables and the dependent variable) is the same across all values of the independent variables
+    - `Heteroscedasticity` (the violation of homoscedasticity) is present when the size of the error term differs across values of an independent variable.
+6. `The error term is normally distributed` (`optional`)
+    - OLS does not require that the error term follows a normal distribution to produce unbiased estimates with the minimum variance. `However, satisfying this assumption allows you to perform statistical hypothesis testing` and generate reliable confidence intervals and prediction intervals.
+
+> there should be linear coorelation between independent variable and dependent variable
+> there should not be any coorelation between feature
+
+## Imp points about regression (Scale Invariancy Property):
+- We can translate features, any way we want, without changing the model. 
+- With scaling you need to be a little more careful when using a regularized model – these models are `not scale invariant`. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, we should rescale each feature. 
+
+1. `OLS is scale invariant`. If you have a model `y = w0 + w1 x1 + w2 x2` and you replace `x1` with `x1'=x1/2` and re-estimate the model, you’ll get a new model `y = w0 + 2w1 x1' + w2 x2` which gives exactly the same preditions. The new `x1'` is half as big, so its coefficient is now twice as big.
+2. `Ridge and L1-penalized regression (and hence elastic net) are not scale invariant`. 
+    - Ridge shrinks the big weights more than the small ones
+3. `L0 regression is scale invariant`; the feature is in or out of the model, so the size doesn’t matter.
+4. `PCA is not scale invariant`. People therefore often rescale the data (`standardize` it) before they do PCA. 
+
+## Maximum Likelihood estimation:
+The main advantage of MLE is that it has `asymptotic property`. It means that when the size of the data increases, the `estimate converges faster towards the population parameter`.
+
+
+The Maximum Likelihood method is used in estimating a parameter  θ of a distribution with a density function ∱(x), from samples drawn at random from it. Naturally, one wants the estimate to be the best possible one of the unknown  θ. So, a Likelihood function is defined such that it allows the sample to arrive at that desirable estimate. And we want that Likelihood to be Maximum for the best estimate. 
+
+
+
+
+Firstly it is necessary to have an intuition for the likelihood function. A probability model states how the probability for observing any particular set of data values depends on unknown parameters. It seems reasonable to seek the parameter values that maximises the probability of the actual values observed. (In the case of a continuous distribution, we maximise the density, which isn't as compelling, but usually gives reasonable estimates. So the likelihood function is a finction of the parameters when the observations are regarded as fixed.
+
+When comparing two models it seems reasonable to consider the ratio of the likelihoods under the two models. This is the likelihood ratio. The better model has the greater likelihood.
+
+Taking logs is merely a convenience. However, if the observations are independent, this converts multiplication of probabilities (densities) to addition, which is often helpful.
+
+
+
+Step to do MLE:
+1. Assume distribution of data(that is one disadvantage too)
+2. Find likelihood of data under parameter `theta`, as `p(X/theta)`
+3. Estimate parameter `theta`
+
+## Q. Difference between least square estimation and maximum likelihood estimation:
+- `LSE` is to minimize the `least square error`
+- `MLE` is to `maximize the log likelihood` as the loss function and minimze it with respect to the parameter.
+- Both becomes `equivalent`, we assume `gaussian distribution` as probability density function in `MLE`.
+
+
+## Q. Do least square and linear regression same thing?
+1. **They are not the same thing.**
+2. Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell you how the model is fitted. Least square fitting is simply one of the possibilities.
+3. In summary: `linear regression is optimization problem`, with the intent to find best possible parameter for the linear line, where as `least square method is potential loss function for an optimization problem`. Which means, loss is (y - f(x, w))^2, where f(x,w) can be any function, linear/non-linear, parameterized by `w`.
+4. In least square: `w =  argmin_w [y − f(x, w)]^2`
+
+> f linear regression is  "low bias/high variance", there must be some alternative method that is biased but that has lower variance. Various forms of regularized regression exist, including lasso regression and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. Also note that regularizing a regression using lasso or ridge will always decrease the variance in the estimator, and it will always introduce bias if the true value of the coefficient is not zero.
+
+
+
+
+# Linear regression vs logistic regeression:
 - Linear regression try to put a linear line on samples, **Just imagine**, Can a linear line give a solution which seprate **[0,1]**. **Well, it can, Look at following exp**, because we need a threshold to decide which side the samples lie. But for biased/imbalanced dataset, the linear line will be biased along one side and solution may not be good, whereas logistic regression helps to put a sigmoid like curve on the samples, which seems good.
 - In log-reg, output is always between `[0-1]`, where in linear reg, output can be anything `> 1 or < 0`.
 - it computes probability of being 1.
@@ -69,7 +158,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 
 3. Third, logistic regression requires there to be little or no multicollinearity among the independent variables.  This means that the independent variables should not be too highly correlated with each other.
 
-4. Fourth, logistic regression assumes linearity of independent variables and log odds.  although this analysis does not require the dependent and independent variables to be related linearly, it requires that the independent variables are linearly related to the log odds.
+4. Fourth, logistic regression assumes linearity of independent variables and log odds. Although this analysis does not require the dependent and independent variables to be related linearly, `it requires that the independent variables are linearly related to the log odds`
 
 5. Finally, logistic regression typically requires a large sample size.  A general guideline is that you need at minimum of 10 cases with the least frequent outcome for each independent variable in your model. For example, if you have 5 independent variables and the expected probability of your least frequent outcome is .10, then you would need a minimum sample size of 500 (10*5 / .10).
 
@@ -83,20 +172,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 - early stopping (not a regularization, but it helps in same way)
 
 
-# optimization
-- Gradient decent:
-    need to pick learning rate
-- conjugate gradient:
-    very fast
-    no hyperparameter
-    more complex
-
-# Convex function
-- if second derivative is always **positive**.
-- if hessian is positive definite.
-
-
-## Model Flexibility vs model interpretability:
+## Model Flexibility vs model interpretability(in cross-validation curve):
 - Flexibility increase from left to right
 - Interpretation decrease from left to right
   `subset-selection/lasso, linear regression, Decision tree/general additive model, SVM, Bagging, boosting`
@@ -106,7 +182,6 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 ---
 
 ## Generative model vs discriminative model:
-
 ### Generative classifiers
 ‌1. Naive Bayes
 2. Bayesian networks
@@ -123,225 +198,37 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 
 ---
 
-
-
-## Unbalanced Dataset:
-There seems to be some confusion about calculating class weights, as this dataset is very imbalanced. This dataset has ~0.247% 1s, and the rest are 0s (~99.753%). scale_pos_weight of LightGBM is "weight of positive class in binary classification task" according to LightGBM documentation. I think that translates into a multiplication factor that has to be applied to number of 1s in order to get the same sample number as in 0s. So: 99.753 / 0.247 = ~ 403.8
-
-```python
-import pandas as pd
-from collections import Counter
-
-def get_class_weights(y):
-    counter = Counter(y)
-    majority = max(counter.values())
-    return  {cls: round(float(majority)/float(count), 2) for cls, count in counter.items()}
-
-train = pd.read('train.csv')
-class_weights = get_class_weights(train.is_attributed.values)
-print(class_weights)
-
-Out: {0: 1.0, 1: 403.74}
-```
-
-## Percentile calculation:
-- find the percentile score in exam or test.
-1. Sort the data values from low to high
-2. Multiply the percentile with total number of value. For 25 student and 99 percentile, it will be 25*0.99.
-3. Round to nearest whole number. 1.5-->2, 2.7-->3, 1.2-->1, 5-->5
-4.  If the value obtained at step `2` is not whole number:
-        Pick the value at that index, given by step `3`
-    Else
-        Ans will be the average of value at (index, index+1)
-```
-For example, suppose you have 25 test scores, and in order from lowest to highest they look like this: 43, 54, 56, 61, 62, 66, 68, 69, 69, 70, 71, 72, 77, 78, 79, 85, 87, 88, 89, 93, 95, 96, 98, 99, 99. To find the 90th percentile for these (ordered) scores, start by multiplying 90% times the total number of scores, which gives 90% ∗ 25 = 0.90 ∗ 25 = 22.5 (the index). Rounding up to the nearest whole number, you get 23th term. Ans is 98
-```
-
-
-
-## Find Inverse of matrix:
-- use GAUSS ELIMINATION METHOD
-- Procede like following: 
-1. `a11, a21, a31`
-2. `a22, a32, a33`
-3. `a23, a13, a12`
-```c++
-1. Init A X = B as [A | B]
-2. Find pivot and rearrange row such that, diagnol represent the big number from the following rows
-  For exp: 
-  [1,  2, 4]    [49, 2, 2]
-  [2, 10, 1] => [2, 10, 1]
-  [49, 2, 2]    [1,  2, 4]
-3. start with first pivot (49) and compute factor f as (2/49) and subtract the entire row from f * pivot that will be (2/49)*(49) as A[i][j] = A[i][j] - f*pivot
-4. repeat for each pivot and iterate downward for each row
-5. In the end, we will get matrix in row echlon form, which give as coefficient of X.
-  [1, x12, x13, x14]
-  [0,  1 , x23, x24]
-  [0,  0 ,  1 , x34]
-
-Note: there is a catch, if matrix A is [m X n] dimension:
-  1. m == n , then we have unique solution (x33 = B3)
-  2. m > n , no solution
-  3. m < n , many solution (choose any value for x34, and then x33 = B3 - x34)
-```
-
-
-#### Solving linear equation using gaussian elimination method
-Steps
-• Eliminate x1 from second equaধon
-Row2 Row2 - a21 / a11 * Row1
-• Eliminate x1 from third equaধon
-Row3 Row3 - a31 / a11 * Row1
-• Repeat above procedure to eliminate x1 from n-th row
-
-Back Subsধtuধon
-• Solve for xn
-xn =
-b( nn-1)
-a
-(n-1)
-nn
-• Back subsধtute in the upper triangular system
-1. Subsধtute xn in (n - 1)-th equaধon to solve for xn-1
-2. Subsধtute xn-1 in (n - 2)-th equaধon to solve for xn-2
-3. Repeat
-• Floaধng point operaধons (flops)
-Number of flops = 2n3
-3 + O(n2)
-| {z }
-Forward Eliminaধon
-
-
-```c
-h := 1 /* Initialization of the pivot row */
-k := 1 /* Initialization of the pivot column */
-while h ≤ m and k ≤ n
-/* Find the k-th pivot: */
-i_max := argmax (i = h ... m, abs(A[i, k]))
-if A[i_max, k] = 0
- /* No pivot in this column, pass to next column */
- k := k+1
-else
-  swap rows(h, i_max)
-  /* Do for all rows below pivot: */
-  for i = h + 1 ... m:
-     f := A[i, k] / A[h, k]
-     /* Fill with zeros the lower part of pivot column: */
-     A[i, k]  := 0
-     /* Do for all remaining elements in current row: */
-     for j = k + 1 ... n:
-        A[i, j] := A[i, j] - A[h, j] * f
-  /* Increase pivot row and column */
-  h := h+1 
-  k := k+1
-```
-
-```c++
-//Gauss Elimination
-#include<iostream>
-#include<iomanip>
-using namespace std;
-int main()
-{
-    int n,i,j,k;
-    cout.precision(4);     //set precision
-    cout.setf(ios::fixed);
-    cout<<"\nEnter the no. of equations\n";        
-    cin>>n;                //input the no. of equations
-    float a[n][n+1],x[n];  //declare an array to store the elements of augmented-matrix    
-    cout<<"\nEnter the elements of the augmented-matrix row-wise:\n";
-    for (i=0;i<n;i++)
-        for (j=0;j<=n;j++)    
-            cin>>a[i][j];    //input the elements of array
-    //Pivotisation
-    for (i=0; i<n; i++){
-        for (k=i+1; k<n; k++){
-            if(abs(a[i][i]) >= abs(a[k][i])) continue;
-            for(j=0; j<=n; j++){
-                swap(a[i][j], a[k][j]);
-            }
-        }
-    }
-    cout<<"\nThe matrix after Pivotisation is:\n";
-    for (i=0;i<n;i++){
-        for (j=0;j<=n;j++)
-            cout<<a[i][j]<<setw(16);
-        cout<<"\n";
-    }
-    // loop to perform the gauss elimination
-    for(i=0; i<n-1; i++){
-        for(k=i+1; k<n; k++){
-            double factor = a[k][i] / a[i][i];
-            for(j=0; j<=n; j++){
-                //make the elements below the pivot elements equal to zero or elimnate the variables
-                a[k][j] = a[k][j] - factor * a[i][j];
-            }
-        }
-    }
-    cout<<"\n\nThe matrix after gauss-elimination is as follows:\n";
-    for (i=0; i<n; i++){
-        for (j=0; j<=n; j++)
-            cout<<a[i][j]<<setw(16);
-        cout<<"\n";
-    }
-    for (i=n-1;i>=0;i--)                //back-substitution
-    {                        //x is an array whose values correspond to the values of x,y,z..
-        x[i]=a[i][n];                //make the variable to be calculated equal to the rhs of the last equation
-        for (j=i+1;j<n;j++)
-            if (j!=i)            //then subtract all the lhs values except the coefficient of the variable whose value                                   is being calculated
-                x[i]=x[i]-a[i][j]*x[j];
-        x[i]=x[i]/a[i][i];            //now finally divide the rhs by the coefficient of the variable to be calculated
-    }
-    cout<<"\nThe values of the variables are as follows:\n";
-    for(i=0; i<n; i++)
-        cout << x[i] << endl;
-    return 0;
-}
-```
-
-## Difference between gauss-jordan and gauss-elimination method:
-Both methods are used to find solutions for linear systems by pivoting and elimination like as Ax⃗ =b⃗ 
-
-. Gauss method end the matrix as a superior-triangular matrix and you find the solutions of a linear system by applying a regressive substitution.
-
-Gauss-Jordan do the same as an additional: turn the desired current matrix A
-
-a identity matrix. Thus, Gauss-Jordan means Gauss method plus doing the operation sufficient to make the matrix triangular inferior as well, which ends in a identity matrix.
-
-With Gauss-Jordan method you have the exactly solution that you want without the need of regressive/progressive substitution. The desired solution is directly encoded on the vectorb⃗ .
-
-## Fastest method to solve for inverse of matrix (or find the solution for set of linear equation in general)
-1. Fast method would be the Gauss-Jordan method. 
-2. Next would be LU Decomposition method. 
-3. And last would be using Gaussian elimination. 
-4. (cramer rule)Using the co-factor method would be the least efficient method - just see how much time it takes to find determinant of a matrix.
-
 ## Optimization (Part-1):
-- A function is convex, when `f(y) >= f(x) + dy/dx (y-x)`, which is nothing but the value at function is always greater than its tangent.
+- A function is convex, when `f(y) >= f(x) + dy/dx (y-x)`, which is nothing but the `value at function is always greater than its tangent`.
 - In other words, pick any two points on curve, the line passing through two points, will always be above the curve, if curve follows convexity.
-- Convex function has its second derivative(hessian) as semi-definite.
+- Convex function has its second derivative`(hessian) as semi-definite`.
+
 ```
 At critical point, f'(x) = 0;
 using taylor series: f(x+h) = f(x) + h * f'(x) + 1/2 h* f"(x) * h
 f(x+h) = f(x) + 1/2 h * f"(x) * h, as f'(x) = 0
 f(x+h) - f(x) = 1/2 h * f"(x) * h
-For local minima to exist, hessian(h) should be >=0, which is positive semidefinte
+For local minima to exist, hessian should be positive semidefinte, which is f"(x) >= 0
 ```
 
+# Convex function
+- if second derivative is always **positive**.
+- if hessian is positive definite.
+
 ### Concave, Convex and Non-Convex function:
-1.  A function is non-convex if the function is not a convex function.
-2. A function `g` is concave if `−g`is a convex function.
-3. A function is non-concave if the function is not a concave function.
-4. A non-convex function need not be a concave function. For example, the function f(x)=x(x−1)(x+1)
+1.  A function is `non-convex` if the function is `not a convex` function.
+2. A function `g` is `concave` if `−g`is a `convex` function.
+3. A function is `non-concave` if the function is `not a concave` function.
+4. A `non-convex` function need `not be a concave` function. 
+    - For example, the function f(x)=x(x−1)(x+1)
 defined on [−1,1].
+5. A `non-convex` function `curves up and down`. It is `neither convex nor concave`.
+    - A familiar example is the `sine function`
+    - Note that this function is `convex from -pi to 0`, and `concave from 0 to +pi`.
+    - If the function is convex in the defined region then the overall problem considered as convex.
 
-> Notice that a function can be both convex and concave at the same time, a straight line is both convex and concave.
+> Notice that a function can be both convex and concave at the same time, a straight line is both convex and concave. But in convex optimization, we consider linear curve as convex most of the time.
 
-
-## gradient Desent:
-- can optimize any function, `convex/non-convex`
-- the idea is to take gradient and move in the opposite direction of it. `As grad tells us the direction in which slope is increasing`.
-- we use `learning rate` to control the significance of update using current gradient.
 
 ## learning rate:
 - constant
@@ -349,25 +236,53 @@ defined on [−1,1].
 - `adaptive lr` **Adam, AdaGrad,...**
 - `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many-many extrema and build the ensemble using all those optima pts.
 
+### Cyclic Learning Rate:
+- `x = abs(cur_itr/half_cycle_size - 2*cycle + 1)`
+- `min_lr + (max_lr - min_lr) * max(0, 1-x)`
+- for exp: 
+    - Assume, init cycle = 1, cycle_size = 200
+    - for cur_itr = 100, so then `x = 0`
+    - for cur_itr = 200, so then `x = 1`
+    - for cur_itr = 300, cycle becomes 2, so then `x = 0`
+    This way, it will keep oscillating between `0-1`, but we want to start with high learning rate, to do that we use `1-x`, which make it `1-0`.
+- We can also build ensemble using this trick.
+    - collect all optima under a threshold
+    - take average of model's response for all those optimal weights
+- `better generalization`
+- `avoid saddle point and bad optima`
+
 ## Gradient Based Optimization:
-- `GD`: update as per the gradient of all data
+1. `GD`: update as per the gradient of all data
     - GD converge to optimal at the rate of **(1/k)**, which means if you need an accuracy of **1e-4**, then it need something on the order of one thousand steps.
-- `SGD`: Take one random sample and upadte acc to that, it will have **high variance**
-- `Batch GD`: **Reduce Variance**
-- `Subgradient`: At non-differential point, we get a range by looking at grad value on the right and left, then pick a value and pretend it like a differential function
-- `Constrained opt` (Lagrangian Based && Projected Grad)
-- Coordinate Descent Algo: Where we update one dimension feature from D-dim space
-- `Alternative Optimization`: **Exp: EM**
-- `Newton Method`(Second Order Method, another is `L-BFGS`):
+    - can optimize any function, `convex/non-convex`
+    - the idea is to take gradient and move in the opposite direction of it. `As grad tells us the direction in which slope is increasing`.
+    - we use `learning rate` to control the significance of update using current gradient.
+
+2. `SGD`: Take one random sample and upadte acc to that, it will have **high variance**
+
+3. `Batch GD`: **Reduce Variance**
+
+4. `Subgradient`: At non-differential point, we get a range by looking at grad value on the right and left, then pick a value and pretend it like a differential function
+
+5. `Constrained opt` (Lagrangian Based && Projected Grad)
+
+6. `Coordinate Descent`: Where we update one dimension feature from D-dim space
+
+7. `Projected GD`: If function is not following the constraint, then we project the gradient back in the defined region.
+
+8. `Alternative Optimization`: **Exp: EM**
+
+9. `Newton Method`(Second Order Method, another is `L-BFGS`):
     1. It tells about its curvature, shape, etc
     2. Each step is finding the minima of **quadratic function** in local space.
-    3. No need of learning rate
+    3. No need of learning rate(hyperparameter)
     4. As `f(y) = f(x) + (y-x) df/dx + (y-x)^2 d^2f/dx^2`
         `f(wt+1) = f(wt) + df/dwt (w-wt) + 1/2 (w-wt)^2 d^2f/dw^2`
         `w = argmax_w f(wt+1)`
         `wt+1 = wt + (hessian)^-1 * grad`
     5. Expensive Because of hessian
     6. Very Fast, if f(w) is convex
+    7. `L-BFGS` is used `to approximate the hessian` and most solver in SVM used that.
 
 > double derivative tell about curvature, which decide the learning rate. As if the surface is getting less steeper, then the learning step is decreased.
 
@@ -468,55 +383,53 @@ Best, if we are using sparse data such as tf-idf features for words.
 
 > Note: Least square method is scale invariant as y = beta0 + x1*beta1 + x2*beta2. So LS method can learn appropriate coeff betas with the scaled features, but with regularization, it can creates some problem, it `increase the panality for those features`. Better method to standarize the data before using it in ridge regression.
 
-## Impotant Points
-- Non-Linear Boundary using linear predictors, for circular dataset, using linear predictor, such as **f(w0 + w1*x1 + w2*x2)** will not work, But if we use **f(w0 + w1*x1^2 + w2*x2^2)**, it can find a circular boundary. **w0** helps in finding the threshold, the radius of circle.
-
-
+---
 ## Time complexity of matrix multiplication:
-- one is [m X n] and other is [n X p], the time complexity will be **[mnp]**
+- one is `[m X n]` and other is `[n X p]`, the time complexity will be `O(m*n*p)`
 
 ## Linear Regression:
-- closed form solution is `[w = (X' X + lambda I_d)^(-1) X' Y]`, the time analysis is as 
-    1. `X'X : DND`
-    2. `X' X + lambda I_d : D D`
-    3. Inverse of D X D matrix is D^3
-    4. then [DXD][DXN][NX1] will be DDN
-    5. [DXN][NX1] will be DN 
-    - Overall O(DDD + DDN) == O(DDN)
-- With GD, it will be O(KND), where k is number of iteration.
-
-
-## Inductive Bias: 
-- Inductive bias is the set of assumptions a learner uses to predict results given inputs it has not yet encountered.
+- closed form solution is `w = (X' X + lambda I_d)^(-1) X' Y`, the time analysis is as 
+    1. `X'X : D*N*D`
+    2. `X' X + lambda I_d : D*D`
+    3. Inverse of `D X D` matrix is `D^3`
+    4. then `[DXD][DXN]` will be `D*D*N` and finally, `[DXN][NX1]` will be `D*N` 
+    5. Overall `O(DDD + DDN) == O(D*D*N)`
+- With gradient descent, it will be `O(K*N*D)`, where `k` is number of iteration.
 
 ---
 
 ## SVM (Maximum margin hyperplane): 
 - `ywx > gamma`, it add a pre-specified margin.
-- For gamma=0, it becomes perceptron
+- For `gamma = 0`, it becomes `perceptron`
 - Reason behind the name "Support Vector Machine"?
     1. SVM optimization discovers the most important examples (called `support vectors`) in training data
     2. These examples act as `balancing` the margin boundaries (hence called `support`)
-- margin(gamma) is distance as `(wx+b) / ||w||`
+
+
+## Hard-margin SVM:
+- `loss = ||w||^2 , yn (w*xn + b ) >= 1`
+- `margin(gamma)` is distance as `|wx+b| / ||w||`
 - to maximize the margin, we minimize the `||w||`
 
 ## soft-margin SVM:
-- `Very small C`: Large margin but also large training error.
-- `Very large C`: Small training error but also small margin.
+- `loss = ||w||^2 + C*sum_n slack_n, yn (w*xn + b ) >= 1 - slack_n`
+- In simple words, `loss = margin + C*mistakes`
 - C controls the trade-off between large margin and small training error
+- `Very small C`: Large margin(as it forgets about mistakes) ans so large training error.
+- `Very large C`: Small training error(`complete consideration of mistakes, which makes model to overfit`) but also small margin.
 
 - Dual formaulation, where we have `argmax_a (a.1 - a G a)`
 - The dual formulation is nice due to two primary reasons:
-  1. Allows conveniently handling the margin based constraint (via Lagrangians)
-  2. Important: Allows learning nonlinear separators by replacing inner products (e.g., `Gmn = ym yn xm xn`) by kernelized similarities (kernelized SVMs)
+    1. Allows conveniently handling the margin based constraint (via Lagrangians)
+    2. Important: Allows learning nonlinear separators by replacing inner products (e.g., `Gmn = ym yn xm xn`) by kernelized similarities (kernelized SVMs)
 
 - What if we have solution, w and b, but not slacks, can we find it, **YES**, slacks's value is nothing but the hinge loss on the corresponding example.
-  - slack = `0, when  yn (w xn + b) >= 1`
-    and `(1 - yn (w xn + b))`   otherwise
+    - slack = `0, when  yn (w xn + b) >= 1`
+    - and `(1 - yn (w xn + b))`   otherwise
 
 - Soft Margin loss, is same as `regularized hinge loss`. `min_{w,b} = ||w||^2 + C sum_n hingle_loss(yn, (w xn + b))`
-  1. first term --> large margin
-  2. 2nd term   --> small slack
+    1. first term --> large margin
+    2. 2nd term   --> small slack
 
 > One Biggest Advantage of Soft Margin SVM over hard margin, is that there is always going to be some solution, whether it is linearly seperable or not. **For example, lets suppose data is not linearly seperable, so hard margin will give up, but in soft margin, it use slacks to incorporate some mistakes/error, and will come up with a solution anyway.**
 
@@ -559,6 +472,8 @@ Best, if we are using sparse data such as tf-idf features for words.
     - `cos(x)`, `log(n)`
     - any function
 
+> for circular dataset or for any other Non-Linear Boundary, usually linear predictor such as **f(w0 + w1*x1 + w2*x2)** doesn't work, But if we use **f(w0 + w1*x1^2 + w2*x2^2)**, it can find a circular boundary. **w0** helps in finding the threshold, the radius of circle.
+
 
 ## kernel:
 - `Implicit mapping` for data, which means we operate an function on input, which automatically compute operation on higher dimesional space. 
@@ -576,7 +491,7 @@ For k to be a kernel function
 1. k must define a dot product for some Hilbert Space F
 2. (1.) is true if k is symmetric and positive semi-definite (p.s.d.) function (though there are exceptions; there are also "indefinite" kernels).
     - The function k is p.s.d. if the following holds
-    `integ integ f(x) k(x; z) f(z) dx dz ≥ 0`
+    `∫ ∫ f(x) k(x; z) f(z) dx dz ≥ 0`
 
 ## properties of kernel function:
 Let k1, k2 be two kernel functions then the following are as well:
@@ -725,46 +640,38 @@ score = inter_class / intra_class;
 ## Evaluation Metric:
 
 ### Confusion Metrics:
-  | Predicted +ve | Predicted -ve
+
+ _ | Predicted +ve | Predicted -ve
 --- | --- | ---
 Actual +ve | TP | FN
 Actual -ve | FP | TN
 
 #### Precision: 
 - How good is model on predicting positive class, which is `TP/(TP + FP)`
-- More Important, when we False positive id  
+- More Important, when we False positive id
 
 ## Null Hypothesis:
 - Accepted Fact
 - which can be nullify/Invalidate
 - For example: Earth is oval shaped, this is **null Nypothesis**, and earth is flat, is **alternative hypothesis**.
+- we design alternative hypothesis, to oppose the accepted fact.
 
 ## Z-test:
-`Std-dev = sigma/sqrt(N)`
-`Z = (X - mu) / std-dev`
-`Z critical value for α = 0.05 (one tailed) would be 1.65 as seen from the z table.`
-- Therefore, if we get Z greater than the Z critical value, we can reject the null hypothesis.
-- We know that confidence interval depends on the standard deviation of the data. If we introduce outliers into the data, the standard deviation increases, and hence the confidence interval also increases.
-- The standard error of the mean is the standard deviation by the square root of the number of values.
+- `std-dev = sigma/sqrt(N)`
+- `Z = (X - mu) / std-dev`
+- `Z critical value for α = 0.05 (one tailed) would be 1.65` as seen from the z table.
+- Therefore, if we get Z greater than the `Z critical value`, we can `reject` the null hypothesis.
+- We know that `confidence interval depends on the standard deviation of the data`. **If we introduce outliers into the data, the standard deviation increases, and hence the confidence interval also increases**.
+- The standard error of the mean is the `std-dev / sqrt(N)`
 - To check, if we have sufficient evidence to reject the null, we use `two tailed test`. It states that, the `z critical value for a 2 tailed test would be ±2.58`. If calculated z value is less than z_critical, we cann't reject null hypothesis.
 
-## Type-I and type-II error:
-A medical researcher wants to compare the effectiveness of two medications. The null and alternative hypotheses are:
-1. Null hypothesis (H0): μ1= μ2
-    The two medications are equally effective.
-2. Alternative hypothesis (H1): μ1≠ μ2
-    The two medications are not equally effective.
-
-- A `type-I error` occurs if the researcher rejects the null hypothesis and concludes that the two medications are different when, in fact, they are not. If the medications have the same effectiveness, the researcher may not consider this error too severe because the patients still benefit from the same level of effectiveness regardless of which medicine they take. 
-- However, if a `type-II error` occurs, the researcher fails to reject the null hypothesis when it should be rejected. That is, the researcher concludes that the medications are the same when, in fact, they are different. This error is potentially life-threatening if the less-effective medication is sold to the public instead of the more effective one.
-
 #### Table of error types:
-- `H0` is Null Hypothesis
 
- _ | H0 is true | H0 is false
+ _ | Reject Null | fail to reject Null
 --- | --- | ---
-Reject H0 |  Type-I error, (false positive) (prob = α) | Correct inference (true positive) (prob = 1 - β)
-Fail to Reject H0 |  Correct inference (true negative) (prob = 1 - α) | Type II error (false negative) (prob = β)
+Null Hypothesis is false | Correct inference (true positive) (prob = 1 - β) | Type II error (false negative) (prob = β)
+Null Hypothesis is true | type-I error, (false positive) (prob = α) | Correct inference (true negative) (prob = 1 - α)
+
 
 1. The type I error rate or significance level is the probability of rejecting the null hypothesis given that it is true. 
   - Often, the significance level is set to 0.05.
@@ -772,46 +679,74 @@ Fail to Reject H0 |  Correct inference (true negative) (prob = 1 - α) | Type II
 2. Type II error occurs when the null hypothesis is false, but erroneously fails to be rejected. 
   - A type II error is often called a false negative (where an actual hit was disregarded by the test and is seen as a miss) in a test checking for a single condition with a definitive result of true or false.
 
-## Precision & recall:
-- Precision: Of the positive predicted output, what percentage is actually positive.
-- Recall: Of the positive actual output, what percentage our model predict it positive 
-- Another definition:
-    `Precision`: What proportion of positive identifications was actually correct?
-    `Recall`: What proportion of actual positives was identified correctly?
 
-In statistical hypothesis testing a `type-I error` is the rejection of a true null hypothesis (also known as a "false positive" finding or conclusion), while a `type-II error` is the non-rejection of a false null hypothesis (also known as a "false negative" finding or conclusion)
+## Type-I and type-II error:
+A medical researcher wants to compare the effectiveness of two medications. First, We define hypotheses as:
+1. Null hypothesis `(H0): μ1 = μ2`
+    The two medications are equally effective.
+2. Alternative hypothesis `(H1): μ1 ≠ μ2`
+    The two medications are not equally effective.
 
-                | Predicted +ve | predicted -ve
---------------------------------------------------
-Actual Postive  |     TP        |  FN (Type-II)
-Actual Negative |  FP(Type-I)   |      TN
-
-precision | TP / (TP + FP) 
-Recall    | TP / (TP + FN)
-F1        | 2 P*R / (P + R)
-
-- False Negative has more severe effect than False Positive
-- True positive rate: Fraction of actual positive predicted as positives: TP/(TP+FN) **Ist Row**
-- False positive Rate: Fraction of actual negatives wrongly predicted as positive FP/(TN+FP)**2nd Row**
-- ROC: Plot of TPR vs FPR for all possible value of threshold, also called area under operaring point
-- AUC of 0.5, means close to random.
+- A `type-I error` occurs if the researcher rejects the null hypothesis and concludes that the two medications are different when, in fact, they are not. If the medications have the same effectiveness, the researcher may not consider this error too severe because the patients still benefit from the same level of effectiveness regardless of which medicine they take. 
+- However, if a `type-II error` occurs, the researcher fails to reject the null hypothesis when it should be rejected. That is, the researcher concludes that the medications are the same when, in fact, they are different. This error is potentially life-threatening if the less-effective medication is sold to the public instead of the more effective one.
 
 ## which is more important among type-1 and type-2
-A Type I error, on the other hand, is an error in every sense of the word. A conclusion is drawn that the null hypothesis is false when, in fact, it is true. Therefore, Type I errors are generally considered more serious than Type II errors. The probability of a Type I error (α) is called the significance level and is set by the experimenter. There is a tradeoff between Type I and Type II errors. The more an experimenter protects himself or herself against Type I errors by choosing a low level, the greater the chance of a Type II error. Requiring very strong evidence to reject the null hypothesis makes it very unlikely that a true null hypothesis will be rejected. However, it increases the chance that a false null hypothesis will not be rejected, thus lowering power. The Type I error rate is almost always set at .05 or at .01, the latter being more conservative since it requires stronger evidence to reject the null hypothesis at the .01 level then at the .05 level. 
+- If the conclusion is drawn that the null hypothesis is false when, in fact, it is true. `Therefore, Type I errors are generally considered more serious than Type II errors.`
+- The probability of a `Type I error (α) is called the significance level` and is set by the experimenter. 
+- There is a `tradeoff between Type I and Type II errors`. 
+- `The more an experimenter protects himself against Type I errors by choosing a low level, the greater the chance of a Type II error`. Requiring very strong evidence to reject the null hypothesis makes it very unlikely that a true null hypothesis will be rejected. However, it increases the chance that a false null hypothesis will not be rejected, thus lowering power. The Type I error rate is almost always set at .05 or at .01, the latter being more conservative since it requires stronger evidence to reject the null hypothesis at the .01 level then at the .05 level. 
 
 ### Look at the Potential Consequences
 
 Since there's not a clear rule of thumb about whether Type 1 or Type 2 errors are worse, our best option when using data to test a hypothesis is to look very carefully at the fallout that might follow both kinds of errors. Several experts suggest using a table like the one below to detail the consequences for a Type 1 and a Type 2 error in your particular analysis. 
-Null    Type 1 Error: H0 true, but rejected     Type 2 Error: H0 false, but not rejected
-Medicine A does not relieve Condition B.    Medicine A does not relieve Condition B, but is not eliminated as a treatment option.   Medicine A relieves Condition B, but is eliminated as a treatment option.
-Consequences    Patients with Condition B who receive Medicine A get no relief. They may experience worsening condition and/or side effects, up to and including death. Litigation possible.    A viable treatment remains unavailable to patients with Condition B. Development costs are lost. Profit potential is eliminated.
+- `Type 1 Error: H0 true, but rejected`
+- `Type 2 Error: H0 false, but not rejected`
 
-Whatever your analysis involves, understanding the difference between Type 1 and Type 2 errors, and considering and mitigating their respective risks as appropriate, is always wise. For each type of error, make sure you've answered this question: "What's the worst that could happen?"
+Exp:
+- Medicine does not relieve Dengue, but is not eliminated as a treatment option.
+- Medicine relieves Dengue, but is eliminated as a treatment option.
+
+Consequences:
+- Patients with Dengue who receive Medicine get no relief. They may experience worsening condition and/or side effects, up to and including death. Litigation possible.
+- A viable treatment remains unavailable to patients with Dengue. Development costs are lost. Profit potential is eliminated.
+
+- For each type of error, make sure you've answered this question: "What's the worst that could happen?"
+
+> If we read conclusion carefully, both are bad. 
+1) if medicine doesn't help, that person may die early
+2) If medicine is not available, still that person will die.
+
+## Precision & recall:
+- Precision: Of the positive predicted output, what percentage is actually positive.
+- Recall: Of the positive actual output, what percentage our model predict it positive 
+- Another definition:
+    - `Precision`: What proportion of positive identifications was actually correct?
+    - `Recall`: What proportion of actual positives was identified correctly?
+
+- Another definition (in recommendation engine terms):
+    - `precision`: Out of selected items, how relevant these items are
+    - `recall`: how many relevant items are selected?
 
 
-## imp stuff
-- `Sensitivity`: In simple terms, the proportion of patients that were identified correctly to have the disease (i.e. True Positive) upon the total number of patients who actually have the disease is called as Sensitivity or Recall.
-- `Specificity`: Similarly, the proportion of patients that were identified correctly to not have the disease (i.e. True Negative) upon the total number of patients who do not have the disease is called as Specificity.
+In statistical hypothesis testing a `type-I error` is the rejection of a true null hypothesis (also known as a "false positive" finding or conclusion), while a `type-II error` is the non-rejection of a false null hypothesis (also known as a "false negative" finding or conclusion)
+
+ _ | Predicted +ve | predicted -ve | -
+--- | --- | ---
+Actual Postive  |     TP        |  FN (Type-II) | True +ve Rate, Power, Sensitivity, Recall = TP / (TP + FN)
+Actual Negative |  FP(Type-I)   |      TN       | True -ve Rate = TN / FP + TN
+ _ | precision = TP / (TP + FP) 
+
+-
+- `F1 = 2 P*R / (P + R) = 2*TP / (2*TP + FP + FN)`
+- `Accuracy = TP + TN / (TP + TN + FP + FN)`
+- False Negative has more severe effect than False Positive
+- `True positive rate`: Fraction of actual positive predicted as positives: `TP/(TP+FN)` **Ist Row**
+- `False positive Rate`: Fraction of actual negatives wrongly predicted as positive `FP/(TN+FP)` **2nd Row**
+- `ROC: Plot of TPR vs FPR` for all possible value of threshold, also called `area under operaring point`
+- AUC of 0.5, means close to random.
+
+1. `Sensitivity (Recall)`: In simple terms, the proportion of patients that were identified correctly to have the disease(TP) upon the total number of patients who actually have the disease.
+2. `Specificity`: Similarly, the proportion of patients that were identified correctly to not have the disease(TN) upon the total number of patients who do not have the disease is called as Specificity.
 
 ### Trade-off between Sensitivity and Specificity
 - **When we decrease the threshold, we get more positive values thus increasing the sensitivity. Meanwhile, this will decrease the specificity.**
@@ -819,8 +754,7 @@ Whatever your analysis involves, understanding the difference between Type 1 and
 - `As Sensitivity ⬇️ Specificity ⬆️`
 - `As Specificity ⬇️ Sensitivity ⬆️`
 
-### Trade off between Sensitivity & Specificity
-- To plot ROC curve, instead of Specificity we use (1 — Specificity). So now, when the sensitivity increases, (1 — specificity) will also increase. This curve is known as the ROC curve.
+- To plot ROC curve, instead of `Specificity` w,e use `(1 — Specificity)`. So now, `when the sensitivity increases, (1 — specificity) will also increase`. This curve is known as the `ROC curve`.
 
 ## regression Metrics: Page 15 lec23 CS771
 ### R2 (R-squared): [Best](https://statisticsbyjim.com/regression/interpret-r-squared-regression/)
@@ -850,70 +784,14 @@ Whatever your analysis involves, understanding the difference between Type 1 and
 
 > Note: R2 cann't tells us about bias in the model, it is possible that higher R2 score is due to biased model. **So Never conclude that lower R2 model are not good, they can be good, Always look at residual plot to determine that**.
 
----
+## When will you prefer F1 over ROC-AUC?
+When you have a small positive class, then F1 score makes more sense. This is the common problem in fraud detection where positive labels are few.
+- Note that roc random score is 0.5, which confuse some people, whereas f1 random score ~ 0
 
-## Types of Regression model:
-- Linear Regresion
-- Logistic Regression
-- Ridge
-- Lasso
-- Elastic-Net
-- Robust Regression
-- least square model (ordinal Least square)
-- Polynomial Regression
-- QuasiBionomail regression (Where target varaible's distribution assumed as skewed)
-- Total Least square
-
-
-## Total Least square
-- Assumption: `there is error in observation` **More Practical**
-- So we minimize the residual error **diagnoal distance between data sample and slope(line)**, which consider the error in both varaible along x as well as in y direction.
-- **It is not scale invariant**
-
-
-## Ordinary Least square
-- Assumption: `there is no error in observation`
-- minimize the residual error **vertical distance between data sample and slope(line)**
-- **It is scale invariant**
-
-
-## Assumption in Oordinary Least Square:
-1. The regression model is linear in the coefficients, as well in the error term
-2. The error term has a population mean of zero
-3. All independent variables are uncorrelated with the error term
-4. Observations of the error term are uncorrelated with each other
-    - One observation of the error term should not predict the next observation. For instance, if the error for one observation is positive and that systematically increases the probability that the following error is positive, that is a positive correlation. If the subsequent error is more likely to have the opposite sign, that is a negative correlation. This problem is known both as serial correlation and autocorrelation
-5. The error term has a constant variance (`no heteroscedasticity`)
-    - `Homoscedasticity`(meaning “same variance”) describes a situation in which the error term (that is, the “noise” or random disturbance in the relationship between the independent variables and the dependent variable) is the same across all values of the independent variables
-    - `Heteroscedasticity` (the violation of homoscedasticity) is present when the size of the error term differs across values of an independent variable.
-6. The error term is normally distributed (optional)
-    - OLS does not require that the error term follows a normal distribution to produce unbiased estimates with the minimum variance. However, satisfying this assumption allows you to perform statistical hypothesis testing and generate reliable confidence intervals and prediction intervals.
-
-## Imp points about regression (Scale Invariancy Property):
-- We can translate features, any way we want, without changing the model. 
-- With scaling you need to be a little more careful when using a regularized model – these models are `not scale invariant`. If the scales of predictors vary wildly, models like the Lasso will shrink out the scaled down predictors. To put all predictors on an equal footing, you should be rescaling the columns. 
-- Typically this involves forcing the columns to have unit variance.
-
-1. OLS is scale invariant. If you have a model `y = w0 + w1 x1 + w2 x2` and you replace `x1` with `x1'=x1/2` and re-estimate the model, you’ll get a new model `y = w0 + 2w1 x1' + w2 x2` which gives exactly the same preditions. The new `x1'` is half as big, so its coefficient is now twice as big.
-2. `Ridge and L1-penalized regression (and hence elastic net) are not scale invariant`. 
-    - Ridge shrinks the big weights more than the small ones
-3. `L0 regression is scale invariant`; the feature is in or out of the model, so the size doesn’t matter.
-4. `PCA is not scale invariant`. People therefore often rescale the data (standardize it) before they do PCA. 
-
-
-## Q. Difference between least square estimation and maximum likelihood estimation:
-- LSE is to minimize the least square error
-- MLE is to maximize the log likelihood as the loss function and minimze it with respect to the parameter.
-- They are not equivalent untill, we assume gaussian distribution as probability density function in MLE.
-
-
-## Q. Do least square and linear regression same thing?
-1. **They are not the same thing.**
-2. Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell you how the model is fitted. Least square fitting is simply one of the possibilities.
-3. In summary: linear regression is optimization problem, with the intent to find best possible parameter for the linear line, where as least square method is potential loss function for an optimization problem. Which means, loss is (y - f(x, w))^2, where f(x,w) can be any function, linear/non-linear, parameterized by `w`.
-4. In least square: `w =  argmin_w [y − f(x, w)]^2`
-
-> f linear regression is  "low bias/high variance", there must be some alternative method that is biased but that has lower variance. Various forms of regularized regression exist, including lasso regression and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. Also note that regularizing a regression using lasso or ridge will always decrease the variance in the estimator, and it will always introduce bias if the true value of the coefficient is not zero.
+## multiclass metrics:
+- precision:
+    - an average per class argreement of data class labels with those of classifiers
+    - sum_c 
 
 ---
 
@@ -1112,6 +990,12 @@ Machine learning algorithms that have a high variance are strongly influenced by
 4. go back to 2., untill it converges
 ```
 
+### Why kmean doesn't give global solution:
+- The assignment of points to its corresponding cluster is the biggest part of what k-means is doing. (Once the assignment is made, the centroids are easily computed and there's nothing left to do.) That assignment is discrete: it's not something that can be differentiated at all. 
+- Moreover, it's `combinatorially complex`: there are `O(n^k)` ways to assign `n` points to `k` clusters. Indeed, it's completely unnecessary to use gradient descent to find the centroid
+- So in essence, there is a global solution, but it requires you to iterate over all possible clusterings. You could iterate over all solutions and maximize the objective function, but the number of iterations is exponential in the size of your data
+- Even with `thirty points and two clusters`, there are about a `billion such possible assignments`, this is unfeasible to calculate. 
+
 ---
 
 ## Probability Distribution:
@@ -1279,6 +1163,37 @@ In A and B, we can clearly see that B is better, because of right child have hom
 1. Correlated features will be given equal or similar importance, but overall reduced importance compared to the same tree built without correlated counterparts.
 2. Random Forests and decision trees, in general, give preference to features with high cardinality ( `Trees are biased to these type of variables` ). **For reference look at gain-ratio** to handle this
 
+## OOB
+Suppose our training data set is represented by T and suppose data set has M features (or attributes or variables).
+
+T = {(X1,y1), (X2,y2), ... (Xn, yn)}
+
+and
+
+Xi is input vector {xi1, xi2, ... xiM}
+
+yi is the label (or output or class). 
+
+summary of RF:
+
+Random Forests algorithm is a classifier based on primarily two methods -
+
+    Bagging
+    Random subspace method.
+
+Suppose we decide to have S number of trees in our forest then we first create S datasets of "same size as original" created from random resampling of data in T with-replacement (n times for each dataset). This will result in {T1, T2, ... TS} datasets. Each of these is called a bootstrap dataset. Due to "with-replacement" every dataset Ti can have duplicate data records and Ti can be missing several data records from original datasets. This is called Bootstrapping. (en.wikipedia.org/wiki/Bootstrapping_(statistics))
+
+Bagging is the process of taking bootstraps & then aggregating the models learned on each bootstrap.
+
+Now, RF creates S trees and uses m (=sqrt(M) or =floor(lnM+1)) random subfeatures out of M possible features to create any tree. This is called random subspace method.
+
+So for each Ti bootstrap dataset you create a tree Ki. If you want to classify some input data D = {x1, x2, ..., xM} you let it pass through each tree and produce S outputs (one for each tree) which can be denoted by Y = {y1, y2, ..., ys}. Final prediction is a majority vote on this set.
+
+Out-of-bag error:
+
+After creating the classifiers (S trees), for each (Xi,yi) in the original training set i.e. T, select all Tk which does not include (Xi,yi). This subset, pay attention, is a set of boostrap datasets which does not contain a particular record from the original dataset. This set is called out-of-bag examples. There are n such subsets (one for each data record in original dataset T). OOB classifier is the aggregation of votes ONLY over Tk such that it does not contain (xi,yi).
+
+Out-of-bag estimate for the generalization error is the error rate of the out-of-bag classifier on the training set (compare it with known yi's)
 > Note: In statistics, the terms predictor is used instead of features.
 
 ---
@@ -1365,113 +1280,6 @@ stem.stem(word)
 #### What is the difference between LDA and PCA for dimensionality reduction?
 1. Both LDA and PCA are linear transformation techniques: LDA is a supervised whereas PCA is unsupervised – PCA ignores class labels.
 2. PCA helps to find the directions of maximal variance, while LDA attempts to find a feature subspace that maximizes class separability 
-
-
----
-
-## Hypothesis:
-- A premise or claim that we want to test
-- `Null-Hypothesis`: `H0` currently  accepted value for a parameter
-- `Alternative Hypothesis`: `Ha` research hypothesis, The claim to be tested.
-- These are oppositve of each other `mathematical`
-
-
-## Chi-square test:
-Problem
-
-A public opinion poll surveyed a simple random sample of 1000 voters. Respondents were classified by gender (male or female) and by voting preference (Republican, Democrat, or Independent). Results are shown in the contingency table below.
-
-  | Voting Preferences | Row total
-
-    | Rep  | Dem  | Ind
----|---|---|---
-Male | 200  | 150 |  50 | 400
-Female | 250 |  300 |  50 | 600
-Column total | 450  | 450 | 100 | 1000
-
-Is there a gender gap? Do the men's voting preferences differ significantly from the women's preferences? Use a 0.05 level of significance.
-
-Solution
-
-The solution to this problem takes four steps: (1) state the hypotheses, (2) formulate an analysis plan, (3) analyze sample data, and (4) interpret results. We work through those steps below:
-
-    State the hypotheses. The first step is to state the null hypothesis and an alternative hypothesis.
-
-    Ho: Gender and voting preferences are independent.
-
-    Ha: Gender and voting preferences are not independent.
-    Formulate an analysis plan. For this analysis, the significance level is 0.05. Using sample data, we will conduct a chi-square test for independence.
-    Analyze sample data. Applying the chi-square test for independence to sample data, we compute the degrees of freedom, the expected frequency counts, and the chi-square test statistic. Based on the chi-square statistic and the degrees of freedom, we determine the P-value.
-
-    DF = (r - 1) * (c - 1) = (2 - 1) * (3 - 1) = 2
-
-    Er,c = (nr * nc) / n
-    E1,1 = (400 * 450) / 1000 = 180000/1000 = 180
-    E1,2 = (400 * 450) / 1000 = 180000/1000 = 180
-    E1,3 = (400 * 100) / 1000 = 40000/1000 = 40
-    E2,1 = (600 * 450) / 1000 = 270000/1000 = 270
-    E2,2 = (600 * 450) / 1000 = 270000/1000 = 270
-    E2,3 = (600 * 100) / 1000 = 60000/1000 = 60
-
-    Χ2 = Σ [ (Or,c - Er,c)2 / Er,c ]
-    Χ2 = (200 - 180)2/180 + (150 - 180)2/180 + (50 - 40)2/40
-        + (250 - 270)2/270 + (300 - 270)2/270 + (50 - 60)2/60
-    Χ2 = 400/180 + 900/180 + 100/40 + 400/270 + 900/270 + 100/60
-    Χ2 = 2.22 + 5.00 + 2.50 + 1.48 + 3.33 + 1.67 = 16.2
-
-    where DF is the degrees of freedom, r is the number of levels of gender, c is the number of levels of the voting preference, nr is the number of observations from level r of gender, nc is the number of observations from level c of voting preference, n is the number of observations in the sample, Er,c is the expected frequency count when gender is level r and voting preference is level c, and Or,c is the observed frequency count when gender is level r voting preference is level c.
-    The P-value is the probability that a chi-square statistic having 2 degrees of freedom is more extreme than 16.2.
-
-    We use the Chi-Square Distribution Calculator to find P(Χ2 > 16.2) = 0.0003.
-    Interpret results. Since the P-value (0.0003) is less than the significance level (0.05), we cannot accept the null hypothesis. Thus, we conclude that there is a relationship between gender and voting preference.
-
-Note: If you use this approach on an exam, you may also want to mention why this approach is appropriate. Specifically, the approach is appropriate because the sampling method was simple random sampling, the variables under study were categorical, and the expected frequency count was at least 5 in each cell of the contingency table.
-
----
-
-## p-value:
-- In statistics, the p-value is the probability of obtaining the observed results of a test, assuming that the null hypothesis is correct. 
-- **The P-test statistic typically follows a standard normal distribution when large sample sizes are used.**
-- It is the level of marginal significance within a statistical hypothesis test representing the probability of the occurrence of a given event. 
-- The p-value is used as an alternative to rejection points to provide the smallest level of significance at which the null hypothesis would be rejected.
-
-#### Interpret Results
-- Reject the null hypothesis, if `p-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
-- `A P-value measures the strength of evidence in support of a null hypothesis.`
-- P-value is the probability for the null hypothesis to be True.
-
-
-1. A small p-value (typically ≤ 0.05) indicates `strong evidence against the null hypothesis`, so you `reject the null hypothesis`.
-2. A large p-value (> 0.05) indicates `weak evidence against the null hypothesis`, so you `fail to reject the null hypothesis`.
-
-```python
-lm = LinearRegression()
-lm.fit(X,y)
-params = np.append(lm.intercept_,lm.coef_)
-predictions = lm.predict(X)
-
-newX = pd.DataFrame({"Constant":np.ones(len(X))}).join(pd.DataFrame(X))
-MSE = (sum((y-predictions)**2))/(len(newX)-len(newX.columns))
-
-# Note if you don't want to use a DataFrame replace the two lines above with
-# newX = np.append(np.ones((len(X),1)), X, axis=1)
-# MSE = (sum((y-predictions)**2))/(len(newX)-len(newX[0]))
-
-var_b = MSE*(np.linalg.inv(np.dot(newX.T,newX)).diagonal())
-sd_b = np.sqrt(var_b)
-ts_b = params/ sd_b
-
-p_values =[2*(1-stats.t.cdf(np.abs(i),(len(newX)-1))) for i in ts_b]
-
-sd_b = np.round(sd_b,3)
-ts_b = np.round(ts_b,3)
-p_values = np.round(p_values,3)
-params = np.round(params,4)
-
-myDF3 = pd.DataFrame()
-myDF3["Coefficients"],myDF3["Standard Errors"],myDF3["t values"],myDF3["Probabilites"] = [params,sd_b,ts_b,p_values]
-print(myDF3)
-```
 
 ---
 
@@ -1580,14 +1388,157 @@ III   How to find appropriate initialization values
     2. Due to above, it add some noise in dataset, which act as regularization similar to `dropout`
 
 ---
+## Image Augmentation Method:
+- Rotate
+- Resize: The resample filter as `NEAREST`, `BICUBIC`, `ANTIALIAS`, `BILINEAR`.
+- Flip: left, right or even along any random axis
+- Crop: First resize by factor(expansion multipler), then crop a certain part
+- HistogramEqualisation
+- Greyscale: it converts image into having only shades of grey (pixel value intensities) varying from 0 to 255 which represent black and white respectively
+- Invert: 0 -> 1, 1 -> 0
+- BlackAndWhite: Set a threshold, and then make it 0 and 1.
+- Brightness: Randomly change the image brightness.
+- Color: Randomly enhance the color's intensity
+- Contrast: Randomly enhance the contrast
+    - In fogg weather, we can't see black and white color separately. It is all mix. If we visualize that color intensity on histogram, we can see the difference.
+    - Expand the historgram, that is high constrast. It will sharpen the color, which means that black becomes more dark. white becomes more bright, and historgram will have a expanded bell curve with peak is more widen
+    - Decreasing contrast, more sharp peak in historgam. In afternoon, we have bright light and darker edges. To compensate that effect, we use this.
+
+
+---
+## Average Precision@K : 
+- [Ref](https://medium.com/@pds.bangalore/mean-average-precision-abd77d0b9a7e)
+Lets try to understand what is Average Precision:
+
+In this competition we were asked to recommend 7 different products to each customer. Ideally when you recommend, you will not get all the products in the correct sequence, right?
+
+e.g. Let’s say, we recommended 7 products and 1st, 4th, 5th, 6th product was correct. so the result would look like — 1, 0, 0, 1, 1, 1, 0.
+
+In this case,
+
+    The precision at 1 will be: 1/1 = 1
+    The precision at 2 will be: 0
+    The precision at 3 will be: 0
+    The precision at 4 will be: 2/4 = 0.5
+    The precision at 5 will be: 3/5 = 0.6
+    The precision at 6 will be: 4/6 = 0.66
+    The precision at 7 will be: 0
+
+Average Precision will be: 1 + 0 + 0 + 0.5 + 0.6 + 0.66 + 0 /4 = 0.69 — Please note that here we always sum over the correct images, hence we are dividing by 4 and not 7.
+
+Mean average precision is an extension of average precision where we take average of all AP’s to get the MAP.
+
+Please remember that for MAP@k, the order of your recommendation is very important. If we are recommending the correct product later in the sequence, our model performance will be affected, because the precision@k is the percentage of correct items in first k recommendations.
+
+Formula for calculating AP@k is: sum k=1:x of (precision at k * change in recall at k)
+
+Lets take a simple example:
+
+It’s AP@2, So in fact only two first predictions matter.Our prediction is product6 and product15. First recommendation is wrong, so precision@1 is 0. Second is correct, so precision@2 is 0.5. Change in recall is 0 to 0.5, so AP@2 = 0 * 0 + 0.5 * 0.5 = 0.25
+
+---
+
+## CNN:
+- local invariance property: Can capture locallity of feature
+One can show that the convolution operator commutes with respect to translation. If you convolve f with g, it doesn't matter if you translate the convolved output f∗g, or if you translate f or g first, then convolve them.
+
+I think there is some confusion about what is meant by translational invariance. Convolution provides translation equivariance meaning if an object in an image is at area A and through convolution a feature is detected at the output at area B, then the same feature would be detected when the object in the image is translated to A'. The position of the output feature would also be translated to a new area B' based on the filter kernel size. This is called translational equivariance and not translational invariance.
+
+
+#### CNN components:
+Convolutional layer
+The convolutional layer is the core building block of a CNN. The layer's parameters consist of a set of learnable filters (or kernels), which have a small receptive field, but extend through the full depth of the input volume
+
+#### Local connectivity:
+Convolutional networks exploit spatially local correlation by enforcing a sparse local connectivity pattern between neurons of adjacent layers: each neuron is connected to only a small region of the input volume.
+
+The extent of this connectivity is a hyperparameter called the receptive field of the neuron. The connections are local in space (along width and height), but always extend along the entire depth of the input volume. Such an architecture ensures that the learnt filters produce the strongest response to a spatially local input pattern. 
+
+Spatial arrangement
+
+Three hyperparameters control the size of the output volume of the convolutional layer: the depth, stride and zero-padding.
+
+Stride controls how depth columns around the spatial dimensions (width and height) are allocated. When the stride is 1 then we move the filters one pixel at a time. This leads to heavily overlapping receptive fields between the columns, and also to large output volumes. When the stride is 2 then the filters jump 2 pixels at a time as they slide around.Sometimes it is convenient to pad the input with zeros on the border of the input volume.
+Parameter sharing
+
+A parameter sharing scheme is used in convolutional layers to control the number of free parameters. It relies on the assumption that if a patch feature is useful to compute at some spatial position, then it should also be useful to compute at other positions. Denoting a single 2-dimensional slice of depth as a depth slice, the neurons in each depth slice are constrained to use the same weights and bias.
+
+Pooling layer
+Max pooling with a 2x2 filter and stride = 2
+
+Another important concept of CNNs is pooling, which is a form of non-linear down-sampling. There are several non-linear functions to implement pooling among which max pooling is the most common. It partitions the input image into a set of non-overlapping rectangles and, for each such sub-region, outputs the maximum.
+
+Intuitively, the exact location of a feature is less important than its rough location relative to other features. This is the idea behind the use of pooling in convolutional neural networks. The pooling layer serves to progressively reduce the spatial size of the representation, to reduce the number of parameters, memory footprint and amount of computation in the network, and hence to also control overfitting.
+
+
+### How CNN are translation invariant:
+`Convolution + Max pooling ≈ translation invariance`
+1. Convolution: provides equivariance to translation which is actually really simple to explain. Basically if you move the image to the right so does its feature layer produced by the convolution. This is obvious since convolution in a NN is defined as a feature detector at different locations. So if its detecting edges and one edge is moved to the right it won’t detect it until it goes to the right and matches it. Thus, the feature layer will have an activation moved to the right, but they are “really the same representation” (same equivalence class). Thus, in one simple equation f(T(x))=T(f(x))
+
+2. Pooling: provides the real translation invariance but only approximately. Honestly the figure 9.8 of the book explains it really well but in a summary think of it this way. A pooling layer (like max) returns the largest value in its receptive field (input to the pooling function). If the largest value is moved to the right and its still within the receptive field then the pooling layer still outputs that largest value. It became invariant to moving it to the right (translation invariance). Obviously this only applies as long as the image is not translated too much, the reason I assume the authors refer to it as approximately invariant to translation.
+
+So both operations together provide some type of (approximate) invariance to translation, one keeps detecting things even if they are moved (equivariance/convolution) while pooling tries to keep the representation as consistent as possible (approx. translation invariance/pooling). Or at least thats my understanding from the deep learning book. Hope it helps!
+
+---
+
+## What is Backpropagation:
+- backpropagation is an algorithm widely used in the training of feedforward neural networks
+- Backpropagation efficiently computes the gradient of the loss function with respect to the weights of the network for a single input-output example. 
+- This makes it feasible to use gradient methods for training multi-layer networks, updating weights to minimize loss 
+- it commonly uses gradient descent or variants such as stochastic gradient descent. 
+- it uses `chain rule`, iterating backwards one layer at a time from the last layer to avoid redundant calculations of intermediate terms in the chain rule; this is an example of dynamic programming.
+- `Limitation`: Gradient descent with backpropagation is not guaranteed to find the global minimum of the error function, but only a local minimum; also, it has trouble crossing plateaus in the error function landscape. This issue, caused by the non-convexity of error functions in neural networks, was long thought to be a major drawback
+
+---
+## SMOTE:
+Synthetic Minority Oversampling Technique (SMOTE) is a statistical technique for increasing the number of cases in your dataset in a balanced way. The module works by generating new instances from existing minority cases that you supply as input. This implementation of SMOTE does not change the number of majority cases.
+
+The new instances are not just copies of existing minority cases. Instead, the algorithm takes samples of the feature space for each target class and its nearest neighbors. The algorithm then generates new examples that combine features of the target case with features of its neighbors. This approach increases the features available to each class and makes the samples more general.
+
+
+
+    Use cost-sensitive learning: Certain learning algorithms and implementations allow you to assign a cost to each class, essentially describing how bad it is if an example of that class is misclassified. If I recall correctly, this is usually considered the best approach when you have a good idea of these different costs.
+    Rebalance the classes: You can oversample the minority class (which carries a risk of overfitting), undersample the majority class (which is dangerous if you don't have a lot of data), use a mixture of both or perhaps something a bit more advanced like synthetic sampling (attempt to generate new examples of the minority class using something like SMOTE)
+
+Overall, you should also be careful to pick the right evaluation metric. 
+
+---
 
 ## Statistics:
 1. Descriptive Statistics
-
 Descriptive Statistics is the study of understanding patterns that might emerge from data. It is a way to summarize our data and interpret it in a meaningful way. It includes important attributes of the dataset like mean, mode, median and also the deviation or measuring the spread. These attributes help guide us to know the quality of convergence during model evaluation.
-2. Inferential Statistics
 
+2. Inferential Statistics
 Sometimes it is not feasible to consume the entire model. This is where sampling comes in. Sampling is of great importance in inferential statistics and is the basis of breaking down data into samples for training, validation and test for your AI models. Sampling estimation and testing for hypothesis are two main aspects of inferential statistics.
+
+---
+## Central Limit Theorem:
+- It states that the sampling distribution of the sample means approaches a normal distribution as the sample size gets larger — no matter what the shape of the population distribution. 
+- This fact holds especially true for sample sizes over 30. 
+- It tells is that the average of your sample means will be the population mean. 
+- Similarly, if we find the average of all of the standard deviations using our sample, you will find the actual standard deviation for your population. `std_dev = sqrt((x - x_mean)^2) / sqrt(N)`
+- It’s a pretty useful phenomenon that can help accurately predict characteristics of a population.
+
+---
+## A/B Testing:
+There are two group involved, `control group` and `experiment group`.
+    - An `experimental group` is the group that `receives an experimental procedure` or a test sample.
+    - A `control group` is a group `separated` from the rest of the experiment such that the independent variable being tested cannot influence the results.
+
+Steps involved in the testing:[Ref](https://www.kaggle.com/tammyrotem/ab-tests-with-python/notebook)
+1. Experiment Overview:
+    - current condition
+    - description of experiment(what we want to add or change)
+    - experiment hypothesis
+2. Metric Choice:
+    - build metrics for the right evaluation
+    - there can be multiple metrics
+3. Estimate baseline along with std-dev
+4. Sample Size
+5. Calculate Z-score and define significance level(alpha) and power(beta)
+6. Analyze and sanity check
+7. Examine the result
+8. verify the result
 
 ---
 
@@ -1823,8 +1774,579 @@ Kurtosis is all about the tails of the distribution — not the peakedness or fl
 High kurtosis in a data set is an indicator that data has heavy tails or outliers. If there is a high kurtosis, then, we need to investigate why do we have so many outliers. It indicates a lot of things, maybe wrong data entry or other things. Investigate!
 Low kurtosis in a data set is an indicator that data has light tails or lack of outliers. If we get low kurtosis(too good to be true), then also we need to investigate and trim the dataset of unwanted results.
 
+---
+## Credit Assignment Problem:
+There are actually three credit assignment problems that can be identified:
+
+    Temporal credit assignment: given a long sequence of actions, e.g. sequence of moves in chess that lead to a win or loss, identify which action or actions were useful or useless in obtaining the final feedback.
+    Structural credit assignment: find the set of sensory situations in which a given sequence of actions will yield the same outcome.
+    Transfer credit assignment: learn to generalize a given action sequence across tasks.
+
+Problem 1 has received the maximum attention in the RL community. Problem 2 has received the bulk of attention in machine learning, e.g. regression methods. Problem 3 is the transfer learning problem. There’s a large set of research on all three, far more than I can summarize here.
 
 ---
+
+## Check Biasness of fair coin
+The evidence is pretty strong that the coin is biased. Using the normal approximation to the binomial distribution, the mean number of heads is np = 1000 x 0.5 = 500 and the standard deviation is sqrt(npq) = 16 (approx). 560 heads in 1000 tosses is almost 4 standard deviations (3.79) above the mean. The probability of tossing more than 560 heads in 1000 tosses is about .000075. Thus, it's very unlikely that p = 0.5 (= fair coin). Ok, the evidence is more than just pretty strong. It's compelling.
+
+
+These problems depend on confidence interval you are willing to take into account for ascertaining the hypothesis for the given coin to be biased.
+
+Using the concept that a Bernoulli random variable can be approximated as Normal random variable for as large number as sample as 1000,
+
+and applying Central Limit Theorem here,
+
+z=0.56−0.50.5/1000√=3.79
+
+Such a large value of z
+almost guarantees that the hypothesis is true and coin is biased. Refer to the Standard Normal Distribution table here. Go to the last line to check that if z is anything close to 3.9, confidence increases to close to 100.
+
+---
+
+##  Central Limit Theorem(CLT):
+- `Assumption`: 
+    1. `all samples are identical in size`, and regardless of the population distribution shape.
+    2. Sample sizes `>= 30` are considered sufficient for the CLT to hold.
+- It states that the distribution of sample means approximates a normal distribution as the sample size becomes larger.
+- `variances` being approximately equal to the variance of the population, divided by each sample's size.
+- A key aspect of CLT is that the average of the sample means and standard deviations will equal the population mean and standard deviation.
+
+
+## Hypothesis testing
+Hypothesis testing allows a mathematical model to validate or reject a null hypothesis within a certain confidence level. Statistical hypotheses are tested using a four-step process. The first step is for the analyst to state the two hypotheses so that only one can be right. The next step is to formulate an analysis plan, which outlines how the data will be evaluated. The third step is to carry out the plan and physically analyze the sample data. The fourth and final step is to analyze the results and either accept or reject the null hypothesis.
+.
+- A premise or claim that we want to test
+- `Null-Hypothesis`: `H0` currently  accepted value for a parameter
+- `Alternative Hypothesis`: `Ha` research hypothesis, The claim to be tested.
+- These are oppositve of each other `mathematical`
+
+## null hypothesis
+1. A null hypothesis is a type of conjecture used in statistics that proposes that no statistical significance exists in a set of given observations.
+2. It is set up in opposition to an alternative hypothesis and attempts to show that no variation exists between variables, or that a single variable is no different than its mean.
+3. It allows a mathematical model to validate or reject a null hypothesis within a certain confidence level.
+
+## Alpha:
+- `alpha` refers to the `likelihood that the true population parameter lies outside the confidence interval`.
+- `Alpha` is usually expressed as a `proportion`. Thus, if the `confidence level is 95%`, then `alpha would equal 1 - 0.95 or 0.05`.
+
+## p-test[ref](https://www.investopedia.com/terms/p/p-test.asp)
+A P-test calculates a value which enables the researcher to determine the credibility of the accepted claim. The corresponding p-value is compared to a statistically significant level (confidence level), alpha (α), that the researcher has chosen to gauge the randomness of the results. The P-test statistic typically follows a standard normal distribution when large sample sizes are used.
+
+Researchers will usually choose alpha levels of 5% or lower which translates to confidence levels of 95% or greater. In other words, a p-value less than a 5% alpha level means that there is greater than 95% chance that your results are not random, thus enhancing the significance of your results. This is the evidence that would allow the researcher to reject the null hypothesis.
+#
+- A P-test is a statistical method that tests the validity of the null hypothesis which states a commonly accepted claim about a population.
+- The P-test statistic typically follows a standard normal distribution when large sample sizes are used.
+- The smaller the p-value, the stronger the evidence that the null hypothesis should be rejected and that the alternate hypothesis might be more credible.
+
+
+##  Z-test:
+- `z-test`: It tests the `statistical significance of a sample mean to the hypothesized population mean` but requires that the `standard deviation of the population be known`, which is `often not possible`. 
+
+> `z-test` require sample size to be `larger`, whereas `t-test` works for `small` sample size as well
+
+
+## t-test:
+- `t-test`: It is a more realistic type of test in that it requires only the standard deviation of the sample as opposed to the population's standard deviation.
+
+​T-value=n1
+var12​+n2
+var22​
+​
+mean1−mean2​where:mean1 and mean2=Average values of eachof the sample setsvar1 and var2=Variance of each of the sample setsn1 and n2=Number of records in each sample set​
+
+
+## Chi-Square Statistic?
+- A `chi-square(χ2)` statistic is a test that measures how expectations compare to actual observed data (or model results). The data used in calculating a chi-square statistic must be random, raw, mutually exclusive, drawn from independent variables, and drawn from a large enough sample. For example, the results of tossing a coin 100 times meet these criteria.
+
+There are `two` main kinds of chi-square tests: 
+1. `test of independence`, which asks a question of relationship, such as, "Is there a relationship between gender and SAT scores?"
+2. `goodness-of-fit` test, which asks something like "If a coin is tossed 100 times, will it come up heads 50 times and tails 50 times?"
+
+
+Problem: A public opinion poll surveyed a simple random sample of 1000 voters. Respondents were classified by gender (male or female) and by voting preference (Republican, Democrat, or Independent). Results are shown in the contingency table below.
+
+
+ _ | Rep  | Dem | Ind
+---|---|---|---
+Male   | 200  | 150 |  50 | 400
+Female | 250 |  300 |  50 | 600
+Col-sum| 450  | 450 | 100 | 1000
+
+Is there a gender gap? Do the men's voting preferences differ significantly from the women's preferences? Use a 0.05 level of significance.
+
+Solution: The solution to this problem takes four steps: 
+1. state the hypotheses
+2. formulate an analysis plan
+3. analyze sample data
+4.  interpret results. 
+
+1. State the hypotheses. The first step is to state the null hypothesis and an alternative hypothesis.
+    - `Ho`: Gender and voting preferences are independent.
+    - `Ha`: Gender and voting preferences are not independent.
+
+2. Formulate an analysis plan. For this analysis, the significance level is 0.05. Using sample data, we will conduct a chi-square test for independence.
+
+3. Analyze sample data. Applying the chi-square test for independence to sample data, we compute the degrees of freedom, the expected frequency counts, and the chi-square test statistic. Based on the chi-square statistic and the degrees of freedom, we determine the P-value.
+
+- `Chi-squared (χ2) = sum [O(r, c) - E(r, c)]^2 / E(r, c)`, where 
+    `O(r,c)` = observed data for the given row and column​﻿
+    `E(r,c)` = expected data for the given row and column​﻿
+- `DF = (r - 1) * (c - 1) = (2 - 1) * (3 - 1) = 2`
+- `E(r,c) = (nr * nc) / n`
+    - DF is the degrees of freedom, 
+    - r is the number of levels of gender, 
+    - c is the number of levels of the voting preference, 
+    - nr is the number of observations from level r of gender, 
+    - nc is the number of observations from level c of voting preference, 
+    - n is the number of observations in the sample
+```
+    E1,1 = (400 * 450) / 1000 = 180000/1000 = 180
+    E1,2 = (400 * 450) / 1000 = 180000/1000 = 180
+    E1,3 = (400 * 100) / 1000 = 40000/1000 = 40
+    E2,1 = (600 * 450) / 1000 = 270000/1000 = 270
+    E2,2 = (600 * 450) / 1000 = 270000/1000 = 270
+    E2,3 = (600 * 100) / 1000 = 60000/1000 = 60
+
+    Χ2 = (200 - 180)2/180 + (150 - 180)2/180 + (50 - 40)2/40 + 
+    (250 - 270)2/270 + (300 - 270)2/270 + (50 - 60)2/60
+    Χ2 = 16.2
+
+    The P-value is the probability that a chi-square statistic having 2 degrees of freedom is more extreme than 16.2.
+
+    We use the Chi-Square Distribution Calculator to find P(Χ2 > 16.2) = 0.0003.
+    Interpret results. Since the P-value (0.0003) is less than the significance level (0.05), we cannot accept the null hypothesis. Thus, we conclude that there is a relationship between gender and voting preference.
+```
+
+## Degrees of Freedom:
+- It refers to the maximum number of logically independent values, which are values that have the freedom to vary, in the data sample.
+
+
+## p-value:
+- In statistics, the p-value is the probability of obtaining the observed results of a test, assuming that the null hypothesis is correct. 
+- **The P-test statistic typically follows a standard normal distribution when large sample sizes are used.**
+- It is the level of marginal significance within a statistical hypothesis test representing the probability of the occurrence of a given event. 
+- The p-value is used as an alternative to rejection points to provide the smallest level of significance at which the null hypothesis would be rejected.
+
+### confidence interval
+- A confidence interval does not quantify variability
+- A `95% confidence interval is a range of values that you can be 95% certain contains the true mean of the population`. 
+- `This is not the same as a range that contains 95% of the values.`
+
+#### Interpret Results
+- Reject the null hypothesis, if `p-value` is less than significance level(eg. 0.05 that is 95% confidence interval)
+- `A P-value measures the strength of evidence in support of a null hypothesis.`
+- P-value is the probability for the null hypothesis to be True.
+
+
+1. A small p-value (typically ≤ 0.05) indicates `strong evidence against the null hypothesis`, so you `reject the null hypothesis`.
+2. A large p-value (> 0.05) indicates `weak evidence against the null hypothesis`, so you `fail to reject the null hypothesis`.
+
+
+## Goodness of fit :
+- `Goodness-of-fit` tests are statistical tests aiming to determine whether a set of observed values match those expected under the applicable model.
+- There are multiple types of goodness-of-fit tests, but the most common is the `chi-square test`(prefered)) and Kolmogorov-Smirnov test.
+- This test shows `if your sample data represents the data you would expect to find in the actual population with normal distribution or if it is somehow skewed.`
+
+> Goodness-of-fit tests are commonly used to test for the normality of residuals or to determine whether two samples are gathered from identical distributions. 
+
+## one-tailed test:
+- It is a statistical hypothesis test set up to show that the sample mean would be higher or lower than the population mean, but not both.
+- When using a one-tailed test, the analyst is testing for the possibility of the relationship in one direction of interest, and completely disregarding the possibility of a relationship in another direction.
+- Before running a one-tailed test, the analyst must set up a null hypothesis and an alternative hypothesis and establish a probability value (p-value).
+
+Example of a One-Tailed Test
+
+Let's say an analyst wants to prove that a portfolio manager outperformed the S&P 500 index in a given year by 16.91%. He may set up the null (H0) and alternative (Ha) hypotheses as:
+- `H0: μ ≤ 16.91`
+- `Ha: μ > 16.91`
+
+> Note that here mean is either <= or >. So final result it follow one direction, that is what one-tailed test shows.
+
+The null hypothesis is the measurement that the analyst hopes to reject. The alternative hypothesis is the claim made by the analyst that the portfolio manager performed better than the S&P 500. If the outcome of the one-tailed test results in rejecting the null, the alternative hypothesis will be supported. On the other hand, if the outcome of the test fails to reject the null, the analyst may carry out further analysis and investigation into the portfolio manager’s performance
+
+
+```python
+lm = LinearRegression()
+lm.fit(X,y)
+params = np.append(lm.intercept_,lm.coef_)
+predictions = lm.predict(X)
+
+newX = pd.DataFrame({"Constant":np.ones(len(X))}).join(pd.DataFrame(X))
+MSE = (sum((y-predictions)**2))/(len(newX)-len(newX.columns))
+
+# Note if you don't want to use a DataFrame replace the two lines above with
+# newX = np.append(np.ones((len(X),1)), X, axis=1)
+# MSE = (sum((y-predictions)**2))/(len(newX)-len(newX[0]))
+
+var_b = MSE*(np.linalg.inv(np.dot(newX.T,newX)).diagonal())
+sd_b = np.sqrt(var_b)
+ts_b = params/ sd_b
+
+p_values =[2*(1-stats.t.cdf(np.abs(i),(len(newX)-1))) for i in ts_b]
+
+sd_b = np.round(sd_b,3)
+ts_b = np.round(ts_b,3)
+p_values = np.round(p_values,3)
+params = np.round(params,4)
+
+myDF3 = pd.DataFrame()
+myDF3["Coefficients"],myDF3["Standard Errors"],myDF3["t values"],myDF3["Probabilites"] = [params,sd_b,ts_b,p_values]
+print(myDF3)
+```
+
+
+## Alpha risk (Type-I error):
+- Alpha risk refers to the risk inherent in rejecting the null hypothesis when it is actually true.
+- This type of risk can also be thought of the danger of assuming a difference exists when there is actually no difference
+
+## Type-II Error:
+- A type II error is a statistical term referring to the non-rejection of a false null hypothesis. It is used within the context of hypothesis testing.
+- A type II error is essentially a false positive.
+- A type II error can be reduced by making more stringent criteria for rejecting a null hypothesis.
+- `Analysts need to weigh the likelihood and impact of type II errors with type I errors.`
+
+### Differences Between Type I and Type II Errors
+- The difference between a type II error and a type I error is that a type I error rejects the null hypothesis when it is true (a false negative). The probability of committing a type I error is equal to the level of significance that was set for the hypothesis test. Therefore, if the level of significance is 0.05, there is a 5% chance a type I error may occur.
+- The probability of committing a type II error is equal to one minus the power of the test, also known as beta. The power of the test could be increased by increasing the sample size, which decreases the risk of committing a type II error.
+
+
+## Rand index:
+- `R = (a + b) / nc2`
+    - `a`: number of times a pair of elements belongs to a same cluster across two different clustering results
+    - `b`: number of times a pair of elements are in different clusters across two different clustering results.
+
+
+Ignoring the numerator for now, notice that the denominator is a binomial coefficient. {n}\choose{2} is the number of unordered pairs in a set of n elements. For example, if you have set of 4 elements {a, b, c, d}, there are 6 unordered pairs: {a, b}, {a, c}, {a, d}, {b, c}, {b, d}, and {c, d}. 
+
+For exp:
+Say we have a set of six elements: {a, b, c, d, e, f}. Clustering method 1 (CM1) forms three clusters; the first two items are in group 1, the third and fourth are in group 2, and the fifth and sixth are in group 3: {1, 1, 2, 2, 3, 3}. Clustering method 2 (CM2) forms two clusters; the first three items are in group 1 and the last three items are in group 2: {1, 1, 1, 2, 2, 2}. What’s the Rand index of these two clustering results?
+
+To manually calculate the Rand index, we need to go through every unordered pair to work out a and b ; let’s work out a first. There are 15 unordered pairs in a set of six elements: {a, b}, {a, c}, {a, d}, {a, e}, {a, f}, {b, c}, {b, d}, {b, e}, {b, f}, {c, d}, {c, e}, {c, f}, {d, e}, {d, f}, and {e, f}. a is every time a pair of elements is grouped together by the two clustering methods. {a, b} and {e, f} are clustered together by CM1 and CM2, so a = 2. b is every time a pair of elements is not grouped together by the two clustering methods. {a, d}, {a, e}, {a, f}, {b, d}, {b, e}, {b, f}, {c, e}, and {c, f} are not clustered together by CM1 and CM2, so b = 8. a and b are the times that both clustering methods agree. Therefore, the Rand index is:
+
+R = \frac{2 + 8}{ {{6}\choose{2}} }
+
+## R-squared:
+- `R^2 = 1 - MSE/variance`
+- `MSE = 1/N sum_n (yn - yhat_n)^2`
+- `variance = 1/N sum_n (yn - ymean)^2`
+
+## adjusted r2:
+- ` = 1 - [(1 - R^2)*(n-1)/(n-k-1)]`
+- `k: predictors`, `n: sample`
+
+## why prefere `adjusted R-squared` over `R-squared`
+- One major difference between R-squared and the adjusted R-squared is that R-squared supposes that every independent variable in the model explains the variation in the dependent variable.
+
+- The adjusted R-squared compares the descriptive power of regression models — two or more variables—that include a diverse number of independent variables—known as a predictor. 
+- Every predictor or independent variable, added to a model increases the R-squared value and never decreases it. So, a model that includes several predictors will return higher R2 values and may seem to be a better fit. However, this result is due to it including more terms.
+
+The adjusted R-squared compensates for the addition of variables and only increases if the new predictor enhances the model above what would be obtained by probability. Conversely, it will decrease when a predictor improves the model less than what is predicted by chance.
+
+## AIC/BIC/Mallow cp:
+Additionally, there are four other important metrics - AIC, AICc, BIC and Mallows Cp - that are commonly used for model evaluation and selection. These are an unbiased estimate of the model prediction error MSE. The lower these metrics, he better the model.
+
+1. AIC stands for (Akaike’s Information Criteria): 
+- Akaike’s information criterion (AIC) compares the quality of a set of statistical models to each other
+- The basic idea of AIC is to penalize the inclusion of additional variables to a model. It adds a penalty that increases the error when including additional terms. The lower the AIC, the better the model.
+    - `AIC = 2k - log(p)`, `p: maximum likelihood`, `k: no of estimated parameter`
+
+Akaike’s Information Criterion is usually calculated with software. The basic formula is defined as:
+AIC = -2(log-likelihood) + 2K
+Where:
+
+    K is the number of model parameters (the number of variables in the model plus the intercept).
+    Log-likelihood is a measure of model fit. The higher the number, the better the fit. This is usually obtained from statistical output.
+
+For small sample sizes (n/K < ≈ 40), use the second-order AIC:
+AICc = -2(log-likelihood) + 2K + (2K(K+1)/(n-K-1))
+Where:
+
+    n = sample size,
+    K= number of model parameters,
+    Log-likelihood is a measure of model fit.
+
+
+
+Given a set of candidate models for the data, the preferred model is the one with the minimum AIC value. Thus, AIC rewards goodness of fit (as assessed by th
+2. AICc is a version of AIC corrected for small sample sizes.
+3. BIC (or Bayesian information criteria) is a variant of AIC with a stronger penalty for including additional variables to the model.
+
+The Bayesian Information Criterion (BIC) is defined as
+
+    k log(n)- 2log(L(θ̂)).
+
+Here n is the sample size; the number of observations or number of data points you are working with. k is the number of parameters which your model estimates, and θ is the set of all parameters.
+
+L(θ̂) represents the likelihood of the model tested, given your data, when evaluated at maximum likelihood values of θ. You could call this the likelihood of the model given everything aligned to their most favorable.
+
+
+
+4. Mallows Cp: A variant of AIC developed by Colin Mallows.
+
+
+
+## BLEU (Bilingual Evaluation Understudy)
+It is mostly used to measure the quality of machine translation with respect to the human translation. It uses a modified form of precision metric.
+
+Steps to compute BLEU score:
+1. Convert the sentence into unigrams, bigrams, trigrams, and 4-grams
+2. Compute precision for n-grams of size 1 to 4
+3. Take the exponential of the weighted average of all those precision values
+4. Multiply it with brevity penalty (will explain later)
+
+- `BLEU = BP * exp(sum_i w_i log(precision_i)`)
+- `BP: brevity`, `w: weight`
+
+## Focal loss:
+2. Focal Loss
+2.1. Cross Entropy (CE) Loss
+    - `- log(pt) for y=1, and -log(1-pt) for y=0`
+
+    The above equation is the CE loss for binary classification. y ∈{±1} which is the ground-truth class and p∈[0,1] which is the model’s estimated probability. It is straightforward to extend it to multi-class case. For notation convenience, pt is defined and CE is rewritten as below:
+
+    When summed over a large number of easy examples, these small loss values can overwhelm the rare class. Below is the example:
+
+Example
+
+    Let treat the above figure as an example. If we have 100000 easy examples (0.1 each) and 100 hard examples (2.3 each). When we need to sum over to estimate the CE loss.
+    The loss from easy examples = 100000×0.1 = 10000
+    The loss from hard examples = 100×2.3 = 230
+    10000 / 230 = 43. It is about 40× bigger loss from easy examples.
+    Thus, CE loss is not a good choice when there is extreme class imbalance.
+
+2.2. α-Balanced CE Loss
+    - `- α log(pt)`
+
+    To address the class imbalance, one method is to add a weighting factor α for class 1 and 1 - α for class -1.
+    α may be set by inverse class frequency or treated as a hyperparameter to set by cross validation.
+    As seen at the two-stage detectors, α is implicitly implemented by selecting the foreground-to-background ratio of 1:3.
+
+2.3. Focal Loss (FL):
+    - `- (1 - pt)^γ log(pt)`
+
+    The loss function is reshaped to down-weight easy examples and thus focus training on hard negatives. A modulating factor (1-pt)^ γ is added to the cross entropy loss where γ is tested from [0,5] in the experiment.
+    There are two properties of the FL:
+
+    When an example is misclassified and pt is small, the modulating factor is near 1 and the loss is unaffected. As pt →1, the factor goes to 0 and the loss for well-classified examples is down-weighted.
+    The focusing parameter γ smoothly adjusts the rate at which easy examples are down-weighted. When γ = 0, FL is equivalent to CE. When γ is increased, the effect of the modulating factor is likewise increased. (γ=2 works best in experiment.)
+
+    For instance, with γ = 2, an example classified with pt = 0.9 would have 100 lower loss compared with CE and with pt = 0.968 it would have 1000 lower loss. This in turn increases the importance of correcting misclassified examples.
+    The loss is scaled down by at most 4× for pt ≤ 0.5 and γ = 2.
+
+2.4. α-Balanced Variant of FL
+    - `- α (1 - pt)^γ log(pt)`
+
+    The above form is used in experiment in practice where α is added into the equation, which yields slightly improved accuracy over the one without α. And using sigmoid activation function for computing p resulting in greater numerical stability.
+    γ: Focus more on hard examples.
+    α: Offset class imbalance of number of examples.
+
+
+
+
+---
+## How to handle outlier:
+### How to detect outlier first:
+- `Box-Cox graph`:
+    1. `IQR = q3 - q1`
+    2. Upper bound = q3 + 1.5*IQR
+    3. Lower bound = q1 - 1.5*IQR
+- `z-score`:
+    - `1 sigma`: covers `68%`
+    - `2 sigma`: covers `95%`
+    - `3 sigma`: covers `99%`
+- `cookie's distance`:
+    - it removes the observation one by one and measure the change in the metric/score
+    - expensive
+
+## Handling outliers:
+- `Winsorizing`: replace the outlier of >= 95% and <= 5% with these bounds
+- `Log-tranformation`: transfrom to log-space, which may transform those skewed distribution to normal distribution
+- `Binning`: tranform the continuous variable to discrete use bin based method
+- `Model-based` Approach: use loss function such as `mean absolute error`, which is less effective than `RMSE`
+- `truncated loss function`
+- use robust model such as `tree based model`
+
+## 2. Approach to handling Imbalanced Datasets
+1. Use the right evaluation metrics
+
+ 
+Applying inappropriate evaluation metrics for model generated using imbalanced data can be dangerous. Imagine our training data is the one illustrated in graph above. If accuracy is used to measure the goodness of a model, a model which classifies all testing samples into “0” will have an excellent accuracy (99.8%), but obviously, this model won’t provide any valuable information for us.
+
+In this case, other alternative evaluation metrics can be applied such as:
+
+    Precision/Specificity: how many selected instances are relevant.
+    Recall/Sensitivity: how many relevant instances are selected.
+    F1 score: harmonic mean of precision and recall.
+    MCC: correlation coefficient between the observed and predicted binary classifications.
+    AUC: relation between true-positive rate and false positive rate. 
+
+
+- cost based model
+    - adjust the weight for each class, which can used as reciprocal of number of samples in that class.
+
+6. Cluster the abundant class
+An elegant approach was proposed by Sergey on Quora [2]. Instead of relying on random samples to cover the variety of the training samples, he suggests clustering the abundant class in r groups, with r being the number of cases in r. For each group, only the medoid (centre of cluster) is kept. The model is then trained with the rare class and the medoids only. 
+
+2.1 Data Level approach: Resampling Techniques
+2.1.1  Random Under-Sampling
+
+    Advantages
+        It can help improve run time and storage problems by reducing the number of training data samples when the training data set is huge.
+
+    Disadvantages
+        It can discard potentially useful information which could be important for building rule classifiers.
+        The sample chosen by random under sampling may be a biased sample. And it will not be an accurate representative of the population. Thereby, resulting in inaccurate results with the actual test data set.
+
+ 
+2.1.2  Random Over-Sampling
+
+    Advantages
+        Unlike under sampling this method leads to no information loss.
+        Outperforms under sampling
+
+    Disadvantages
+        It increases the likelihood of overfitting since it replicates the minority class events.
+
+ 
+2.1.3  Cluster-Based Over Sampling
+In this case, the K-means clustering algorithm is independently applied to minority and majority class instances. This is to identify clusters in the dataset. Subsequently, each cluster is oversampled such that all clusters of the same class have an equal number of instances and all classes have the same size.  
+
+    Advantages
+        This clustering technique helps overcome the challenge between class imbalance. Where the number of examples representing positive class differs from the number of examples representing a negative class.
+        Also, overcome challenges within class imbalance, where a class is composed of different sub clusters. And each sub cluster does not contain the same number of examples.
+
+    Disadvantages
+        The main drawback of this algorithm, like most oversampling techniques is the possibility of over-fitting the training data.
+
+2.1.4  Informed Over Sampling: Synthetic Minority Over-sampling Technique
+This technique is followed to avoid overfitting which occurs when exact replicas of minority instances are added to the main dataset. A subset of data is taken from the minority class as an example and then new synthetic similar instances are created. These synthetic instances are then added to the original dataset. The new dataset is used as a sample to train the classification models.
+
+    Advantages
+        Mitigates the problem of overfitting caused by random oversampling as synthetic examples are generated rather than replication of instances
+        No loss of useful information
+
+    Disadvantages
+        While generating synthetic examples SMOTE does not take into consideration neighboring examples from other classes. This can result in increase in overlapping of classes and can introduce additional noise
+        SMOTE is not very effective for high dimensional data
+
+2.1.5  Modified synthetic minority oversampling technique (MSMOTE)
+This algorithm classifies the samples of minority classes into 3 distinct groups – Security/Safe samples, Border samples, and latent nose samples. This is done by calculating the distances among samples of the minority class and samples of the training data.
+
+
+While the basic flow of MSOMTE is the same as that of SMOTE (discussed in the previous section).  In MSMOTE the strategy of selecting nearest neighbors is different from SMOTE. The algorithm randomly selects a data point from the k nearest neighbors for the security sample, selects the nearest neighbor from the border samples and does nothing for latent noise.
+
+
+2.2 Algorithmic Ensemble Techniques
+2.2.1. Bagging Based
+
+    Advantages
+        Improves stability & accuracy of machine learning algorithms
+        Reduces variance
+        Overcomes overfitting
+        Improved misclassification rate of the bagged classifier
+        In noisy data environments bagging outperforms boosting
+
+ 
+
+    Disadvantages
+        Bagging works only if the base classifiers are not bad to begin with. Bagging bad classifiers can further degrade performance
+
+ 
+2.2.2. Boosting-Based
+2.2.2.1. Adaptive Boosting- Ada Boost
+
+    Advantages
+        Very Simple to implement
+        Good generalization- suited for any kind of classification problem ü Not prone to overfitting
+
+ 
+
+    Disadvantages
+        Sensitive to noisy data and outliers
+
+ 
+2.2.2.2  Gradient Tree Boosting
+
+    Disadvantages
+        Gradient Boosted trees are harder to fit than random forests
+        Gradient Boosting Algorithms generally have 3 parameters which can be fine-tuned, Shrinkage parameter, depth of the tree, the number of trees. Proper training of each of these parameters is needed for a good fit. If parameters are not tuned correctly it may result in over-fitting.
+
+ 
+
+2.2.2.3 XG Boost
+
+XGBoost (Extreme Gradient Boosting) is an advanced and more efficient implementation of Gradient Boosting Algorithm discussed in the previous section.
+
+Advantages over Other Boosting Techniques
+
+    It is 10 times faster than the normal Gradient Boosting as it implements parallel processing. It is highly flexible as users can define custom optimization objectives and evaluation criteria, has an inbuilt mechanism to handle missing values.
+    Unlike gradient boosting which stops splitting a node as soon as it encounters a negative loss, XG Boost splits up to the maximum depth specified and prunes the tree backward and removes splits beyond which there is an only negative loss.
+
+---
+## process of designing a model:
+1. problem formulation
+2. data collection
+3. evaluation metrics (It is the most imp step in designing a model)
+4. feature preprocessing/engineering
+5. model building
+6. experimentation
+
+---
+
+## Time series feature:
+- `date-time feature`
+- `lag feature`
+- `window-based feature`
+
+## Time series model:
+1. Autoregression (AR)
+    - The autoregression (AR) method models the next step in the sequence as a linear function of the `observations` at prior time steps.
+
+2. Moving Average (MA)
+    - The moving average (MA) method models the next step in the sequence as a linear function of the `residual errors` from a mean process at prior time steps.
+
+3. Autoregressive Moving Average (ARMA)
+    - The Autoregressive Moving Average (ARMA) method models the next step in the sequence as a linear function of the `observations` and `resiudal errors` at prior time steps.
+    - It combines both Autoregression (AR) and Moving Average (MA) models.
+
+4. Autoregressive Integrated Moving Average (ARIMA)
+    - ARIMA method models the next step in the sequence as a linear function of the `differenced observations` and `residual errors` at prior time steps.
+    - It combines both Autoregression (AR) and Moving Average (MA) models as well as a differencing pre-processing step of the sequence to make the sequence stationary, called integration (I).
+
+5. Seasonal Autoregressive Integrated Moving-Average (SARIMA)
+    - SARIMA method models the next step in the sequence as a linear function of the `differenced observations`, `errors`, `differenced seasonal observations`, and `seasonal errors` at prior time steps.
+    - It combines the ARIMA model with the ability to perform the same autoregression, differencing, and moving average modeling at the seasonal level.
+
+6. Vector Autoregression (VAR):
+    - The Vector Autoregression (VAR) method models the next step in each time series using an AR model. It is the generalization of `AR to multiple parallel time series`, e.g. multivariate time series.
+
+
+### ARIMA-family Crash-Course: [ref](https://medium.com/open-machine-learning-course/open-machine-learning-course-topic-9-time-series-analysis-in-python-a270cb05e0b3)
+
+A few words about the model. Letter by letter we’ll build the full name — SARIMA(p,d,q)(P,D,Q,s), Seasonal Autoregression Moving Average model:
+
+    AR(p) — autoregression model, i.e., regression of the time series onto itself. Basic assumption — current series values depend on its previous values with some lag (or several lags). The maximum lag in the model is referred to as p. To determine the initial p you need to have a look at PACF plot — find the biggest significant lag, after which most other lags are becoming not significant.
+    MA(q) — moving average model. Without going into detail it models the error of the time series, again the assumption is — current error depends on the previous with some lag, which is referred to as q. Initial value can be found on ACF plot with the same logic.
+
+Let’s have a small break and combine the first 4 letters:
+
+AR(p) + MA(q) = ARMA(p,q)
+
+What we have here is the Autoregressive–moving-average model! If the series is stationary, it can be approximated with those 4 letters. Shall we continue?
+
+    I(d)— order of integration. It is simply the number of nonseasonal differences needed for making the series stationary. In our case it’s just 1, because we used first differences.
+
+Adding this letter to four previous gives us ARIMA model which knows how to handle non-stationary data with the help of nonseasonal differences. Awesome, last letter left!
+
+    S(s) — this letter is responsible for seasonality and equals the season period length of the series
+
+After attaching the last letter we find out that instead of one additional parameter we get three in a row — (P,D,Q)
+
+    P — order of autoregression for seasonal component of the model, again can be derived from PACF, but this time you need to look at the number of significant lags, which are the multiples of the season period length, for example, if the period equals 24 and looking at PACF we see 24-th and 48-th lags are significant, that means initial P should be 2.
+    Q — same logic, but for the moving average model of the seasonal component, use ACF plot
+    D — order of seasonal integration. Can be equal to 1 or 0, depending on whether seasonal differences were applied or not
+---
+
 ## References:
 1. Hadamard : element wise multiplication
 2. Image Processing Algo: https://www.dfstudios.co.uk/articles/programming/image-programming-algorithms/image-processing-algorithms-part-3-greyscale-conversion/
@@ -1834,3 +2356,6 @@ Low kurtosis in a data set is an indicator that data has light tails or lack of 
   - In optimization problem, positve definiteness `guarantedd for existance for optima`
   - It is a class of symetric matrix, which has huge application in algebra. For example to find the inverse, it is O(n^3) and even impossible to compute for very high dimensional space because of memory constarint. `But using symetrical property, we can decoompose the matrix (using Cholesky decomposition) as A = L.L', where L is lower trainagular matrix`
 6. [amazon interview question](https://medium.com/acing-ai/amazon-ai-interview-questions-acing-the-ai-interview-3ed4e671920f)
+7. [Design website like this](http://www.mytechinterviews.com/)
+8. [data scientist prepration](https://elu.nl/how-to-land-a-data-scientist-job-at-your-dream-company%E2%80%8A-%E2%80%8Amy-journey-to-airbnb/)
+9. [Good-resource-of-machine-learning](https://towardsdatascience.com/ten-elements-of-machine-learning-interviews-ba79db437ad1)
