@@ -1,34 +1,120 @@
 
-W2V_CONFIG = {
-             "cols": ["branch_id", "manufacturer_id",
-                      "supplier_id",
-                      "Current_pincode_ID", "State_ID"],
-             "vector_size": 32,
-             "window_size":6,
-             "epochs": 2,
-             "min_count": 1,
-             "sample": 1e-1
-             }
+# Complete example ofn using entity embedding
+from gensim.models import Word2Vec
+from itertools import chain
+import pandas as pd
+import numpy as np
 
+
+train_test = pd.read_csv('dataset/loan_prediction_data.csv')
+
+W2V_CONFIG = {
+    "cols": ["branch_id", "State_ID", "supplier_id", 
+            "Current_pincode_ID", "manufacturer_id"],
+    "vector_size": 32,
+    "window_size":6,
+    "epochs": 2,
+    "min_count": 1,
+    "sample": 1e-1
+}
+
+train_test = train_test[W2V_CONFIG['cols']]
+cols = train_test.columns
+new_df = pd.DataFrame()
+for col in cols:
+    new_df[col] = train_test[col].apply(lambda x: col[:3]+'_'+str(x))
+    
+new_df['sentence'] = new_df.apply(lambda x: " ".join(x), axis=1)
 all_sentences = list(new_df['sentence'].str.split(" ").values)
 print("sentence length: ", len(all_sentences))
 
-w2v_model = Word2Vec(min_count=W2V_CONFIG["min_count"],
-                 window=W2V_CONFIG["window_size"],
-                 size=W2V_CONFIG["vector_size"],
-                 sample=W2V_CONFIG["sample"],
-                 workers=4)
-w2v_model.build_vocab(all_sentences, progress_per=10000)
 
+w2v_model = Word2Vec(
+    min_count = W2V_CONFIG["min_count"],
+    window    = W2V_CONFIG["window_size"],
+    size      = W2V_CONFIG["vector_size"],
+    sample    = W2V_CONFIG["sample"],
+    workers   = 4
+)
+
+w2v_model.build_vocab(all_sentences, progress_per=10000)
 print("Vocabulary corpus: ", len(w2v_model.wv.vocab))
-w2v_model.train(all_sentences, total_examples=w2v_model.corpus_count, 
-                epochs=100, report_delay=1)
+
+w2v_model.train(
+    all_sentences, 
+    total_examples = w2v_model.corpus_count, 
+    epochs = 100, 
+    report_delay = 1
+)
 
 print("one example: ")
 w2v_model.wv.get_vector('bra_67'), w2v_model.wv.get_vector('bra_67').shape
 
 
 
+
+
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.layers import Dense, Input, LSTM, Embedding, Dropout, Activation, Conv1D
+from keras.layers import Bidirectional, GlobalMaxPool1D
+
+
+## Tokenize the sentences
+max_features = 15000
+tokenizer = Tokenizer(
+    num_words=max_features, 
+    filters="", 
+    lower=False
+)
+tokenizer.fit_on_texts(list(new_df.sentence.values))
+train_test_X = tokenizer.texts_to_sequences(new_df.sentence)
+print("keras tokenizers:  ", len(tokenizer.word_index))
+print("Vocabulary corpus: ", len(w2v_model.wv.vocab))
+
+"""
+train_test_X[:10]
+i = 0
+for word, idx in tokenizer.word_index.items():
+    print(word, idx)
+    i += 1
+    if i == 10:
+        break
+"""
+
+embedding_matrix = np.zeros((len(tokenizer.word_index)+1, 32))
+for word, idx in tokenizer.word_index.items():
+    embedding_matrix[idx] = w2v_model.wv.get_vector(word)
+
+
+max_features = min(len(tokenizer.word_counts), max_features)
+print("vocabulary size: ", max_features)
+
+
+
+from keras import Model
+embed_size = 32
+inp = Input(shape=(len(train_test_X[0]),))
+x = Embedding(
+    max_features + 1, 
+    embed_size, 
+    weights=[embedding_matrix], 
+    trainable=False
+)(inp)
+
+x = GlobalMaxPool1D()(x)
+model = Model(inp, x)
+model.summary()
+
+
+model.fit(np.array(train_test_X[:5]))
+pred = model.predict(
+    np.array(train_test_X[10:11])
+)
+
+
+
+"""
 
     Type:   Word2VecTrainables
 
@@ -69,7 +155,7 @@ Parameters:
 
 alpha: 0.025 with lin. decay until 0.0001 (min_alpha)
 
-
+"""
 
 
 
