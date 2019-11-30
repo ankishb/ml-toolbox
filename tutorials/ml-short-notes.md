@@ -997,6 +997,16 @@ Machine learning algorithms that have a high variance are strongly influenced by
 - Even with `thirty points and two clusters`, there are about a `billion such possible assignments`, this is unfeasible to calculate. 
 
 ---
+## LDA:
+Two criteria are used by LDA to create a new axis:
+
+    Maximize the distance between means of the two classes.
+    Minimize the variation within each class.
+
+
+
+
+---
 
 ## Probability Distribution:
 
@@ -1004,7 +1014,7 @@ Machine learning algorithms that have a high variance are strongly influenced by
 1. Bernoulli
     - distribution over {0,1} e.g coin toss problem
     - can applied only for binary event, `yes or no`, `success or failure`
-    - `p^x (1-p)^(1-x)`
+    - `p^x (1-p)^(1-x)` ---> `theta^xn (1-theta)^(1-xn)`
     - `mean: p`
     - `var: p (1 - p)`
 2. Binomial
@@ -1033,7 +1043,11 @@ Machine learning algorithms that have a high variance are strongly influenced by
         1. There are two possible outcomes for each trial (success or failure).
         2. The trials are independent.
         3. The probability of success is the same for each trial.
-
+7. Beta distribution:
+    - The beta distribution is a suitable model for the random behavior of percentages and proportions. 
+    - The beta distribution has been applied to model the behavior of random variables limited to intervals of finite length in a wide variety of disciplines. `[0-1]`
+    - beta distribution is the conjugate prior probability distribution for the Bernoulli, binomial, negative binomial and geometric distributions.
+    - `f(x) = tau(alpha + beta)/(tau(alpha) tau(beta) theta^(alpha-1) (1 - theta)^(beta-1)`
 
 ### Continuous distribution
   1. Uniform
@@ -1204,7 +1218,7 @@ Out-of-bag estimate for the generalization error is the error rate of the out-of
 ## Boosting:
 - build tree sequentially on residuals
 1. start with equal weight `Dt(n) = 1/n` for each sample.
-2. find error `et = sum_n Dt(n) |yt == yhatt|`
+2. find error `et = sum_n Dt(n) |1[yt == yhatt]|`
 3. Compute importance `alphat = 1/2 log((1 - et)/et)`
 4. update weight `D{t+1}(n) = Dt(n) exp(beta)`, where beta = 
     `-alpha for correct prediction` 
@@ -1239,19 +1253,19 @@ Computes the (query, document) similarity. It has two parts.
 ### Effect of idf on ranking
 - idf has no effect on ranking one term queries like iPhone
 – idf affects the ranking of documents for queries **with atleast two terms** 
-– For the query `capricious person`, idf weighting makes occurrences of `capricious` count for much more in the final document ranking than occurrences of `person`. 
+– For the query `capricious person`, idf weighting makes occurrences of `capricious` count for much more in the final document ranking than occurrences of `person`.
 
 ## Text Normalization:
 ### Stemming:
 - "Stemming is the process of `reducing inflection in words to their root forms` such as mapping a group of words to the same stem even if the stem itself is not a valid word in the Language."
 - stemming is just `stemming of prefix and suffix` such as `(-ed, -ize, -s, -de, -mis)`
-  1. `Porter-stem`: fast, set of 5 rule
-  2. `Lanchester-stemming`: slow, set of 120 rule, iterative approach, check character by chracter
-  3. `SnowballStemmer`: Non-english work stemmer
+    1. `Porter-stem`: fast, set of 5 rule
+    2. `Lanchester-stemming`: slow, set of 120 rule, iterative approach, check character by chracter
+    3. `SnowballStemmer`: Non-english work stemmer
 
 ### Lemmantization:
-- Lemmatization, unlike Stemming, reduces the inflected words properly ensuring that the root word belongs to the language. In Lemmatization root word is called Lemma. A lemma (plural lemmas or lemmata) is the canonical form, dictionary form, or citation form of a set of words.
-  1. WordNet-lemmantization
+- Lemmatization, unlike Stemming, `reduces the inflected words properly ensuring that the root word belongs to the language`. In Lemmatization root word is called Lemma. A lemma (plural lemmas or lemmata) is the canonical form, dictionary form, or citation form of a set of words.
+    1. WordNet-lemmantization
 
 
 ```python
@@ -1334,7 +1348,7 @@ III   How to find appropriate initialization values
     1. `E[a[l−1]] = E[a[l]]`
     2. `Var(a[l−1]) = Var(a[l])`
 - Final result:
-    1. `w ~ N(0, 1/n_prev` where `n_prev` is the number of neuron in previous layer
+    1. `w ~ N(0, 1/n_prev)` where `n_prev` is the number of neuron in previous layer
     2. `b = 0`
 
 ### Xavier Init:
@@ -1342,8 +1356,10 @@ III   How to find appropriate initialization values
 - Using `forward pass` relation, we come up at
     1. `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
     2.  So `Var(W[l]) = 1 / n[l-1]`, to ensure the above property to avoid exploding and vanishing graient problem
+
 - Using `backward pass` relation, we come up at, `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
     1. `Var(a[l-1]) = n[l] * Var(W[l]) * Var(a[l])`
+
 - In practice, we consider `harmonic mean of both variance`, which is `2 / (n[l] + n[l-1])`
 
 - In general, `Var(a[L]) = [prod{l=1:L} ​n[l−1] Var(W[l])] Var(x)​`
@@ -1750,26 +1766,21 @@ Probabilistic models see features and target variables as random variables. The 
 
 ## Skewness vs Kurtusis
 ### Skewness
-
-It is the degree of distortion from the symmetrical bell curve or the normal distribution. It measures the lack of symmetry in data distribution.
-It differentiates extreme values in one versus the other tail. A symmetrical distribution will have a skewness of 0.
+- It is the degree of distortion from the symmetrical bell curve or the normal distribution. `It measures the lack of symmetry in data distribution`.
 
 There are two types of Skewness: Positive and Negative
+1. `Positive Skewness` means when the tail on the right side of the distribution is longer or fatter. The mean and median will be greater than the mode.
 
-Positive Skewness means when the tail on the right side of the distribution is longer or fatter. The mean and median will be greater than the mode.
+2. `Negative Skewness` is when the tail of the left side of the distribution is longer or fatter than the tail on the right side. The mean and median will be less than the mode.
 
-Negative Skewness is when the tail of the left side of the distribution is longer or fatter than the tail on the right side. The mean and median will be less than the mode.
-So, when is the skewness too much?
-
+#### When is the skewness too much?
 The rule of thumb seems to be:
-
-    If the skewness is between -0.5 and 0.5, the data are fairly symmetrical.
-    If the skewness is between -1 and -0.5(negatively skewed) or between 0.5 and 1(positively skewed), the data are moderately skewed.
-    If the skewness is less than -1(negatively skewed) or greater than 1(positively skewed), the data are highly skewed.
+1. If the skewness is between -0.5 and 0.5, the data are fairly symmetrical.
+2. If the skewness is between -1 and -0.5(negatively skewed) or between 0.5 and 1(positively skewed), the data are moderately skewed.
+3. If the skewness is `<-1`(negatively skewed) or `>1`(positively skewed), the data are highly skewed.
 
 ### Kurtosis
-
-Kurtosis is all about the tails of the distribution — not the peakedness or flatness. It is used to describe the extreme values in one versus the other tail. It is actually the measure of outliers present in the distribution.
+- `Kurtosis is all about the tails of the distribution — not the peakedness or flatness`. It is used to describe the extreme values in one versus the other tail. `It is actually the measure of outliers present in the distribution`.
 
 High kurtosis in a data set is an indicator that data has heavy tails or outliers. If there is a high kurtosis, then, we need to investigate why do we have so many outliers. It indicates a lot of things, maybe wrong data entry or other things. Investigate!
 Low kurtosis in a data set is an indicator that data has light tails or lack of outliers. If we get low kurtosis(too good to be true), then also we need to investigate and trim the dataset of unwanted results.
@@ -1777,12 +1788,17 @@ Low kurtosis in a data set is an indicator that data has light tails or lack of 
 ---
 ## Credit Assignment Problem:
 There are actually three credit assignment problems that can be identified:
+1. Temporal credit assignment: 
+    - given a long sequence of actions, e.g. sequence of moves in chess that lead to a win or loss, identify which action or actions were useful or useless in obtaining the final feedback.
+    - it has received the maximum attention in the RL community.
 
-    Temporal credit assignment: given a long sequence of actions, e.g. sequence of moves in chess that lead to a win or loss, identify which action or actions were useful or useless in obtaining the final feedback.
-    Structural credit assignment: find the set of sensory situations in which a given sequence of actions will yield the same outcome.
-    Transfer credit assignment: learn to generalize a given action sequence across tasks.
+2. Structural credit assignment: 
+    - find the set of sensory situations in which a given sequence of actions will yield the same outcome.
+    - it has received the bulk of attention in machine learning, e.g. regression methods.
 
-Problem 1 has received the maximum attention in the RL community. Problem 2 has received the bulk of attention in machine learning, e.g. regression methods. Problem 3 is the transfer learning problem. There’s a large set of research on all three, far more than I can summarize here.
+3. Transfer credit assignment: 
+    - learn to generalize a given action sequence across tasks.
+    - application: transfer learning problem. 
 
 ---
 
@@ -1807,13 +1823,20 @@ almost guarantees that the hypothesis is true and coin is biased. Refer to the S
 - `Assumption`: 
     1. `all samples are identical in size`, and regardless of the population distribution shape.
     2. Sample sizes `>= 30` are considered sufficient for the CLT to hold.
+
 - It states that the distribution of sample means approximates a normal distribution as the sample size becomes larger.
 - `variances` being approximately equal to the variance of the population, divided by each sample's size.
 - A key aspect of CLT is that the average of the sample means and standard deviations will equal the population mean and standard deviation.
 
 
 ## Hypothesis testing
-Hypothesis testing allows a mathematical model to validate or reject a null hypothesis within a certain confidence level. Statistical hypotheses are tested using a four-step process. The first step is for the analyst to state the two hypotheses so that only one can be right. The next step is to formulate an analysis plan, which outlines how the data will be evaluated. The third step is to carry out the plan and physically analyze the sample data. The fourth and final step is to analyze the results and either accept or reject the null hypothesis.
+Hypothesis testing allows a mathematical model to validate or reject a null hypothesis within a certain confidence level. 
+
+Statistical hypotheses are tested using a four-step process. 
+1. The first step is for the analyst to state the two hypotheses so that only one can be right. 
+2. The next step is to formulate an analysis plan, which outlines how the data will be evaluated. 
+3. The third step is to carry out the plan and physically analyze the sample data. 
+4. The fourth and final step is to analyze the results and either accept or reject the null hypothesis.
 .
 - A premise or claim that we want to test
 - `Null-Hypothesis`: `H0` currently  accepted value for a parameter
@@ -2359,3 +2382,25 @@ After attaching the last letter we find out that instead of one additional param
 7. [Design website like this](http://www.mytechinterviews.com/)
 8. [data scientist prepration](https://elu.nl/how-to-land-a-data-scientist-job-at-your-dream-company%E2%80%8A-%E2%80%8Amy-journey-to-airbnb/)
 9. [Good-resource-of-machine-learning](https://towardsdatascience.com/ten-elements-of-machine-learning-interviews-ba79db437ad1)
+
+
+
+
+---
+
+
+## LightGBM:[Ref](https://medium.com/@abhisheksharma_57055/what-makes-lightgbm-lightning-fast-a27cf0d9785e)
+
+    What makes LightGBM special?
+
+LightGBM aims to reduce complexity of histogram building ( O(data * feature) ) by down sampling data and feature using GOSS and EFB. This will bring down the complexity to (O(data2 * bundles)) where data2 < data and bundles << feature.
+
+    What is GOSS?
+
+GOSS (Gradient Based One Side Sampling) is a novel sampling method which down samples the instances on basis of gradients. As we know instances with small gradients are well trained (small training error) and those with large gradients are under trained. A naive approach to downsample is to discard instances with small gradients by solely focussing on instances with large gradients but this would alter the data distribution. In a nutshell GOSS retains instances with large gradients while performing random sampling on instances with small gradients.
+
+    Intuitive steps for GOSS calculation
+    1. Sort the instances according to absolute gradients in a descending order
+    2. Select the top a * 100% instances. [ Under trained / large gradients ]
+    3. Randomly samples b * 100% instances from the rest of the data. This will reduce the contribution of well trained examples by a factor of b ( b < 1 )
+    4. Without point 3 count of samples having small gradients would be 1-a ( currently it is b ). In order to maintain the original distribution LightGBM amplifies the contribution of samples having small gradients by a constant (1-a)/b to put more focus on the under-trained instances. This puts more focus on the under trained instances without changing the data distribution by much.
