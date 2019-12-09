@@ -1,17 +1,18 @@
 # ml-toolbox
-This repo contains a few data-science relative features to deal with structure and unstructure data. It contains feature-preprocessing, feature-engineering, machine learning models, bayesian-parameter-tuning and much more. This is my collection and implementations using existed libraries such as scikit-learn, keras,xgboost,h2o,etc. I have included some strategy for feature engineering on my understanding, following tutorial, Data-science practitioner and of-course reading research paper. I consistently update it, to make more generic as i practice(in hackhathons).
+This repo contains various data science strategy and machine learning models to deal with structure as well as unstructured data. It contains module on feature-preprocessing, feature-engineering, machine-learning-models, bayesian-parameter-tuning, etc. Some of these features are collected from the existed libraries such as scikit-learn, keras, h2o, xgboost, lightgbm, catboost, etc. I have also added some technique, which I implemented by following the Research Paper and Data-Scientist advice(on kaggle). There are a lot of feature engineering strategy as well, which I developed during ML-contest and helped me a lot in those contest.
 
-> In my free time, i work on this project, and try to improve it for my own good. Any feedback will be appreciated.
+> I use this toolbox for my personal usuage. I consistently update it, to make more generic.
+
 
 ## Contents:
-1. Feature preprocessing
+1. [Feature preprocessing](https://github.com/ankishb/ml-toolbox/tree/master/src/feature_eng)
     + cleaning
     + handling null value
     + normalization
     + grouping unknow variable
     + memory optimization
     + text preprocessing 
-2. Feature Engineering
+2. [Feature Engineering](https://github.com/ankishb/ml-toolbox/tree/master/src/feature_eng)
     + label-encoder/one-hot/binary/hashing
     + binning/quantile-binning
     + target-encoding
@@ -25,10 +26,10 @@ This repo contains a few data-science relative features to deal with structure a
     + clustering based feature(linear/non-linear)
     + polynomial feature
     + statistical ferature
-3. EDA
+3. [EDA](https://github.com/ankishb/ml-toolbox/tree/master/src/eda_tool)
     + boxplot/kdeplot/countplot/pairplot
     + heatmap
-4. Machine Learning models
+4. [Machine Learning models](https://github.com/ankishb/ml-toolbox/tree/master/src/ml_models)
     + Tree base model
         - xgboost/lighgbm/catboost
         - sklearn: decision-tree/random-forest/extra-tree/GBM
@@ -38,7 +39,7 @@ This repo contains a few data-science relative features to deal with structure a
     + field aware factorization machine
     + online learning(vowpal rabbit/follow the regularized leader)(in progress)
     + h2o models (gbm/rf/nn/auto-ml)
-5. Deep learning models
+5. [Deep learning models](https://github.com/ankishb/ml-toolbox/tree/master/src/deep_ml)
     + neural networks(keras/tensorflow)
     + Attention mechanism for LSTM
     + Data augmentation(for image)
@@ -55,3 +56,4 @@ This repo contains a few data-science relative features to deal with structure a
     + Stacking/blending/rank-average
     + Bert-Model(pretrained text model)
     + parallel-processing for feature-engineering(in progress)
+
