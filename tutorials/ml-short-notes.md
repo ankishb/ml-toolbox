@@ -1,9 +1,67 @@
 # ML-short notes
-This is machine learning notes, where most of defined in very compact form(including mathematics), as per my understanding. It has lot of important and deeper points about ML models.
+This is my machine learning notes on machine learning, deep learning, statistical learning and data science models and strategies. This doc can be seen as a revision notes. Here I discuss only the important point (including mathematics). These notes are prepared by following hundreds of resources such as lecture notes, books, tutorial etc.
 
-> I constantly improve stuff and add new one.
+> If you find anything wrong, please let me know, either raise an github issue or email me at `bansal dot ankish @ gamil dot com` (there is no space between words).
 
-# perceptron
+## Outline of topics are:
+- perceptron
+- Regression Analysis
+- Learning Rate
+- Optimization and types of optimizer
+- Loss function
+- regularization
+- SVM (Maximum margin hyperplane)
+- Kernel Matrix
+- Recurrent Neural Network
+- Word Embedding
+- Evaluation Metric
+- Bias And Varaince
+- Correlation
+- dimensionality reduction algorithms
+- Types of Clustering
+- Probability Distribution
+- Decision Tree
+- Bagging
+- Boosting
+- TF-IDF
+- Text Normalization
+- LDA
+- Activation function
+- Gradient Checking
+- Weight Init in deep learning
+- Cross Validation
+- Batch Normalization
+- Image Augmentation Method
+- Average Precision@K
+- CNN
+- What is Backpropagation
+- SMOTE
+- Statistics
+- Central Limit Theorem
+- A/B Testing
+- Eigenvalues and Eigenvector
+- MLE, MAP and Conjugate-pair
+- Parametric 
+- Non-Parametric Models
+- Expectation Minimization
+- Gaussian Mixture Model
+- Domain Adaptation
+- Naive Bayes Algorithm
+- Probabilistic Models
+- Skewness vs Kurtusis
+- Credit Assignment Problem
+- Check Biasness of fair coin
+- Central Limit Theorem(CLT)
+- Hypothesis testing
+- Differences Between Type I and Type II Errors
+- Rand index
+- How to handle outlier
+- Approach to handling Imbalanced Datasets
+- process of designing a model
+- Time series feature
+- LightGBM
+
+## perceptron
 - Online Algo (check one example at a time)
 - Error driven (update weights only if prediction is wrong)
 - **Linear Boundary Seprator** (`can be kernelized to obtain non-linear boundary`)
@@ -197,7 +255,28 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
     
 
 ---
+## learning rate:
+- constant
+- momentum based `1/t`, `1/sqrt(t)`, `1/(1-t)`, RMSProp < Nestrov Momentum
+- `adaptive lr` **Adam, AdaGrad,...**
+- `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many-many extrema and build the ensemble using all those optima pts.
 
+### Cyclic Learning Rate:
+- `x = abs(cur_itr/half_cycle_size - 2*cycle + 1)`
+- `min_lr + (max_lr - min_lr) * max(0, 1-x)`
+- for exp: 
+    - Assume, init cycle = 1, cycle_size = 200
+    - for cur_itr = 100, so then `x = 0`
+    - for cur_itr = 200, so then `x = 1`
+    - for cur_itr = 300, cycle becomes 2, so then `x = 0`
+    This way, it will keep oscillating between `0-1`, but we want to start with high learning rate, to do that we use `1-x`, which make it `1-0`.
+- We can also build ensemble using this trick.
+    - collect all optima under a threshold
+    - take average of model's response for all those optimal weights
+- `better generalization`
+- `avoid saddle point and bad optima`
+
+---
 ## Optimization (Part-1):
 - A function is convex, when `f(y) >= f(x) + dy/dx (y-x)`, which is nothing but the `value at function is always greater than its tangent`.
 - In other words, pick any two points on curve, the line passing through two points, will always be above the curve, if curve follows convexity.
@@ -229,27 +308,6 @@ defined on [−1,1].
 
 > Notice that a function can be both convex and concave at the same time, a straight line is both convex and concave. But in convex optimization, we consider linear curve as convex most of the time.
 
-
-## learning rate:
-- constant
-- momentum based `1/t`, `1/sqrt(t)`, `1/(1-t)`, RMSProp < Nestrov Momentum
-- `adaptive lr` **Adam, AdaGrad,...**
-- `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many-many extrema and build the ensemble using all those optima pts.
-
-### Cyclic Learning Rate:
-- `x = abs(cur_itr/half_cycle_size - 2*cycle + 1)`
-- `min_lr + (max_lr - min_lr) * max(0, 1-x)`
-- for exp: 
-    - Assume, init cycle = 1, cycle_size = 200
-    - for cur_itr = 100, so then `x = 0`
-    - for cur_itr = 200, so then `x = 1`
-    - for cur_itr = 300, cycle becomes 2, so then `x = 0`
-    This way, it will keep oscillating between `0-1`, but we want to start with high learning rate, to do that we use `1-x`, which make it `1-0`.
-- We can also build ensemble using this trick.
-    - collect all optima under a threshold
-    - take average of model's response for all those optimal weights
-- `better generalization`
-- `avoid saddle point and bad optima`
 
 ## Gradient Based Optimization:
 1. `GD`: update as per the gradient of all data
@@ -315,6 +373,7 @@ Best, if we are using sparse data such as tf-idf features for words.
 
 > If our data is sparse and our features have very different frequencies, we might not want to update all of them to the same extent, but perform a larger update for rarely occurring features.
 
+---
 
 ## lagrangian Method:
 - Primal & Dual method: Both gives same answer if the constrained function is convex, i.e. `g(w) <= 0`
@@ -330,7 +389,7 @@ Best, if we are using sparse data such as tf-idf features for words.
 
 - Example: let's suppose our z(t+1), lie outside the unit circle, but just consider it to be 1, if our constrained of **w belong to unit circle**.
 
-
+---
 ## Loss function (`Convex Surrogate Losses Function`):
 - Surrogate losses, because it define the upper bound on the real losses and minimize that. So minimze the surrogate losses function make sure pushing down real losses too.
 - **0/1 loss**: 1[ywx <= 0], this is NP hard, no efficient solution. For example for wx = -0.0000001, with increase of 00000009 it will still be -1, but 000000011 increase will take it to right side that is +1.
@@ -340,6 +399,7 @@ Best, if we are using sparse data such as tf-idf features for words.
 - `Exponential Loss`: `exp(-y w x)`
 - `Absolute loss`: `|y - w x|` **Robust to outliers**
 - `epsilon-insensitive loss`: `|y - w x| + epsilon`
+
 
 ## Hyperplane:
 - `W x + b = 0`, a hyperplane
@@ -566,66 +626,8 @@ intra_class = (n_1-1)*var_1 + (n_2-1)*var_2;
 score = inter_class / intra_class;
 ```
 
----
-
-## Recurrent Neural Network:
-- weight sharing across the sequence
-    - It create dependency across the data in sequence, but with different weights across sequence. This will cause in independent decision at the final prediction.
-- Two main problem: 
-    1. vanishing Grad (Most Imp) (cured by LSTM, but expensive)
-    2. Exploding Grad (can handled by grad clipping)
-
-## LSTM:
-1. forget Gate (using sigmoid)
-2. Input Gate (using sigmoid)
-3. **ct_hat** Current cell state (using tanh)
-4. Update Cell state (`ft * c{t-1} + it * ct_hat`)
-5. Output gate (using sigmoid)
-6. ht hidden state = `ot * tanh(ct)`
-
-## LSTM variant:
-1. LSTM with PeepHole:
-2. LSTM with cooupling between forget and input gate
-3. GRU
-    1. reset gate
-    2. update gate
-    3. no cell state
-
-    **The GRU unit controls the flow of information like the LSTM unit, but without having to use a memory unit. It just exposes the full hidden content without any control.**
-    A GRU has two gates, an LSTM has three gates.
-    GRUs don’t possess and internal memory (c_t) that is different from the exposed hidden state. They don’t have the output gate that is present in LSTMs.
-    The input and forget gates are coupled by an update gate z and the reset gate r is applied directly to the previous hidden state. Thus, the responsibility of the reset gate in a LSTM is really split up into both r and z.
-    We don’t apply a second nonlinearity when computing the output.
 
 ---
-
-## Word Embedding: [Best Blog](https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html)
-### count based:
-1. Unsupervised method
-2. Use raw co-occurance count matrix
-3. Run factor model/PCA/SVD etc to find the comprssed representation of word, with the assumption that word with similar context share same symantics (meaning)
-
-### context based
-1. Skip Gram
-    - This is predictive model, which find the probability of neighbour words given the target word, which is middle word in sliding window
-    - Each context-target pair is treated as a new observation in the data. 
-    - For example, the target word “swing” in the `“sentence should the sword”` produces four training samples: (“swing”, “sentence”), (“swing”, “should”), (“swing”, “the”), and (“swing”, “sword”).
-2. Continuous Bag of Words
-    - The Continuous Bag-of-Words (CBOW) predicts the target word (i.e. “swing”) from source context words (i.e., `“sentence should the sword”`).
-    - In The CBOW model, Word vectors of multiple context words are averaged to get a fixed-length vector as in the hidden layer.
-
-## Loss function to train word embedding:
-1. Full Softmax
-2. Hierarchichal Softmax (didn't understood properly). The idea here is to create a tree, where each node represent relative probability  of children nodes and leaf nodes are words. So to reach at one word, we follow a unique path, so on...
-3. Cross Entropy
-4. Noise Contrastive Analysis
-    - The idea here is to differentiate target word from noise sample using a logistic regression classifier.
-5. Negative Sampling
-    - The idea is very simple, just replace the probabilty with sigmoid, now relation of noise contrastive analysis become very simple.
-
-
----
-
 ## Hyperparameter Tuning:
 1. Random Search
 2. Grid Search
@@ -793,8 +795,41 @@ When you have a small positive class, then F1 score makes more sense. This is th
     - an average per class argreement of data class labels with those of classifiers
     - sum_c 
 
----
 
+---
+## [Average Precision@K](https://medium.com/@pds.bangalore/mean-average-precision-abd77d0b9a7e)
+Lets try to understand what is Average Precision:
+
+In this competition we were asked to recommend 7 different products to each customer. Ideally when you recommend, you will not get all the products in the correct sequence, right?
+
+e.g. Let’s say, we recommended 7 products and 1st, 4th, 5th, 6th product was correct. so the result would look like — 1, 0, 0, 1, 1, 1, 0.
+
+In this case,
+
+    The precision at 1 will be: 1/1 = 1
+    The precision at 2 will be: 0
+    The precision at 3 will be: 0
+    The precision at 4 will be: 2/4 = 0.5
+    The precision at 5 will be: 3/5 = 0.6
+    The precision at 6 will be: 4/6 = 0.66
+    The precision at 7 will be: 0
+
+Average Precision will be: 1 + 0 + 0 + 0.5 + 0.6 + 0.66 + 0 /4 = 0.69 — Please note that here we always sum over the correct images, hence we are dividing by 4 and not 7.
+
+Mean average precision is an extension of average precision where we take average of all AP’s to get the MAP.
+
+Please remember that for MAP@k, the order of your recommendation is very important. If we are recommending the correct product later in the sequence, our model performance will be affected, because the precision@k is the percentage of correct items in first k recommendations.
+
+Formula for calculating AP@k is: sum k=1:x of (precision at k * change in recall at k)
+
+Lets take a simple example:
+
+It’s AP@2, So in fact only two first predictions matter.Our prediction is product6 and product15. First recommendation is wrong, so precision@1 is 0. Second is correct, so precision@2 is 0.5. Change in recall is 0 to 0.5, so AP@2 = 0 * 0 + 0.5 * 0.5 = 0.25
+
+
+
+
+---
 ## Bias And Varaince:
 Generally to measure the model, we draw a `chart of performance error vs model complexity`, this will leads us to the better decision.
   1. with more complexity in model(higher order polynomial features), we will have `low-bias and higher-variance`
@@ -1238,6 +1273,49 @@ Out-of-bag estimate for the generalization error is the error rate of the out-of
 
 
 ---
+## Text Preprocessing Techniques:
+1. Lower Case:
+    - `Canada`, `CanaDa`, `CANADA`
+2. Stemming:
+    - remove prefix and suffix of words
+    - For exp: `trouble`, `troubling`, `troubles` to `troubl`
+    - it also have negative effects. for exp: `class` vs `classes`
+3. Lemmantization:
+    - map words to its root form
+    - For exp: `trouble`, `troubling`, `troubles` to `trouble`
+    - `not much useful`. There are few papers, that states that there is no effect of this technique on text classification using deep learning methods.
+4. Stopword removal:
+    - remove words like `a`, `the`, `in` etc
+5. Normalization:
+    - transform text to its standard form
+    - `misspelling`, `short form`
+    - `2moro`, `:)`, `wtf`, `don't`
+    - necessary step for building good model
+    - use `dictionary mapping` and `spell check approach` 
+6. Noise removal:
+    - it may be domain specific such as `Co2` that is carbon dioxide
+    - `trouble<`, `trouble!`, `...trouble...`, `<a>trouble</a>`, `1.trouble`
+    - -above examples will be same, even after `stemming`
+    - necessary step for building better model
+7. Text Enrichment or Augmentation:
+    - speech tagging
+    - book is `noun` or `verb`, it can change semantic of sentence entirely
+    - there is paper, which shows importance of this method on chinese dataset.
+    - it can be time consuiming
+
+
+
+### Stemming:
+- Stemming is the process of `reducing inflection in words to their root forms` such as mapping a group of words to the same stem even if the stem itself is not a valid word in the Language.
+- stemming is just `stemming of prefix and suffix` such as `(-ed, -ize, -s, -de, -mis)`
+    1. `Porter-stem`: (fast), it is a set of `5` rule
+    2. `Lanchester-stemming`: (slow), it is a set of `120` rule, it is a iterative approach, it check character by chracter
+    3. `SnowballStemmer`: Non-english work stemmer
+
+### Lemmantization:
+- Lemmatization, unlike Stemming, `reduces the inflected words properly ensuring that the root word belongs to the language`. In Lemmatization root word is called Lemma. A lemma (plural lemmas or lemmata) is the canonical form, dictionary form, or citation form of a set of words.
+    1. `WordNet-lemmantization`
+
 
 ## TF-IDF:
 Computes the (query, document) similarity. It has two parts.
@@ -1252,20 +1330,8 @@ Computes the (query, document) similarity. It has two parts.
 
 ### Effect of idf on ranking
 - idf has no effect on ranking one term queries like iPhone
-– idf affects the ranking of documents for queries **with atleast two terms** 
-– For the query `capricious person`, idf weighting makes occurrences of `capricious` count for much more in the final document ranking than occurrences of `person`.
-
-## Text Normalization:
-### Stemming:
-- "Stemming is the process of `reducing inflection in words to their root forms` such as mapping a group of words to the same stem even if the stem itself is not a valid word in the Language."
-- stemming is just `stemming of prefix and suffix` such as `(-ed, -ize, -s, -de, -mis)`
-    1. `Porter-stem`: fast, set of 5 rule
-    2. `Lanchester-stemming`: slow, set of 120 rule, iterative approach, check character by chracter
-    3. `SnowballStemmer`: Non-english work stemmer
-
-### Lemmantization:
-- Lemmatization, unlike Stemming, `reduces the inflected words properly ensuring that the root word belongs to the language`. In Lemmatization root word is called Lemma. A lemma (plural lemmas or lemmata) is the canonical form, dictionary form, or citation form of a set of words.
-    1. WordNet-lemmantization
+- idf affects the ranking of documents for queries **with atleast two terms** 
+- For the query `capricious person`, idf weighting makes occurrences of `capricious` count for much more in the final document ranking than occurrences of `person`.
 
 
 ```python
@@ -1283,7 +1349,6 @@ stem.stem(word)
 ```
 
 ---
-
 ## LDA
 - `supervised`
 - linear transformation techniques
@@ -1295,9 +1360,85 @@ stem.stem(word)
 1. Both LDA and PCA are linear transformation techniques: LDA is a supervised whereas PCA is unsupervised – PCA ignores class labels.
 2. PCA helps to find the directions of maximal variance, while LDA attempts to find a feature subspace that maximizes class separability 
 
----
 
-## Activation function in deep learning
+---
+## What is Backpropagation:
+- backpropagation is a widely used algorithm, in the training of feedforward neural networks
+- Backpropagation efficiently computes the gradient of the loss function with respect to the weights of the network for a single input-output example. 
+- This makes it feasible to use gradient methods for training multi-layer networks, updating weights while minimizing loss function.
+- it commonly uses gradient descent or variants such as stochastic gradient descent. 
+- it uses `chain rule`, iterating backwards one layer at a time from the last layer to avoid redundant calculations of intermediate terms in the chain rule. `It is an example of dynamic programming`.
+- `Limitation`: 
+    1. Because of error function in neural network are non-convex in nature, Gradient descent with backpropagation is not guaranteed to find the global minimum, but only to a local minimum. 
+    2. Also, it has trouble crossing plateaus in the error function landscape.
+
+
+---
+## Weight Init in deep learning:
+- A `too-large` value of weights, can lead to `exploding gradients`
+- A `too-small` value of weights, can lead to `vanishing gradients`
+
+
+### How to find appropriate initialization values
+- To prevent the gradients of the network’s activations from vanishing or exploding, we will stick to the following rules of thumb:
+    1. The mean of the activations should be zero.
+    2. The variance of the activations should stay the same across every layer.
+    Under these two assumptions, the backpropagated gradient signal should not be multiplied by values too small or too large in any layer. It should travel to the input layer without exploding or vanishing.
+- More concretely, consider a layer l. Its forward propagation is:
+    - `z[l] = W[l] * a[l−1] + b[l]`
+    - `a[l] = g(z[l])`
+- We would like the following to hold:
+    1. `E[a[l−1]] = E[a[l]]`
+    2. `Var(a[l−1]) = Var(a[l])`
+- Final result:
+    1. `w ~ N(0, 1/n_prev)` where `n_prev` is the number of neuron in previous layer
+    2. `b = 0`
+
+
+### Xavier Init:
+- widely used, with the activation function like `tanh`
+- With `forward pass`,
+    1. `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
+    2.  So `Var(W[l]) = 1 / n[l-1]`, to ensure the above property to avoid exploding and vanishing graient problem
+
+- With `backward pass`,
+    1. `Var(a[l-1]) = n[l] * Var(W[l]) * Var(a[l])`
+    2. `Var(W[l]) = 1 / n[l]`
+
+- In practice, we consider `harmonic mean of both variance`, which is `2 / (n[l] + n[l-1])`
+
+- In general, `Var(a[L]) = [prod{l=1:L} ​n[l−1] Var(W[l])] Var(x)​`. Depending on how we initialize our weights, the
+    - `[prod{l=1:L} ​n[l−1] Var(W[l])] < 1 ⟹ Vanishing Signal`
+    - `[prod{l=1:L} ​n[l−1] Var(W[l])] = 1 ⟹ Var(a[L]) = Var(x)`
+    - `[prod{l=1:L} ​n[l−1] Var(W[l])] > 1 ⟹ Exploding Signal`
+
+
+### He Init:
+- work great with `relu`
+- `Var(a[l]) = sqrt(2 / n_prev)`, `n_prev = fan_in`
+
+
+---
+## Batch Normalization:
+- `batch-norm` solve the problem of **local-covariate-shift**
+- compute mean and variance of current batch
+- normalize the dataset with that mean and var
+- scale and shift the output, to add more non-linearity
+    1. When we normalize, it will be in the range of `[0-1]`. While using `sigmoid` at each layer, output will be linear around the `0.5`.
+    2. To avoid that, we learn a `scaling` and `shifting` factor as well, which is applied at output of batch-norm layer.
+    3. `out = beta * (out_norm) + gamma`
+
+### Advantage of batch-norm
+1. `Faster training`
+    1. We can use `higher learning rates` because batch normalization makes sure that there’s no activation that’s gone really high or really low. Without `bacth-norm`, it becomes very difficult to train `deep` model with `high lr-rate`.
+
+2. `Reduces overfitting`
+    1. As it normalize the dataset as per mean and variance of current batch observation, which may not be equal to global mean and vaiance
+    2. Due to above, it add some `noise` in the dataset, which act as `regularization` similar to `dropout`
+
+
+---
+## Activation function (in deep learning)
 1. sigmoid function: ``1 / (1 + exp(-x))
 2. Tanh : `2 / (1 + exp(-2x))  -1`
 3. Relu: `x if x > 0, 0 otherwise`
@@ -1312,6 +1453,7 @@ stem.stem(word)
     - `a*(exp(x) - 1) if x < 0`
 7. Softplus: `log(1 + exp(x))`
 
+
 ### Why Relu is better:
 1. computationaly cheaper
 2. `No vanishing Gradient` problem, even with very deep network
@@ -1319,170 +1461,47 @@ stem.stem(word)
 4. It converge faster
 6. `Relu6` : clipping gradient to avoid exploding gradient problem.
 
----
 
+---
 ## Gradient Checking:
+
 ### Why do we need Gradient Checking?
-
 Back prop as an algorithm has a lot of details and can be a little bit tricky to implement. And one unfortunate property is that there are many ways to have subtle bugs in back prop. So that if you run it with gradient descent or some other optimizational algorithm, it could actually look like it's working. And your cost function, J of theta may end up decreasing on every iteration of gradient descent. But this could prove true even though there might be some bug in your implementation of back prop. So that it looks J of theta is decreasing, but you might just wind up with a neural network that has a higher level of error than you would with a bug free implementation. And you might just not know that there was this subtle bug that was giving you worse performance. So, what can we do about this? There's an idea called gradient checking that eliminates almost all of these problems.
+
 ### What is Gradient Checking?
-
-We describe a method for numerically checking the derivatives computed by your code to make sure that your implementation is correct. Carrying out the derivative checking procedure significantly increase your confidence in the correctness of your code.
-
-If I have to say in short than Gradient Checking is kind of debugging your back prop algorithm. Gradient Checking basically carry out the derivative checking procedure. 
-
----
-
-## Weight Init in deep learning:
-- A too-large initialization leads to exploding gradients
-- A too-small initialization leads to vanishing gradients
-III   How to find appropriate initialization values
-- To prevent the gradients of the network’s activations from vanishing or exploding, we will stick to the following rules of thumb:
-    1. The mean of the activations should be zero.
-    2. The variance of the activations should stay the same across every layer.
-    Under these two assumptions, the backpropagated gradient signal should not be multiplied by values too small or too large in any layer. It should travel to the input layer without exploding or vanishing.
-- More concretely, consider a layer l. Its forward propagation is:
-    - `z[l] = W[l]a[l−1] + b[l]`
-    - `a[l] = g[l](z[l])`
-- We would like the following to hold:
-    1. `E[a[l−1]] = E[a[l]]`
-    2. `Var(a[l−1]) = Var(a[l])`
-- Final result:
-    1. `w ~ N(0, 1/n_prev)` where `n_prev` is the number of neuron in previous layer
-    2. `b = 0`
-
-### Xavier Init:
-- widely used, with the activation function like `tanh`
-- Using `forward pass` relation, we come up at
-    1. `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
-    2.  So `Var(W[l]) = 1 / n[l-1]`, to ensure the above property to avoid exploding and vanishing graient problem
-
-- Using `backward pass` relation, we come up at, `Var(a[l]) = n[l−1] * Var(W[l]) * Var(a[l−1])`
-    1. `Var(a[l-1]) = n[l] * Var(W[l]) * Var(a[l])`
-
-- In practice, we consider `harmonic mean of both variance`, which is `2 / (n[l] + n[l-1])`
-
-- In general, `Var(a[L]) = [prod{l=1:L} ​n[l−1] Var(W[l])] Var(x)​`
-    Depending on how we initialize our weights, the
-        [prod{l=1:L} ​n[l−1] Var(W[l])] < 1 ⟹ Vanishing Signal
-        [prod{l=1:L} ​n[l−1] Var(W[l])] = 1 ⟹ Var(a[L]) = Var(x)
-        [prod{l=1:L} ​n[l−1] Var(W[l])] > 1 ⟹ Exploding Signal
-
-### He Init:
-- work great with `relu`
-- `Var(a[l]) = sqrt(2 / n_prev)`, `n_prev = fan_in`
-
----
-
-## Cross Validation:
-- K-fold
-- startified k-fold
-- leave one out
-- leave-p out
-- group-k fold
-- leave-1 group out
-- leave-p group out
-- time-series split
-- all above with shuffling
-
----
-
-## Batch Normalization:
-- batch-norm solve the problem of **local-covariate-shift**
-- compute mean and variance of current batch
-- normalize the dataset with that
-- scale and shift the output, to add more non-linearity
-    1. When we normalize, it will be `0-1`, while using `sigmoid` at each layer, output will be linear, beacuse, most of the time it lies around `0.5`, where curve is almost linear.
-    2. To avoid that, we learn a scaling and shifting factor too, which is applied at output of batch-norm layer.
-
-### Advantage of batch-norm
-1. Faster training
-    1. We can use higher learning rates because batch normalization makes sure that there’s no activation that’s gone really high or really low. And by that, things that previously couldn’t get to train, it will start to train.
-
-2. It reduces overfitting
-    1. As it normalize the dataset as per mean and variance of current batch observation, which may not be equal to global mean and vaiance
-    2. Due to above, it add some noise in dataset, which act as regularization similar to `dropout`
-
----
-## Image Augmentation Method:
-- Rotate
-- Resize: The resample filter as `NEAREST`, `BICUBIC`, `ANTIALIAS`, `BILINEAR`.
-- Flip: left, right or even along any random axis
-- Crop: First resize by factor(expansion multipler), then crop a certain part
-- HistogramEqualisation
-- Greyscale: it converts image into having only shades of grey (pixel value intensities) varying from 0 to 255 which represent black and white respectively
-- Invert: 0 -> 1, 1 -> 0
-- BlackAndWhite: Set a threshold, and then make it 0 and 1.
-- Brightness: Randomly change the image brightness.
-- Color: Randomly enhance the color's intensity
-- Contrast: Randomly enhance the contrast
-    - In fogg weather, we can't see black and white color separately. It is all mix. If we visualize that color intensity on histogram, we can see the difference.
-    - Expand the historgram, that is high constrast. It will sharpen the color, which means that black becomes more dark. white becomes more bright, and historgram will have a expanded bell curve with peak is more widen
-    - Decreasing contrast, more sharp peak in historgam. In afternoon, we have bright light and darker edges. To compensate that effect, we use this.
+- We describe a method for numerically checking the derivatives computed by your code to make sure that your implementation is correct. 
+- Gradient Checking is a kind of debugging for our back prop algorithm.
 
 
 ---
-## Average Precision@K : 
-- [Ref](https://medium.com/@pds.bangalore/mean-average-precision-abd77d0b9a7e)
-Lets try to understand what is Average Precision:
+## Convolutional Neural Network:
+1. `local invariance property`: Can capture locality of features. One can show that the convolution operator commutes with respect to translation. If you convolve `f` with `g`, it doesn't matter if you translate the convolved output `f∗g`, or if you translate `f` or `g` first, then convolve them.
 
-In this competition we were asked to recommend 7 different products to each customer. Ideally when you recommend, you will not get all the products in the correct sequence, right?
+2. Convolution provides `translation equivariance`. It means that if an object in an image is at `area A` and through convolution a feature is detected at the output at `area B`, then the same feature would be detected when the object in the image is translated to `A'`. The position of the output feature would also be translated to a new area `B'` based on the filter kernel size. This is called `translational equivariance` and `not translational invariance`.
 
-e.g. Let’s say, we recommended 7 products and 1st, 4th, 5th, 6th product was correct. so the result would look like — 1, 0, 0, 1, 1, 1, 0.
-
-In this case,
-
-    The precision at 1 will be: 1/1 = 1
-    The precision at 2 will be: 0
-    The precision at 3 will be: 0
-    The precision at 4 will be: 2/4 = 0.5
-    The precision at 5 will be: 3/5 = 0.6
-    The precision at 6 will be: 4/6 = 0.66
-    The precision at 7 will be: 0
-
-Average Precision will be: 1 + 0 + 0 + 0.5 + 0.6 + 0.66 + 0 /4 = 0.69 — Please note that here we always sum over the correct images, hence we are dividing by 4 and not 7.
-
-Mean average precision is an extension of average precision where we take average of all AP’s to get the MAP.
-
-Please remember that for MAP@k, the order of your recommendation is very important. If we are recommending the correct product later in the sequence, our model performance will be affected, because the precision@k is the percentage of correct items in first k recommendations.
-
-Formula for calculating AP@k is: sum k=1:x of (precision at k * change in recall at k)
-
-Lets take a simple example:
-
-It’s AP@2, So in fact only two first predictions matter.Our prediction is product6 and product15. First recommendation is wrong, so precision@1 is 0. Second is correct, so precision@2 is 0.5. Change in recall is 0 to 0.5, so AP@2 = 0 * 0 + 0.5 * 0.5 = 0.25
-
----
-
-## CNN:
-- local invariance property: Can capture locallity of feature
-One can show that the convolution operator commutes with respect to translation. If you convolve f with g, it doesn't matter if you translate the convolved output f∗g, or if you translate f or g first, then convolve them.
-
-I think there is some confusion about what is meant by translational invariance. Convolution provides translation equivariance meaning if an object in an image is at area A and through convolution a feature is detected at the output at area B, then the same feature would be detected when the object in the image is translated to A'. The position of the output feature would also be translated to a new area B' based on the filter kernel size. This is called translational equivariance and not translational invariance.
+> CNN do have the property of `translational invariance`. They are not `rotational invariant`, for this purpose, `hinton` proposed `capsule net`.
 
 
-#### CNN components:
-Convolutional layer
-The convolutional layer is the core building block of a CNN. The layer's parameters consist of a set of learnable filters (or kernels), which have a small receptive field, but extend through the full depth of the input volume
 
-#### Local connectivity:
-Convolutional networks exploit spatially local correlation by enforcing a sparse local connectivity pattern between neurons of adjacent layers: each neuron is connected to only a small region of the input volume.
+### CNN components:
+1. `Convolutional layer`
+The convolutional layer is the core building block of a CNN. The layer's parameters consist of a set of `learnable filters (or kernels)`, which have a small receptive field, but extend through the full depth of the input volume
 
-The extent of this connectivity is a hyperparameter called the receptive field of the neuron. The connections are local in space (along width and height), but always extend along the entire depth of the input volume. Such an architecture ensures that the learnt filters produce the strongest response to a spatially local input pattern. 
+2. `Local connectivity`:
+CNN exploit `spatially local correlation` by enforcing a sparse local connectivity pattern between neurons of adjacent layers. As, each neuron is connected to only a small region of the input volume.
 
-Spatial arrangement
+    - The extent of this connectivity is a hyperparameter called the `receptive field` of the neuron. The connections are local in space (along width and height), but always extend along the entire depth of the input volume. Such an architecture ensures that the learnt filters produce the strongest response to a spatially local input pattern. 
 
-Three hyperparameters control the size of the output volume of the convolutional layer: the depth, stride and zero-padding.
+3. `Spatial arrangement`
+`Three hyperparameters` control the `size` of the output volume of the convolutional layer: the `depth`, `stride` and `zero-padding`.
 
-Stride controls how depth columns around the spatial dimensions (width and height) are allocated. When the stride is 1 then we move the filters one pixel at a time. This leads to heavily overlapping receptive fields between the columns, and also to large output volumes. When the stride is 2 then the filters jump 2 pixels at a time as they slide around.Sometimes it is convenient to pad the input with zeros on the border of the input volume.
-Parameter sharing
+    - `Stride` controls how depth columns around the spatial dimensions (width and height) are allocated. When the stride is 1 then we move the filters one pixel at a time. This leads to heavily overlapping receptive fields between the columns, and also to large output volumes. When the stride is 2 then the filters jump 2 pixels at a time as they slide around. Sometimes it is convenient to pad the input with zeros on the border of the input volume.
 
-A parameter sharing scheme is used in convolutional layers to control the number of free parameters. It relies on the assumption that if a patch feature is useful to compute at some spatial position, then it should also be useful to compute at other positions. Denoting a single 2-dimensional slice of depth as a depth slice, the neurons in each depth slice are constrained to use the same weights and bias.
+4. `Parameter sharing`
+A parameter sharing scheme is used in convolutional layers to control the number of free parameters. `It relies on the assumption that if a patch feature is useful to compute at some spatial position, then it should also be useful to compute at other positions`. Denoting a single 2-dimensional slice of depth as a depth slice, the neurons in each depth slice are constrained to use the same weights and bias.
 
-Pooling layer
-Max pooling with a 2x2 filter and stride = 2
-
-Another important concept of CNNs is pooling, which is a form of non-linear down-sampling. There are several non-linear functions to implement pooling among which max pooling is the most common. It partitions the input image into a set of non-overlapping rectangles and, for each such sub-region, outputs the maximum.
+5. `Pooling layer`
+Pooling  is a form of `non-linear down-sampling`. There are several non-linear functions to implement pooling among which `max pooling` is the most common. It partitions the input image into a set of non-overlapping rectangles and, for each such sub-region, outputs the maximum.
 
 Intuitively, the exact location of a feature is less important than its rough location relative to other features. This is the idea behind the use of pooling in convolutional neural networks. The pooling layer serves to progressively reduce the spatial size of the representation, to reduce the number of parameters, memory footprint and amount of computation in the network, and hence to also control overfitting.
 
@@ -1496,14 +1515,91 @@ Intuitively, the exact location of a feature is less important than its rough lo
 So both operations together provide some type of (approximate) invariance to translation, one keeps detecting things even if they are moved (equivariance/convolution) while pooling tries to keep the representation as consistent as possible (approx. translation invariance/pooling). Or at least thats my understanding from the deep learning book. Hope it helps!
 
 ---
+## Recurrent Neural Network:
+- weight sharing across the sequence
+    - It create dependency across the data in sequence, but with different weights across sequence. This will cause a independent decision at the final prediction.
+- Two main problem: 
+    1. vanishing Grad (Most Imp) (cured by LSTM, but expensive)
+    2. Exploding Grad (can handled by grad clipping)
 
-## What is Backpropagation:
-- backpropagation is an algorithm widely used in the training of feedforward neural networks
-- Backpropagation efficiently computes the gradient of the loss function with respect to the weights of the network for a single input-output example. 
-- This makes it feasible to use gradient methods for training multi-layer networks, updating weights to minimize loss 
-- it commonly uses gradient descent or variants such as stochastic gradient descent. 
-- it uses `chain rule`, iterating backwards one layer at a time from the last layer to avoid redundant calculations of intermediate terms in the chain rule; this is an example of dynamic programming.
-- `Limitation`: Gradient descent with backpropagation is not guaranteed to find the global minimum of the error function, but only a local minimum; also, it has trouble crossing plateaus in the error function landscape. This issue, caused by the non-convexity of error functions in neural networks, was long thought to be a major drawback
+## LSTM:
+1. forget Gate (using `sigmoid`)
+2. Input Gate (using `sigmoid`)
+3. **ct_hat** Current cell state (using `tanh`)
+4. Update Cell state (`ft * c{t-1} + it * ct_hat`)
+5. Output gate (using sigmoid)
+6. ht hidden state = `ot * tanh(ct)`
+
+### LSTM variant:
+1. LSTM with PeepHole
+2. LSTM with coupling between forget and input gate
+3. GRU
+    1. reset gate
+    2. update gate
+    3. no cell state
+
+    - **The GRU unit controls the flow of information like the LSTM unit, but without having to use a memory unit. It just exposes the full hidden content without any control.**
+    - A GRU has two gates, an LSTM has three gates.
+    - GRUs don’t possess a internal memory (`c_t`) that is different from the exposed hidden state. They don’t have the output gate that is present in LSTMs.
+    - The input and forget gates are coupled by an update gate z and the reset gate r is applied directly to the previous hidden state. Thus, the responsibility of the reset gate in a LSTM is really split up into both r and z.
+    - We don’t apply a second nonlinearity when computing the output.
+
+---
+## Word Embedding: [Best Blog](https://lilianweng.github.io/lil-log/2017/10/15/learning-word-embedding.html)
+### count based:
+1. Unsupervised method
+2. Use raw co-occurance count matrix
+3. Run factor model/PCA/SVD etc to find the comprssed representation of word, with the assumption that word with similar context share same symantics (meaning)
+
+### context based
+1. Skip Gram
+    - This is predictive model, which find the probability of neighbour words given the target word, which is middle word in sliding window
+    - Each context-target pair is treated as a new observation in the data. 
+    - For example, the target word “swing” in the `“sentence should the sword”` produces four training samples: (“swing”, “sentence”), (“swing”, “should”), (“swing”, “the”), and (“swing”, “sword”).
+2. Continuous Bag of Words
+    - The Continuous Bag-of-Words (CBOW) predicts the target word (i.e. “swing”) from source context words (i.e., `“sentence should the sword”`).
+    - In The CBOW model, Word vectors of multiple context words are averaged to get a fixed-length vector as in the hidden layer.
+
+## Loss function to train word embedding:
+1. Full Softmax
+2. Hierarchichal Softmax (didn't understood properly). The idea here is to create a tree, where each node represent relative probability  of children nodes and leaf nodes are words. So to reach at one word, we follow a unique path, so on...
+3. Cross Entropy
+4. Noise Contrastive Analysis
+    - The idea here is to differentiate target word from noise sample using a logistic regression classifier.
+5. Negative Sampling
+    - The idea is very simple, just replace the probabilty with sigmoid, now relation of noise contrastive analysis become very simple.
+
+
+---
+## Cross Validation:
+- k-fold
+- startified k-fold
+- leave one out
+- leave-p out
+- group-k fold
+- leave-1 group out
+- leave-p group out
+- time-series split
+- all above methods with shuffling
+
+
+---
+## Image Augmentation Method:
+- `Rotate`
+- `Resize`: The resample filter as `NEAREST`, `BICUBIC`, `ANTIALIAS`, `BILINEAR`.
+- `Flip`: left, right or even along any random axis
+- `Crop`: First resize by factor(expansion multipler), then crop a certain part
+- `HistogramEqualisation`
+- `Greyscale`: it converts image into having only shades of grey (pixel value intensities) varying from 0 to 255 which represent black and white respectively
+- `Invert`: 0 -> 1, 1 -> 0
+- `BlackAndWhite`: Set a threshold, and then make it 0 and 1.
+- `Brightness`: Randomly change the image brightness.
+- `Color`: Randomly enhance the color's intensity
+- `Contrast`: Randomly enhance the contrast
+    - In fogg weather, we can't see black and white color separately. It is all mix. If we visualize that color intensity on histogram, we can see the difference.
+    - Expand the historgram, that is high constrast. It will sharpen the color, which means that black becomes more dark. white becomes more bright, and historgram will have a expanded bell curve with peak is more widen
+    - Decreasing contrast, more sharp peak in historgam. In afternoon, we have bright light and darker edges. To compensate that effect, we use this.
+
 
 ---
 ## SMOTE:
@@ -2057,7 +2153,7 @@ R = \frac{2 + 8}{ {{6}\choose{2}} }
 - ` = 1 - [(1 - R^2)*(n-1)/(n-k-1)]`
 - `k: predictors`, `n: sample`
 
-## why prefere `adjusted R-squared` over `R-squared`
+## why prefer `adjusted R-squared` over `R-squared`
 - One major difference between R-squared and the adjusted R-squared is that R-squared supposes that every independent variable in the model explains the variation in the dependent variable.
 
 - The adjusted R-squared compares the descriptive power of regression models — two or more variables—that include a diverse number of independent variables—known as a predictor. 
@@ -2189,7 +2285,7 @@ Example
 - `truncated loss function`
 - use robust model such as `tree based model`
 
-## 2. Approach to handling Imbalanced Datasets
+## Approach to handling Imbalanced Datasets
 1. Use the right evaluation metrics
 
  
