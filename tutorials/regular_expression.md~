@@ -52,8 +52,10 @@ So, we have the string we intend to search. We see that we have ages that are in
 ```python
 import re
 
-exampleString = "Jessica is 15 years old, and Daniel is 27 years old.
-Edward is 97 years old, and his grandfather, Oscar, is 102."
+exampleString = '''
+Jessica is 15 years old, and Daniel is 27 years old.
+Edward is 97 years old, and his grandfather, Oscar, is 102. 
+'''
 
 # Now we define the regular expression, using a simple findall method to find all examples of the pattern we specify as the first parameter within the string we specify as the second parameter.
 
