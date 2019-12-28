@@ -1602,19 +1602,6 @@ So both operations together provide some type of (approximate) invariance to tra
 
 
 ---
-## SMOTE:
-Synthetic Minority Oversampling Technique (SMOTE) is a statistical technique for increasing the number of cases in your dataset in a balanced way. The module works by generating new instances from existing minority cases that you supply as input. This implementation of SMOTE does not change the number of majority cases.
-
-The new instances are not just copies of existing minority cases. Instead, the algorithm takes samples of the feature space for each target class and its nearest neighbors. The algorithm then generates new examples that combine features of the target case with features of its neighbors. This approach increases the features available to each class and makes the samples more general.
-
-
-
-    Use cost-sensitive learning: Certain learning algorithms and implementations allow you to assign a cost to each class, essentially describing how bad it is if an example of that class is misclassified. If I recall correctly, this is usually considered the best approach when you have a good idea of these different costs.
-    Rebalance the classes: You can oversample the minority class (which carries a risk of overfitting), undersample the majority class (which is dangerous if you don't have a lot of data), use a mixture of both or perhaps something a bit more advanced like synthetic sampling (attempt to generate new examples of the minority class using something like SMOTE)
-
-Overall, you should also be careful to pick the right evaluation metric. 
-
----
 
 ## Statistics:
 1. Descriptive Statistics
@@ -2263,35 +2250,33 @@ Example
 
 
 ---
-## How to handle outlier:
+## Outliers in dataset:
+
 ### How to detect outlier first:
-- `Box-Cox graph`:
+1. `Box-Cox graph`:
     1. `IQR = q3 - q1`
-    2. Upper bound = q3 + 1.5*IQR
-    3. Lower bound = q1 - 1.5*IQR
-- `z-score`:
+    2. Upper bound = `q3 + 1.5 * IQR`
+    3. Lower bound = `q1 - 1.5 * IQR`
+2. `z-score`:
     - `1 sigma`: covers `68%`
     - `2 sigma`: covers `95%`
     - `3 sigma`: covers `99%`
-- `cookie's distance`:
-    - it removes the observation one by one and measure the change in the metric/score
-    - expensive
+3. `cookie's distance`:
+    - it removes the observation one by one and measure the change in the `metric/score`
+    - computationally expensive
 
-## Handling outliers:
-- `Winsorizing`: replace the outlier of >= 95% and <= 5% with these bounds
+### Handling outliers:
+- `Winsorizing`: replace the outlier of `>= 95%` and `<= 5%` with these bounds
 - `Log-tranformation`: transfrom to log-space, which may transform those skewed distribution to normal distribution
 - `Binning`: tranform the continuous variable to discrete use bin based method
 - `Model-based` Approach: use loss function such as `mean absolute error`, which is less effective than `RMSE`
 - `truncated loss function`
 - use robust model such as `tree based model`
 
+---
 ## Approach to handling Imbalanced Datasets
 1. Use the right evaluation metrics
-
- 
-Applying inappropriate evaluation metrics for model generated using imbalanced data can be dangerous. Imagine our training data is the one illustrated in graph above. If accuracy is used to measure the goodness of a model, a model which classifies all testing samples into “0” will have an excellent accuracy (99.8%), but obviously, this model won’t provide any valuable information for us.
-
-In this case, other alternative evaluation metrics can be applied such as:
+- Applying inappropriate evaluation metrics for model generated using imbalanced data can be dangerous. 
 
     Precision/Specificity: how many selected instances are relevant.
     Recall/Sensitivity: how many relevant instances are selected.
@@ -2347,6 +2332,19 @@ This technique is followed to avoid overfitting which occurs when exact replicas
     Disadvantages
         While generating synthetic examples SMOTE does not take into consideration neighboring examples from other classes. This can result in increase in overlapping of classes and can introduce additional noise
         SMOTE is not very effective for high dimensional data
+
+### SMOTE:
+Synthetic Minority Oversampling Technique (SMOTE) is a statistical technique for increasing the number of cases in your dataset in a balanced way. The module works by generating new instances from existing minority cases that you supply as input. This implementation of SMOTE does not change the number of majority cases.
+
+The new instances are not just copies of existing minority cases. Instead, the algorithm takes samples of the feature space for each target class and its nearest neighbors. The algorithm then generates new examples that combine features of the target case with features of its neighbors. This approach increases the features available to each class and makes the samples more general.
+
+
+
+    Use cost-sensitive learning: Certain learning algorithms and implementations allow you to assign a cost to each class, essentially describing how bad it is if an example of that class is misclassified. If I recall correctly, this is usually considered the best approach when you have a good idea of these different costs.
+    Rebalance the classes: You can oversample the minority class (which carries a risk of overfitting), undersample the majority class (which is dangerous if you don't have a lot of data), use a mixture of both or perhaps something a bit more advanced like synthetic sampling (attempt to generate new examples of the minority class using something like SMOTE)
+
+Overall, you should also be careful to pick the right evaluation metric. 
+
 
 2.1.5  Modified synthetic minority oversampling technique (MSMOTE)
 This algorithm classifies the samples of minority classes into 3 distinct groups – Security/Safe samples, Border samples, and latent nose samples. This is done by calculating the distances among samples of the minority class and samples of the training data.
