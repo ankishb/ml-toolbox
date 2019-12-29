@@ -264,6 +264,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 ### Cyclic Learning Rate:
 - `x = abs(cur_itr/half_cycle_size - 2*cycle + 1)`
 - `min_lr + (max_lr - min_lr) * max(0, 1-x)`
+- `cycle = (1 + iteration/(2*cycle) )`
 - for exp: 
     - Assume, init cycle = 1, cycle_size = 200
     - for cur_itr = 100, so then `x = 0`
