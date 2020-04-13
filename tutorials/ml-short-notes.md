@@ -60,6 +60,7 @@ This is my machine learning notes on machine learning, deep learning, statistica
 - process of designing a model
 - Time series feature
 - LightGBM
+- Contrastive Loss
 
 ## perceptron
 - Online Algo (check one example at a time)
@@ -2499,3 +2500,12 @@ GOSS (Gradient Based One Side Sampling) is a novel sampling method which down sa
     2. Select the top a * 100% instances. [ Under trained / large gradients ]
     3. Randomly samples b * 100% instances from the rest of the data. This will reduce the contribution of well trained examples by a factor of b ( b < 1 )
     4. Without point 3 count of samples having small gradients would be 1-a ( currently it is b ). In order to maintain the original distribution LightGBM amplifies the contribution of samples having small gradients by a constant (1-a)/b to put more focus on the under-trained instances. This puts more focus on the under trained instances without changing the data distribution by much.
+    
+    
+    
+---
+
+
+## Contrastive Loss function
+This loss function is used when our objective is to learn the feature to differentiate `2` images, sound etc from each other. We define `d` to be the euclidean distance between `2` feature vector and `m` as margin (We can control the constraint for the feature differentiation and smoothening .
+- Loss = `y * d^2 + (1-y) * max(m-d, 0)^2`
