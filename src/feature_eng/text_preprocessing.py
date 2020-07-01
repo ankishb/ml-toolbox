@@ -1,4 +1,181 @@
 
+import time
+import spacy #load spacy
+import re
+import string
+from nltk.corpus import stopwords
+
+def decontracted(text):
+    # text = re.sub(r"(W|w)on(\'|\’)t ", "will not ", text))
+    text = re.sub(r"won(\'|\’)t ", "will not ", text)
+    text = re.sub(r"can(\'|\’)t ", "can not ", text)
+    text = re.sub(r"i(\'|\’)m ", "i am ", text)
+    text = re.sub(r"(ain(\'|\’)t ", "is not ", text)
+    text = re.sub(r"n(\'|\’)t ", " not ", text)
+    text = re.sub(r"(\'|\’)re ", " are ", text)
+    text = re.sub(r"(\'|\’)s ", " is ", text)
+    text = re.sub(r"(\'|\’)d ", " would ", text)
+    text = re.sub(r"(\'|\’)ll ", " will ", text)
+    text = re.sub(r"(\'|\’)t ", " not ", text)
+    text = re.sub(r"(\'|\’)ve ", " have ", text)
+    return text
+
+def clean_number(text):
+    text = re.sub(r'(\d+)([a-zA-Z])', '\g<1> \g<2>', text)
+    text = re.sub(r'(\d+) (th|st|nd|rd) ', '\g<1>\g<2> ', text)
+    text = re.sub(r'(\d+),(\d+)', '\g<1>\g<2>', text)    
+    return text
+
+def remove_space(text):
+    """remove extra spaces and ending space if any"""
+    text = text.strip()
+    text = re.sub('\s+', ' ', text)
+    return text
+
+def remove_punctuations(x):
+    x = str(x)
+    for punct in '&':
+        x = x.replace(punct, " and ")
+    for punct in '?!.,"#$%\'()*+-/:;<=>@[\\]^_`{|}~' + '“”’':
+        x = x.replace(punct, '')
+    return x
+
+def text_lemmatized(text):
+    import spacy
+    nlp = spacy.load("en", disable=['parser', 'tagger', 'ner'])
+
+    text = nlp(text) # get tokenization
+    lemmatized = [word.lemma_.strip() for word in text]
+    return " ".join(lemmatized)
+
+def remove_stopwords(text):
+    from nltk.corpus import stopwords # import stopwords
+    stops = stopwords.words("english")
+
+    text = [word for word in str(text).split(" ") if word not in stops]
+    return " ".join(text)
+
+from collections import Counter
+cnt = Counter()
+for text in df["text_wo_stop"].values:
+    for word in text.split():
+        cnt[word] += 1
+        
+
+FREQWORDS = set([w for (w, wc) in cnt.most_common(10)])
+def remove_freqwords(text):
+    """custom function to remove the frequent words"""
+    return " ".join([word for word in str(text).split() if word not in FREQWORDS])
+
+df["text_wo_stopfreq"] = df["text_wo_stop"].apply(lambda text: remove_freqwords(text))
+
+# Drop the two columns which are no more needed 
+df.drop(["text_wo_punct", "text_wo_stop"], axis=1, inplace=True)
+
+n_rare_words = 10
+RAREWORDS = set([w for (w, wc) in cnt.most_common()[:-n_rare_words-1:-1]])
+def remove_rarewords(text):
+    """custom function to remove the rare words"""
+    return " ".join([word for word in str(text).split() if word not in RAREWORDS])
+
+df["text_wo_stopfreqrare"] = df["text_wo_stopfreq"].apply(lambda text: remove_rarewords(text))
+
+
+from nltk.stem.porter import PorterStemmer
+Stemming is the process of reducing inflected (or sometimes derived) words to their word stem, base or root form. e.g. walks and walking reduces to walk
+# Drop the two columns 
+df.drop(["text_wo_stopfreq", "text_wo_stopfreqrare"], axis=1, inplace=True) 
+
+stemmer = PorterStemmer()
+def stem_words(text):
+    return " ".join([stemmer.stem(word) for word in text.split()])
+
+df["text_stemmed"] = df["text"].apply(lambda text: stem_words(text))
+df.head()
+
+
+from nltk.stem import WordNetLemmatizer
+Lemmatization is similar to stemming in reducing inflected words to their word stem but differs in the way that it makes sure the root word (also called as lemma) belongs to the language.
+lemmatization process depends on the POS tag to come up with the correct lemma.
+lemmatizer = WordNetLemmatizer()
+def lemmatize_words(text):
+    return " ".join([lemmatizer.lemmatize(word) for word in text.split()])
+
+df["text_lemmatized"] = df["text"].apply(lambda text: lemmatize_words(text))
+df.head()
+
+
+
+
+
+def remove_urls(text):
+    """
+    text = "Please refer to link http://lnkd.in/ecnt5yC for the paper"
+    remove_urls(text) == 'Please refer to link  for the paper'
+    """
+    url_pattern = re.compile(r'https?://\S+|www\.\S+')
+    return url_pattern.sub(r'', text)
+
+
+ef remove_html(text):
+    html_pattern = re.compile('<.*?>')
+    return html_pattern.sub(r'', text)
+
+text = """<div>
+<h1> H2O</h1>
+<p> AutoML</p>
+<a href="https://www.h2o.ai/products/h2o-driverless-ai/"> Driverless AI</a>
+</div>"""
+
+print(remove_html(text))
+
+ H2O
+ AutoML
+ Driverless AI
+
+from bs4 import BeautifulSoup
+
+def remove_html(text):
+    return BeautifulSoup(text, "lxml").text
+
+text = """<div>
+<h1> H2O</h1>
+<p> AutoML</p>
+<a href="https://www.h2o.ai/products/h2o-driverless-ai/"> Driverless AI</a>
+</div>
+"""
+
+print(remove_html(text))
+
+ H2O
+ AutoML
+ Driverless AI
+
+
+
+
+
+
+
+X_text['Description1'] =  X_text['Description']
+X_text['Description1'] = X_text['Description1'].fillna("<MISSING>")
+X_text['Description1'] = X_text['Description1'].str.replace('\d+', '')
+X_text['Description1'] = X_text['Description1'].str.lower()
+X_text["Description1"] = X_text['Description1'].str.replace('[^\w\s]','')
+
+# X_text['Description1'] = X_text['Description1'].apply(text_normalize, lowercase=True, remove_stopwords=True)
+X_text['Description1'] = X_text['Description1'].apply(decontracted)
+X_text['Description1'] = X_text['Description1'].apply(clean_number)
+X_text['Description1'] = X_text['Description1'].apply(remove_space)
+X_text['Description1'] =  X_text['Description1'].apply(remove_punctuations)
+X_text['Description1'] = X_text['Description1'].apply(text_lemmatized)
+X_text['Description1'] = X_text['Description1'].apply(remove_stopwords)
+X_text['Description1'] = X_text['Description1'].apply(lambda x: x.split())
+X_text['Description1'] = X_text['Description1'].astype('str')
+
+
+
+
 # Complete example ofn using entity embedding
 from gensim.models import Word2Vec
 from itertools import chain
@@ -159,180 +336,6 @@ alpha: 0.025 with lin. decay until 0.0001 (min_alpha)
 
 
 
-import time
-import spacy #load spacy
-import re
-import string
-from nltk.corpus import stopwords
-from unicodedata import category, name, normalize
-
-text_proc_time = time.time()
-nlp = spacy.load("en", disable=['parser', 'tagger', 'ner'])
-stops = stopwords.words("english")
-
-def text_normalize(comment, lowercase, remove_stopwords):
-    if lowercase:
-        comment = comment.lower()
-    comment = nlp(comment)
-    lemmatized = list()
-    for word in comment:
-        lemma = word.lemma_.strip()
-        if lemma:
-            if not remove_stopwords or (remove_stopwords and lemma not in stops):
-                lemmatized.append(lemma)
-    return " ".join(lemmatized)
-
-def clean_text(x):
-    x = str(x)
-    for punct in "/-'":
-        x = x.replace(punct, ' ')
-    for punct in '&':
-        x = x.replace(punct, f' {punct} ')
-    for punct in '?!.,"#$%\'()*+-/:;<=>@[\\]^_`{|}~' + '“”’':
-        x = x.replace(punct, '')
-    return x
-
-def clean_repeat_words(text):
-#     text = text.replace("img", "ing")
-
-    text = re.sub(r"(I|i)(I|i)+ng", "ing", text)
-    text = re.sub(r"(L|l)(L|l)(L|l)+y", "lly", text)
-    text = re.sub(r"(A|a)(A|a)(A|a)+", "a", text)
-    text = re.sub(r"(C|c)(C|c)(C|c)+", "cc", text)
-    text = re.sub(r"(D|d)(D|d)(D|d)+", "dd", text)
-    text = re.sub(r"(E|e)(E|e)(E|e)+", "ee", text)
-    text = re.sub(r"(F|f)(F|f)(F|f)+", "ff", text)
-    text = re.sub(r"(G|g)(G|g)(G|g)+", "gg", text)
-    text = re.sub(r"(I|i)(I|i)(I|i)+", "i", text)
-    text = re.sub(r"(K|k)(K|k)(K|k)+", "k", text)
-    text = re.sub(r"(L|l)(L|l)(L|l)+", "ll", text)
-    text = re.sub(r"(M|m)(M|m)(M|m)+", "mm", text)
-    text = re.sub(r"(N|n)(N|n)(N|n)+", "nn", text)
-    text = re.sub(r"(O|o)(O|o)(O|o)+", "oo", text)
-    text = re.sub(r"(P|p)(P|p)(P|p)+", "pp", text)
-    text = re.sub(r"(Q|q)(Q|q)+", "q", text)
-    text = re.sub(r"(R|r)(R|r)(R|r)+", "rr", text)
-    text = re.sub(r"(S|s)(S|s)(S|s)+", "ss", text)
-    text = re.sub(r"(T|t)(T|t)(T|t)+", "tt", text)
-    text = re.sub(r"(V|v)(V|v)+", "v", text)
-    text = re.sub(r"(Y|y)(Y|y)(Y|y)+", "y", text)
-    text = re.sub(r"plzz+", "please", text)
-    text = re.sub(r"(Z|z)(Z|z)(Z|z)+", "zz", text)
-    return text
-
-regular_punct = list(string.punctuation)
-extra_punct = [',', '.', '"', ':', ')', '(', '!', '?', '|', ';', "'", '$', '&','/', '[', ']', '>', '%', '=', '#', '*', '+', '\\', 
-'•',  '~', '@', '£','·', '_', '{', '}', '©', '^', '®', '`',  '<', '→', '°', '€', '™', '›','♥', '←', '×', '§', '″', 
-'′', 'Â', '█', '½', 'à', '…', '“', '★', '”','–', '●', 'â', '►', '−', '¢', '²', '¬', '░', '¶', '↑', '±', '¿', '▾',
-'═', '¦', '║', '―', '¥', '▓', '—', '‹', '─', '▒', '：', '¼', '⊕', '▼','▪', '†', '■', '’', '▀', '¨', '▄', '♫', '☆', 
-'é', '¯', '♦', '¤', '▲','è', '¸', '¾', 'Ã', '⋅', '‘', '∞', '∙', '）', '↓', '、', '│', '（', '»','，', '♪', '╩', '╚', 
-'³', '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø','¹', '≤', '‡', '√', '«', '»', '´', 'º', '¾', '¡', '§', '£', '₤']
-all_punct = list(set(regular_punct + extra_punct))
-# do not spacing - and .
-all_punct.remove('-')
-all_punct.remove('.')
-
-def spacing_punctuation(text):
-    """add space before and after punctuation and symbols """
-    for punc in all_punct:
-        if punc in text:
-            text = text.replace(punc, f' {punc} ')
-    return text
-
-rare_words = {' s.p ': ' ', ' S.P ': ' ', 'U.s.p': '', 'U.S.A.': 'USA', 'u.s.a.': 'USA', 'U.S.A': 'USA',' U.S ': ' USA ', ' u.s ': ' USA ', 'U.s.': 'USA',
-'u.s.a': 'USA', 'U.S.': 'USA', 'u.s.': 'USA', ' U.s ': 'USA', ' u.S ': ' USA ', 'fu.k': 'fuck', 'U.K.': 'UK', ' u.k ': ' UK ',
-' don t ': ' do not ', 'bacteries': 'batteries', ' yr old ': ' years old ', 'Ph.D': 'PhD','cau.sing': 'causing', 'Kim Jong-Un': 'The president of North Korea', 'savegely': 'savagely',
-'Ra apist': 'Rapist', '2fifth': 'twenty fifth', '2third': 'twenty third','2nineth': 'twenty nineth', '2fourth': 'twenty fourth', '#metoo': 'MeToo',
-'Trumpcare': 'Trump health care system', '4fifth': 'forty fifth', 'Remainers': 'remainder','Terroristan': 'terrorist', 'antibrahmin': 'anti brahmin',
-'fuckboys': 'fuckboy', 'Fuckboys': 'fuckboy', 'Fuckboy': 'fuckboy', 'fuckgirls': 'fuck girls','fuckgirl': 'fuck girl', 'Trumpsters': 'Trump supporters', '4sixth': 'forty sixth',
-'culturr': 'culture','weatern': 'western', '4fourth': 'forty fourth', 'emiratis': 'emirates', 'trumpers': 'Trumpster',
-'indans': 'indians', 'mastuburate': 'masturbate', 'f**k': 'fuck', 'F**k': 'fuck', 'F**K': 'fuck',' u r ': ' you are ', ' u ': ' you ', '操你妈': 'fuck your mother', 'e.g.': 'for example',
-'i.e.': 'in other words', '...': '.', 'et.al': 'elsewhere', 'anti-Semitic': 'anti-semitic','f***': 'fuck', 'f**': 'fuc', 'F***': 'fuck', 'F**': 'fuc',
-'a****': 'assho', 'a**': 'ass', 'h***': 'hole', 'A****': 'assho', 'A**': 'ass', 'H***': 'hole',
-'s***': 'shit', 's**': 'shi', 'S***': 'shit', 'S**': 'shi', 'Sh**': 'shit','p****': 'pussy', 'p*ssy': 'pussy', 'P****': 'pussy',
-'p***': 'porn', 'p*rn': 'porn', 'P***': 'porn','st*up*id': 'stupid','d***': 'dick', 'di**': 'dick', 'h*ck': 'hack',
-'b*tch': 'bitch', 'bi*ch': 'bitch', 'bit*h': 'bitch', 'bitc*': 'bitch', 'b****': 'bitch','b***': 'bitc', 'b**': 'bit', 'b*ll': 'bull'}
-
-def pre_clean_rare_words(text):
-    for rare_word in rare_words_mapping:
-        if rare_word in text:
-            text = text.replace(rare_word, rare_words_mapping[rare_word])
-
-    return text
-
-# de-contract the contraction
-def decontracted(text):
-    # specific
-    text = re.sub(r"(W|w)on(\'|\’)t ", "will not ", text)
-    text = re.sub(r"(C|c)an(\'|\’)t ", "can not ", text)
-    text = re.sub(r"(Y|y)(\'|\’)all ", "you all ", text)
-    text = re.sub(r"(Y|y)a(\'|\’)ll ", "you all ", text)
-    # general
-    text = re.sub(r"(I|i)(\'|\’)m ", "i am ", text)
-    text = re.sub(r"(A|a)in(\'|\’)t ", "is not ", text)
-    text = re.sub(r"n(\'|\’)t ", " not ", text)
-    text = re.sub(r"(\'|\’)re ", " are ", text)
-    text = re.sub(r"(\'|\’)s ", " is ", text)
-    text = re.sub(r"(\'|\’)d ", " would ", text)
-    text = re.sub(r"(\'|\’)ll ", " will ", text)
-    text = re.sub(r"(\'|\’)t ", " not ", text)
-    text = re.sub(r"(\'|\’)ve ", " have ", text)
-    return text
-
-# remove space
-spaces = ['\u200b', '\u200e', '\u202a', '\u202c', '\ufeff', '\uf0d8', '\u2061', '\x10', '\x7f', '\x9d', '\xad', '\xa0']
-def remove_space(text):
-    """remove extra spaces and ending space if any"""
-    for space in spaces:
-        text = text.replace(space, ' ')
-    text = text.strip()
-    text = re.sub('\s+', ' ', text)
-    return text
-
-# replace strange punctuations and raplace diacritics
-
-def remove_diacritics(s):
-    return ''.join(c for c in normalize('NFKD', s.replace('ø', 'o').replace('Ø', 'O').replace('⁻', '-').replace('₋', '-'))
-                  if category(c) != 'Mn')
-
-special_punc_mappings = {"—": "-", "–": "-", "_": "-", '”': '"', "″": '"', '“': '"', '•': '.', '−': '-',
-                         "’": "'", "‘": "'", "´": "'", "`": "'", '\u200b': ' ', '\xa0': ' ','،':'','„':'',
-                         '…': ' ... ', '\ufeff': ''}
-def clean_special_punctuations(text):
-    for punc in special_punc_mappings:
-        if punc in text:
-            text = text.replace(punc, special_punc_mappings[punc])
-    text = remove_diacritics(text)
-    return text
-
-# clean numbers
-def clean_number(text):
-    text = re.sub(r'(\d+)([a-zA-Z])', '\g<1> \g<2>', text)
-    text = re.sub(r'(\d+) (th|st|nd|rd) ', '\g<1>\g<2> ', text)
-    text = re.sub(r'(\d+),(\d+)', '\g<1>\g<2>', text)    
-    return text
-
-
-
-# X_text['Description1'] =  X_text['Description']
-# X_text['Description1'] = X_text['Description1'].fillna("<MISSING>")
-# X_text['Description1'] = X_text['Description1'].str.replace('\d+', '')
-# X_text['Description1'] = X_text['Description1'].str.lower()
-# X_text["Description1"] = X_text['Description1'].str.replace('[^\w\s]','')
-
-# X_text['Description1'] = X_text['Description1'].apply(text_normalize, lowercase=True, remove_stopwords=True)
-print("done")
-X_text['Description1'] =  X_text['Description1'].apply(lambda x: clean_text(x))
-X_text['Description1'] = X_text['Description1'].apply(lambda x: x.split())
-X_text['Description1'] = X_text['Description1'].astype('str')
-X_text['Description1'] = X_text['Description1'].apply(clean_repeat_words)
-X_text['Description1'] = X_text['Description1'].apply(remove_space)
-X_text['Description1'] = X_text['Description1'].apply(remove_diacritics)
-X_text['Description1'] = X_text['Description1'].apply(clean_special_punctuations)
-X_text['Description1'] = X_text['Description1'].apply(clean_number)
-# X_text['Description1'] = X_text['Description1'].apply(pre_clean_rare_words)
-X_text['Description1'] = X_text['Description1'].apply(decontracted)
-X_text['Description1'] = X_text['Description1'].apply(spacing_punctuation)
 
 
 
@@ -635,28 +638,3 @@ print(expandContractions('You won\'t live to see tomorrow.'))
 print(expandContractions('You\'ve got serious cojones coming in here like that.'))
 print(expandContractions('I hadn\'t enough'))
 
-
-
-d = {
-
-  "you'd've": "you would have",
-
-  "you'll": "you you will",
-
-  "you'll've": "you you will have",
-
-  "you're": "you are",
-
-  "you've": "you have"
-
-}
-
-​
-
-['(%s)' % '|'.join(d.keys())]
-
-["(you'd've|you'll|you'll've|you're|you've)"]
-
-re.compile('(%s)' % '|'.join(d.keys()))
-
-re.compile(r"(you'd've|you'll|you'll've|you're|you've)", re.UNICODE)
