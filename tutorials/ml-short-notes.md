@@ -116,13 +116,13 @@ regression analysis estimates the relationship between two or more variables.
 - minimize the residual error `vertical distance` between data sample and slope(line)`(observed response value minus fitted response value)`
 - **It is scale invariant**
 
-### Why total least square is not used widely as compare to ordinary least square:
-- Because of `scale variant` property.
-- The reason why total least squares isn’t used as often as ordinary least squares, is because problems arise when the variables have different units of measurement.  If the variables have different units of measurement and diagonal residual are used, then essentially quantities with different measurement units are being added together (due to Pythagoras Theorem).  To overcome this problem, the variables could be normalised / standardised. 
+### Why total least square is not used widely as compared to ordinary least square:
+- Due to its `scale variant` property.
+- If the variables have different units of measurement and diagonal residual are used, then essentially quantities with different measurement units are being added together (due to Pythagoras Theorem). To overcome this problem, the variables could be normalised first. 
 
 
 ## Assumption in Oordinary Least Square:
-1. The regression model is linear in the coefficients, as well in the error term
+1. The regression model is linear in the coefficients and error term
 2. The error term has a population mean of zero
 3. All `independent variables` are `uncorrelated` with the error term
 4. Each `Observations` is `independent` of each other
@@ -146,11 +146,22 @@ regression analysis estimates the relationship between two or more variables.
 3. `L0 regression is scale invariant`; the feature is in or out of the model, so the size doesn’t matter.
 4. `PCA is not scale invariant`. People therefore often rescale the data (`standardize` it) before they do PCA. 
 
+
+## Q. Do least square and linear regression same thing?
+1. **They are not the same thing.**
+2. Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell us how the model is fitted. Least square fitting is simply one of the possibilities.
+3. Least square optimizes for weight using this expression: `w =  argmin_w [y − f(x, w)]^2`
+4. In summary: `linear regression is an optimization problem`, where we find the best possible value for parameters to fit a linear line. On the other hand, `least square method is a potential loss function for an optimization problem`. And loss is defined as `(y - f(x, w))^2`, where `f(x,w)` can be any function linear or non-linear, parameterized by `w`.
+
+
+> Simple linear regression model has "low bias and high variance". To reduce the variance and compromised with bias, we can choose regularized version of regression model, such as lasso and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. Also note that both will always decrease the variance in the estimator, and introduces bias only if the true value of the coefficient is not zero.
+
+
 ## Maximum Likelihood estimation:
 The main advantage of MLE is that it has `asymptotic property`. It means that when the size of the data increases, the `estimate converges faster towards the population parameter`.
 
 
-The Maximum Likelihood method is used in estimating a parameter  θ of a distribution with a density function ∱(x), from samples drawn at random from it. Naturally, one wants the estimate to be the best possible one of the unknown  θ. So, a Likelihood function is defined such that it allows the sample to arrive at that desirable estimate. And we want that Likelihood to be Maximum for the best estimate. 
+The Maximum Likelihood method is used in estimating a parameter  θ of a distribution with a density function `f(x)`, from samples drawn at random from it. Naturally, one wants the estimate to be the best possible one of the unknown  θ. So, a Likelihood function is defined such that it allows the sample to arrive at that desirable estimate. And we want that Likelihood to be Maximum for the best estimate. 
 
 
 
@@ -169,18 +180,9 @@ Step to do MLE:
 3. Estimate parameter `theta`
 
 ## Q. Difference between least square estimation and maximum likelihood estimation:
-- `LSE` is to minimize the `least square error`
-- `MLE` is to `maximize the log likelihood` as the loss function and minimze it with respect to the parameter.
-- Both becomes `equivalent`, we assume `gaussian distribution` as probability density function in `MLE`.
-
-
-## Q. Do least square and linear regression same thing?
-1. **They are not the same thing.**
-2. Linear regression assumes a linear relationship between the independent and dependent variable. It doesn't tell you how the model is fitted. Least square fitting is simply one of the possibilities.
-3. In summary: `linear regression is optimization problem`, with the intent to find best possible parameter for the linear line, where as `least square method is potential loss function for an optimization problem`. Which means, loss is (y - f(x, w))^2, where f(x,w) can be any function, linear/non-linear, parameterized by `w`.
-4. In least square: `w =  argmin_w [y − f(x, w)]^2`
-
-> f linear regression is  "low bias/high variance", there must be some alternative method that is biased but that has lower variance. Various forms of regularized regression exist, including lasso regression and ridge regression. These methods essentially shrink the estimated coefficient(s) towards zero, and they correspond to priors on the coefficient values. Also note that regularizing a regression using lasso or ridge will always decrease the variance in the estimator, and it will always introduce bias if the true value of the coefficient is not zero.
+- `LSE` minimizes the `least square error`
+- `MLE` `maximize the log likelihood` as the loss function and minimze it with respect to the parameter.
+- Both becomes `equivalent` if we assume `gaussian distribution` as probability density function in `MLE`.
 
 
 
@@ -219,7 +221,7 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 
 4. Fourth, logistic regression assumes linearity of independent variables and log odds. Although this analysis does not require the dependent and independent variables to be related linearly, `it requires that the independent variables are linearly related to the log odds`
 
-5. Finally, logistic regression typically requires a large sample size.  A general guideline is that you need at minimum of 10 cases with the least frequent outcome for each independent variable in your model. For example, if you have 5 independent variables and the expected probability of your least frequent outcome is .10, then you would need a minimum sample size of 500 (10*5 / .10).
+5. Finally, logistic regression typically requires a large sample size.  A general guideline is that you need at minimum of 10 cases with the least frequent outcome for each independent variable in your model. For example, if you have 5 independent variables and the expected probability of your least frequent outcome is .10, then you would need a minimum sample size of 500 (10 * 5 / .10).
 
 
 
@@ -261,6 +263,8 @@ Fit a line though the following sample and analyze the threshold of 0.5 to detec
 - momentum based `1/t`, `1/sqrt(t)`, `1/(1-t)`, RMSProp < Nestrov Momentum
 - `adaptive lr` **Adam, AdaGrad,...**
 - `cyclic learning rate` very effective, the idea is insetead of finding one local minima, it find many-many extrema and build the ensemble using all those optima pts.
+- `Warm-Hold-Decay`: Mainly used in sequence models. To warm up, we increase the learning rate, then keep it constant and finally we decrease it following some criteria such as linear, exponential etc.
+
 
 ### Cyclic Learning Rate:
 - `x = abs(cur_itr/half_cycle_size - 2*cycle + 1)`
@@ -358,11 +362,13 @@ defined on [−1,1].
 
 1. Momentum:
 **Another way to think about momentum, suppose our update as oscilating while moving towards its local minima, so when we taking average of many points value, its oscillation in verticle direction suppress, but in horizontal direction as all grad effect sums up, so it will have nice big grad value.**
-    - `V_w = beta V_w + (1-beta) dw`
-    - `V_b = beta V_b + (1-beta) db`
-    - `w = w - alpha V_w`
-    - `b = b - alpha V_b`
-The momentum term increases for dimensions whose gradients point in the same directions and reduces updates for dimensions whose gradients change directions. As a result, we gain faster convergence and reduced oscillation.
+    """
+        `V_w = beta V_w + (1-beta) dw`
+        `V_b = beta V_b + (1-beta) db`
+        `w = w - alpha V_w`
+        `b = b - alpha V_b`
+    """
+    - The momentum term increases for dimensions whose gradients point in the same directions and reduces updates for dimensions whose gradients change directions. As a result, we gain faster convergence and reduced oscillation.
 
 2. `AdaGrad`: weakness: lr_rate decaying
 Notice that the weights that receive high gradients will have their effective learning rate reduced, while weights that receive small or infrequent updates will have their effective learning rate increased. This agressive behaviour, stops Deep-NN to learn very early.
@@ -380,20 +386,20 @@ Best, if we are using sparse data such as tf-idf features for words.
 ## lagrangian Method:
 - Primal & Dual method: Both gives same answer if the constrained function is convex, i.e. `g(w) <= 0`
 - `w = argmin_w {f(w) + argmax_a {a.g(w)}}`
-- `For dual solution, a.g(w) = 0` (complimentary slackness/Karush-Kuhn-Tucker `(KKT) condition`)
+- `For dual solution, a.g(w) = 0`, Complimentary-Slackness/Karush-Kuhn-Tucker (KKT) cnditions
 
 ## Projected Grad Method:
 1. Each step of projected GD works as follows
-2. Do the usual GD update: `z(t+1) = w(t) − ηt g(t)`
+2. Do the usual GD update: `z(t+1) = w(t) − η * g(t)`
 3. Check z(t+1) for the constraints
     If z(t+1) <= C, `w(t+1) = z(t+1)`
-    If z(t+1) > C , project on the constraint set: `w(t+1) = ΠC[z(t+1)]`
+    If z(t+1) > C , project within the constraint set: `w(t+1) = ΠC[z(t+1)]`
 
-- Example: let's suppose our z(t+1), lie outside the unit circle, but just consider it to be 1, if our constrained of **w belong to unit circle**.
+Example: let's suppose our z(t+1) lies outside the unit circle, we can project this back to unit circle if we have considered unit circle to be our constrained set.
 
 ---
-## Loss function (`Convex Surrogate Losses Function`):
-- Surrogate losses, because it define the upper bound on the real losses and minimize that. So minimze the surrogate losses function make sure pushing down real losses too.
+## Loss function (`Convex Surrogate Loss Functions`):
+- Surrogate losses, it define the upper bound on real losses and minimize that. Thus minimizing the surrogate loss function make sure pushing real losses down too.
 - **0/1 loss**: 1[ywx <= 0], this is NP hard, no efficient solution. For example for wx = -0.0000001, with increase of 00000009 it will still be -1, but 000000011 increase will take it to right side that is +1.
 - `Perceptron`: `max(0, -y w x)`
 - `Hinge Loss`: `max(0, 1 - y w x)`
@@ -411,37 +417,33 @@ Best, if we are using sparse data such as tf-idf features for words.
 
 
 ## regularization:
-- `shrinking of coefficient`
-- avoid overfitting
-- better generalization
+- `Shrinking of coefficient`
+- Avoid overfitting
+- Better generalization
 
-### Types of regularization
+### Types of Regularization
 1. `L_p Norm`:
-    - p < 1, it shrink from diamond to shape, which stretches towards axes, it has sparsity nature, but also non-convex, so non preferable generally.
-    - p = 1 ==> diamond, this is least value of p, with convexity properties, Also have sparse nature.
-    - p = 2 ==> euclidean loss, helps in generalize better, by reducing weights so much that boundriess becomes smooth
-    - **Why small weights are prefered, because by changing the input x by epsilon, its prediction should not change, which is possible with smalle weights only.**
-    - p > 2, it move from circle to square as p = INF
-    - p = INF, also called max norm.
+    - `p = 1` => diamond. It is the least value of p with convexity properties. It is sparse in nature.
+    - p < 1, it shrink from diamond and stretches along the axes. It is alos sparse in nature. It leads to `non-convex` function which is very difficult to optimize, thus highly avoided in usuage.
+    - `p = 2` => euclidean loss. With the reduce in weight's values, boundriess becomes smooth which leads to better generalization.
+    - `p > 2`, its geometrical configuration changes from circle to square as approached to `p = INF`
+    - `p = INF`, also known as `max-norm`
 2. `L0`:
     - point shape
     - NP hard
     - Count of non-negative feature value.
 3. `L1`:
     - **lasso Regression**
-    - Diamond shape(if the linear predictor or line of solution meet the corner point, it creats sparsity in solution)
-    - sparse feaure
+    - As the linear predictor or line of solution meet the corner point, it adds sparsity.
     - deal with multicolinearity problem
 4. `L2`:
-    - `higher lambda, more shrinkage(approx 0)`
-    - `importance`: we don't want our model to be unstable with the addition of any noise. Note that, if there is noise in input feature, the coefficient for that feature will change the direction of hyperplane.
     - **Ridge** regression
-    - circular shape
+    - `higher lambda, more shrinkage (approx 0)`
+    - `Importance`: we don't want our model to be unstable with the addition of any noise. Note that, if there is noise in input feature, the coefficient for that feature will change the direction of hyperplane.
     - small weights **if there is any noise in feature, then having small weights generally doesn't effect too much**
-5. `Dropout` Reg (in deep learning)
-- for unsupervised learning:
-    - `sum_i w_i*(x_i - x_j)^2`
-- As p decrease in **L_p**, the shape of l_p shrink from edge(imagine dianmond and shrink its edges.) and tends to have sharp corners.
+5. `Dropout` Reg (used in deep learning)
+6. For unsupervised learning: The general expression is `sum_i w_i*(x_i - x_j)^2`. Hence can be regularize the same way. (some solid ref?)
+
 
 > Note: Least square method is scale invariant as y = beta0 + x1*beta1 + x2*beta2. So LS method can learn appropriate coeff betas with the scaled features, but with regularization, it can creates some problem, it `increase the panality for those features`. Better method to standarize the data before using it in ridge regression.
 
@@ -948,22 +950,18 @@ Machine learning algorithms that have a high variance are strongly influenced by
 
 ## Types of Clustering
 1. Centroid-based Clustering
-- distance based metrics
-- efficient but sensitive to initial conditions and outliers.
-
+    - distance based metrics
+    - efficient but sensitive to initial conditions and outliers.
 2. Density-based Clustering
-- Density-based clustering connects areas of high example density into clusters. 
-- This allows for arbitrary-shaped distributions as long as dense areas can be connected. 
-- These algorithms have difficulty with data of varying densities and high dimensions. 
-- Further, by design, these algorithms do not assign outliers to clusters.
-
+    - Allows arbitrary-shaped distributions as long as dense areas can be connected. 
+    - Have difficulty with data of varying densities and high dims. 
+    - It doesn't assign outliers to clusters, by design.
 3. Distribution-based Clustering
-- work good only, when we aware the distribution of dataset, such as Gaussian distributions.
-
+    - Strong Assumption about the data distributions.
 4. Hierarchical Clustering
-- Hierarchical clustering creates a tree of clusters. 
-- Hierarchical clustering, not surprisingly, is well suited to hierarchical data, such as taxonomies. 
-- In addition, another advantage is that any number of clusters can be chosen by cutting the tree at the right level.
+    - Creates a tree of clusters. 
+    - Well suited to hierarchical data, such as taxonomies. 
+    - Can select any nos of clusters by cutting the tree at the right level.
 
 
 
@@ -988,7 +986,10 @@ Machine learning algorithms that have a high variance are strongly influenced by
 - It just learn the mean of cluster, but it can be modified to `GMM` to capture variance
 - Our `z` is one-hot vector, if we use `probability` vector, then it will be called probabilistic clustering or `soft-clustering`
 
-> 1. Minimize the intra-cluster distances  2. Maximize the inter-cluster distances  3. However, K-Means is implicitly based on pairwise Euclidean distances b/w data points. 4. SStotal = SSwithin + SSbetween. So, if SSwithin is minimized then SSbetween is maximized.
+    1. Minimize the intra-cluster distances  
+    2. Maximize the inter-cluster distances  
+    3. However, K-Means is implicitly based on pairwise Euclidean distances b/w data points. 
+    4. SStotal = SSwithin + SSbetween. So, if SSwithin is minimized then SSbetween is maximized.
 
 
 
@@ -1009,7 +1010,8 @@ Machine learning algorithms that have a high variance are strongly influenced by
 ```
 
 #### kernelized k-mean:
-- `L(x, mean, c) = ||x - c||^2`, which become with kernelized trick as `||phi(x) - phi(c)||^2 = phi(x,x) + phi(c,c) + 2*phi(x, c)`
+- k-means: `L(x, mean, c) = ||x - c||^2`
+- kernelized k-mean: `||phi(x) - phi(c)||^2 = phi(x,x) + phi(c,c) + 2*phi(x, c)`
 
 #### probalistic setting
 - Objective: Cluster id is defined as `P(z/x,theta)`
@@ -1028,10 +1030,11 @@ Machine learning algorithms that have a high variance are strongly influenced by
 ```
 
 ### Why kmean doesn't give global solution:
-- The assignment of points to its corresponding cluster is the biggest part of what k-means is doing. (Once the assignment is made, the centroids are easily computed and there's nothing left to do.) That assignment is discrete: it's not something that can be differentiated at all. 
-- Moreover, it's `combinatorially complex`: there are `O(n^k)` ways to assign `n` points to `k` clusters. Indeed, it's completely unnecessary to use gradient descent to find the centroid
-- So in essence, there is a global solution, but it requires you to iterate over all possible clusterings. You could iterate over all solutions and maximize the objective function, but the number of iterations is exponential in the size of your data
-- Even with `thirty points and two clusters`, there are about a `billion such possible assignments`, this is unfeasible to calculate. 
+- The assignment of points to its corresponding cluster is discrete, which is non-differentiable.
+- It's `combinatorially complex`. It means that there are `O(n^k)` ways to assign `n` points to `k` clusters.
+- There is a global solution, but very expensive to compute (order: exponential of the size of data). For large dataset, it is practically impossible.
+- Exp: For `thirty points and two clusters`, there are `billion such possible assignments`.
+
 
 ---
 ## LDA:
@@ -1039,8 +1042,6 @@ Two criteria are used by LDA to create a new axis:
 
     Maximize the distance between means of the two classes.
     Minimize the variation within each class.
-
-
 
 
 ---
@@ -1772,14 +1773,7 @@ In the field of statistics, the term parametric is also associated with a specif
 
 
 ## Naive Bayes Algorithm:
-Assumption:
-
-The fundamental Naive Bayes assumption is that each feature makes an:
-
-    independent
-    equal
-
-contribution to the outcome.
+Assumption: Each feature makes an `independent` and `equal` contribution to the outcome.
 
 
     Step 1: Calculate the prior probability for given class labels
@@ -1803,18 +1797,18 @@ Now, apply Laplacian correction on the given dataset. Let's add 1 more tuple for
 
 ### Advantages
 
-    It is not only a simple approach but also a fast and accurate method for prediction.
-    Naive Bayes has very low computation cost.
-    It can efficiently work on a large dataset.
-    It performs well in case of discrete response variable compared to the continuous variable.
-    It can be used with multiple class prediction problems.
-    It also performs well in the case of text analytics problems.
-    When the assumption of independence holds, a Naive Bayes classifier performs better compared to other models like logistic regression.
+- It is not only a simple approach but also a fast and accurate method for prediction.
+- Naive Bayes has very low computation cost.
+- It can efficiently work on a large dataset.
+- **It performs well in case of discrete response variable compared to the continuous variable.**
+- It can be used with multiple class prediction problems.
+- It also performs well in the case of text analytics problems.
+- When the assumption of independence holds, a Naive Bayes classifier performs better compared to other models like logistic regression.
 
 ### Disadvantages
 
-    The assumption of independent features. In practice, it is almost impossible that model will get a set of predictors which are entirely independent.
-    If there is no training tuple of a particular class, this causes zero posterior probability. In this case, the model is unable to make predictions. This problem is known as Zero Probability/Frequency Problem.
+- The assumption of independent features. In practice, it is almost impossible that model will get a set of predictors which are entirely independent.
+- If there is no training tuple of a particular class, this causes zero posterior probability. In this case, the model is unable to make predictions. This problem is known as Zero Probability/Frequency Problem.
 
 ### Application:
 Real time Prediction
@@ -1828,6 +1822,7 @@ There are three types of Naive Bayes model under the scikit-learn library:
 3. Bernoulli: The binomial model is useful if your feature vectors are binary (i.e. zeros and ones). One application would be text classification with ‘bag of words’ model where the 1s & 0s are “word occurs in the document” and “word does not occur in the document” respectively.
 
 ---
+
 ## Probabilistic Models:
 Probabilistic models see features and target variables as random variables. The process of modelling represents and manipulates the level of uncertainty with respect to these variables. There are two types of probabilistic models: Predictive and Generative. Predictive probability models use the idea of a conditional probability distribution P (Y |X) from which Y can be predicted from X.  Generative models estimate the joint distribution P (Y, X).  Once we know the joint distribution for the generative models, we can derive any conditional or marginal distribution involving the same variables. Thus, the generative model is capable of creating new data points and their labels, knowing the joint probability distribution. The joint distribution looks for a relationship between two variables. Once this relationship is inferred, it is possible to infer new data points.
 
@@ -1937,7 +1932,7 @@ Statistical hypotheses are tested using a four-step process.
 - `alpha` refers to the `likelihood that the true population parameter lies outside the confidence interval`.
 - `Alpha` is usually expressed as a `proportion`. Thus, if the `confidence level is 95%`, then `alpha would equal 1 - 0.95 or 0.05`.
 
-## p-test[ref](https://www.investopedia.com/terms/p/p-test.asp)
+## p-test [ref](https://www.investopedia.com/terms/p/p-test.asp)
 A P-test calculates a value which enables the researcher to determine the credibility of the accepted claim. The corresponding p-value is compared to a statistically significant level (confidence level), alpha (α), that the researcher has chosen to gauge the randomness of the results. The P-test statistic typically follows a standard normal distribution when large sample sizes are used.
 
 Researchers will usually choose alpha levels of 5% or lower which translates to confidence levels of 95% or greater. In other words, a p-value less than a 5% alpha level means that there is greater than 95% chance that your results are not random, thus enhancing the significance of your results. This is the evidence that would allow the researcher to reject the null hypothesis.
