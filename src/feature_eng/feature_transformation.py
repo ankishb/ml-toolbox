@@ -3,21 +3,19 @@
 import gc
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import PCA
-from sklearn.decomposition import NMF
-from sklearn.decomposition import TruncatedSVD
+from sklearn.decomposition import PCA, NMF, TruncatedSVD
 from sklearn.preprocessing import PolynomialFeatures as pf
 
 
 
-def get_polynomial_feature(train, test, cols, degree, interact, bias=False, return_fun=False):
+def get_polynomial_feature(train_df, test_df, cols, degree, interact, bias=False, return_fun=False):
     """ polynomial feature
     Args:
-        train_df, test_df
+        train_df, test_df: train and test are pandas dataframes
         degree: degree of polynomial feature
         cols: columns to use
         interact: if True, return [x1, x2, x1*x2], else return [x1, x2, x1**2, x2**2, x1*x2]
-        bias: if True, add column of ones as [1, x1, x2, x1*x2], else do nothing
+        bias: if True, add column of ones as [1, x1, x2, x1*x2], otherwise skip
         
     return:
         data-frame which extended feature obtained from up function
@@ -26,13 +24,12 @@ def get_polynomial_feature(train, test, cols, degree, interact, bias=False, retu
         X = pd.DataFrame(data=X, columns=['x1','x2', 'x3'])
         new, new1 = get_polynomial_feature(X, X, cols=['x1', 'x2'], degree=2, interact=False)
     """
-    from sklearn.preprocessing import PolynomialFeatures as pf
-    complete_df = pd.concat([train, test], axis=0).reset_index(drop=True)
+    complete_df = pd.concat([train_df, test_df], axis=0).reset_index(drop=True)
 
     if len(cols) == 1:
-        raise ValueError('columns should be more than 1.')
+        raise ValueError("columns size should be more than 1, to obtain the interaction")
         
-    print("intraction happens only in cols: ", cols)
+    print("Columns list of interaction: ", cols)
     interact_cols = cols
     no_interact_cols = list(set(train.columns) - set(cols))
 
@@ -42,15 +39,15 @@ def get_polynomial_feature(train, test, cols, degree, interact, bias=False, retu
     new_feat = pd.DataFrame(data=new_feat, columns=poly_feat.get_feature_names())
     new_feat = pd.concat([complete_df[no_interact_cols], new_feat], axis=1)
 
-    train = new_feat.iloc[:train.shape[0]]
-    test  = new_feat.iloc[train.shape[0]:].reset_index(drop=True)
+    train_pf = new_feat.iloc[:train.shape[0]]
+    test_pf  = new_feat.iloc[train.shape[0]:].reset_index(drop=True)
 
     del complete_df, new_feat
     gc.collect()
     if return_fun == True:
-        return train, test, poly_feat
+        return train_pf, test_pf, poly_feat
     else:
-        return train, test
+        return train_pf, test_pf
     
     
 
@@ -81,7 +78,7 @@ def nmf_decomposition(train, test, n_component, alpha=0, l1_ratio=0, col_name=No
     complete_nmf.columns = ['nmf_'+str(i) for i in range(n_component)]
 
     train_nmf = complete_nmf.iloc[:train.shape[0]]
-    test_nmf = complete_nmf.iloc[train.shape[0]:].reset_index(drop=True)
+    test_nmf  = complete_nmf.iloc[train.shape[0]:].reset_index(drop=True)
 
     del complete_nmf, complete_df
     gc.collect()

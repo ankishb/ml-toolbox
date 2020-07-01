@@ -1,19 +1,33 @@
 
 
 EMBEDDING_FILE = '../input/embeddings/glove.840B.300d/glove.840B.300d.txt'
-def get_coefs(word,*arr): return word, np.asarray(arr, dtype='float32')
-embeddings_index = dict(get_coefs(*o.split(" ")) for o in open(EMBEDDING_FILE))
+def get_coefs(word, *arr): 
+    return word, np.asarray(arr, dtype='float32')
+embeddings_index = dict(
+    get_coefs(*o.split(" ")) 
+    for o in open(EMBEDDING_FILE)
+)
 
 
 EMBEDDING_FILE = '../input/embeddings/wiki-news-300d-1M/wiki-news-300d-1M.vec'
-def get_coefs(word,*arr): return word, np.asarray(arr, dtype='float32')
-embeddings_index = dict(get_coefs(*o.split(" ")) for o in open(EMBEDDING_FILE) if len(o)>100)
+def get_coefs(word, *arr): 
+    return word, np.asarray(arr, dtype='float32')
+embeddings_index = dict(
+    get_coefs(*o.split(" ")) 
+    for o in open(EMBEDDING_FILE) 
+    if len(o)>100
+)
 
 
 
 EMBEDDING_FILE = '../input/embeddings/paragram_300_sl999/paragram_300_sl999.txt'
-def get_coefs(word,*arr): return word, np.asarray(arr, dtype='float32')
-embeddings_index = dict(get_coefs(*o.split(" ")) for o in open(EMBEDDING_FILE, encoding="utf8", errors='ignore') if len(o)>100)
+def get_coefs(word, *arr): 
+    return word, np.asarray(arr, dtype='float32')
+embeddings_index = dict(
+    get_coefs(*o.split(" ")) 
+    for o in open(EMBEDDING_FILE, encoding="utf8", errors='ignore') 
+    if len(o)>100
+)
 
 
 
@@ -63,6 +77,7 @@ for word, i in word_index.items():
         print(word)
         embedding_matrix[i] = embedding_vector
   
+x = Embedding(max_features, embed_size, weights=[embedding_matrix])(inp)
 
 good = embeddings_index.get('good')
 bad = embeddings_index.get('bad')
@@ -120,6 +135,7 @@ Returns
 
 Embedding
 
+x = Embedding(max_features, embed_size, weights=[embedding_matrix])(inp)
 keras.layers.Embedding(input_dim, output_dim, embeddings_initializer='uniform',input_length=None)
 
 Arguments
